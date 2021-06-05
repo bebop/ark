@@ -1,4 +1,4 @@
-package biogolem
+package allbase
 
 import (
 	"database/sql"
@@ -20,7 +20,6 @@ CREATE TABLE seqhash (
 -- Create Genbank Table --
 CREATE TABLE genbank (
 	accession TEXT PRIMARY KEY,
-	polyversion TEXT NOT NULL,
 	genbankhash TEXT NOT NULL, -- adler32 checksum
 	genbank TEXT NOT NULL, 
 	seqhash TEXT NOT NULL REFERENCES seqhash(seqhash)

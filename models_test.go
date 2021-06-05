@@ -1,4 +1,4 @@
-package biogolem
+package allbase
 
 import (
 	"context"
