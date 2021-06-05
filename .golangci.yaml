@@ -1,0 +1,11 @@
+linters:
+  enable:
+    - asciicheck
+    - bodyclose
+    - gofmt
+    - goprintffuncname
+    - misspell
+    - unparam
+    - whitespace
+    - megacheck
+    - govet
