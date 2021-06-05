@@ -32,7 +32,7 @@ The entire structure of Rhea can simply be thought of as:
 	1 There are Reactions. Those Reactions can have substrates and products, or substratesOrProducts
 	  in the case that the reaction is bidirectional.
 	2 There are ReactionSides. ReactionSides can be thought of as a many-to-many table between Reactions
-	  and ReactionParticipants. It only serves as an inbetween, saying "this Reaction has these
+	  and ReactionParticipants. It only serves as an in between, saying "this Reaction has these
 	  ReactionParticipants on this side".
 	3 There are ReactionParticipants. ReactionParticipants link ReactionSides with ReactiveParts and include
 	  useful information like the number of ReactiveParts/Compounds (or chemicals) needed to do a certain Reaction.
@@ -63,7 +63,7 @@ type Rhea struct {
 type Compound struct {
 	ID                  int    `json:"id" db:"id"`
 	Accession           string `json:"accession" db:"accession"`
-	Position            string `json:"position" db: "position"`
+	Position            string `json:"position" db:"position"`
 	Name                string `json:"name" db:"name"`
 	HTMLName            string `json:"htmlName" db:"htmlname"`
 	Formula             string `json:"formula" db:"formula"`
@@ -71,10 +71,10 @@ type Compound struct {
 	ChEBI               string `json:"chebi" db:"chebi"`
 	SubclassOfChEBI     string `json:"subclassOfChEBI"`
 	PolymerizationIndex string `json:"polymerizationIndex" db:"polymerizationindex"`
-	CompoundID          int    `json:"id" db:"compoundid"`
-	CompoundAccession   string `json:"accession" db:"compoundaccession"`
-	CompoundName        string `json:"name" db:"compoundname"`
-	CompoundHTMLName    string `json:"htmlName" db:"compoundhtmlname"`
+	CompoundID          int    `json:"compoundid" db:"compoundid"`
+	CompoundAccession   string `json:"compoundaccession" db:"compoundaccession"`
+	CompoundName        string `json:"compoundname" db:"compoundname"`
+	CompoundHTMLName    string `json:"compoundhtmlName" db:"compoundhtmlname"`
 	CompoundType        string `json:"compoundType" db:"compoundtype"`
 }
 
@@ -312,6 +312,7 @@ func Parse(rheaBytes []byte) (Rhea, error) {
 	return rhea, nil
 }
 
+
 // ReadGzippedXml reads in a a gzip'd Rhea dump (https://www.rhea-db.org/help/download) into bytes.
 func ReadGzippedXml(gzipPath string) ([]byte, error) {
 	// Get gz'd file bytes
@@ -361,8 +362,8 @@ in different programs.
 
 ******************************************************************************/
 
-// Export exports Rhea as a JSON file
-func (rhea *Rhea) Export() ([]byte, error) {
+// ExportJSON exports Rhea as a JSON file
+func (rhea *Rhea) ExportJSON() ([]byte, error) {
 	rheaJSON, err := json.Marshal(rhea)
 	if err != nil {
 		return []byte{}, err

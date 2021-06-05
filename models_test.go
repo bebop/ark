@@ -21,20 +21,17 @@ var db *sqlx.DB
 var minioClient *minio.Client
 
 func TestMain(m *testing.M) {
-
 	pool, err := dockertest.NewPool("")
 	if err != nil {
 		log.Fatalf("Could not connect to docker: %s", err)
 	}
 
 	options := &dockertest.RunOptions{
-		Repository: "minio/minio",
-		Tag:        "latest",
-		Cmd:        []string{"server", "/data"},
-		PortBindings: map[dc.Port][]dc.PortBinding{
-			"9000/tcp": []dc.PortBinding{{HostPort: "9000"}},
-		},
-		Env: []string{"MINIO_ACCESS_KEY=MYACCESSKEY", "MINIO_SECRET_KEY=MYSECRETKEY"},
+		Repository:   "minio/minio",
+		Tag:          "latest",
+		Cmd:          []string{"server", "/data"},
+		PortBindings: map[dc.Port][]dc.PortBinding{"9000/tcp": {{HostPort: "9000"}}},
+		Env:          []string{"MINIO_ACCESS_KEY=MYACCESSKEY", "MINIO_SECRET_KEY=MYSECRETKEY"},
 	}
 
 	resource, err := pool.RunWithOptions(options)

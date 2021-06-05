@@ -22,9 +22,9 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func ExampleExportRhea() {
+func ExampleExportJSON() {
 	// Convert rhea to JSON
-	rheaJson, _ := rhea.Export()
+	rheaJson, _ := rhea.ExportJSON()
 
 	fmt.Println(string(rheaJson)[:100])
 	// Output: {"reactionParticipants":[{"reactionside":"http://rdf.rhea-db.org/10000_L","contains":1,"containsn":f
