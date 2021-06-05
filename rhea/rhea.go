@@ -236,8 +236,8 @@ func NewReactionParticipant(description Description, containsx ContainsX, compou
 	return newReactionParticipant, nil
 }
 
-// ParseRhea parses a list of bytes into a higher-level Rhea Struct.
-func ParseRhea(rheaBytes []byte) (Rhea, error) {
+// Parse parses a list of bytes into a higher-level Rhea Struct.
+func Parse(rheaBytes []byte) (Rhea, error) {
 	var err error
 	// Read rheaBytes into a Rdf object
 	var rdf Rdf
@@ -312,7 +312,7 @@ func ParseRhea(rheaBytes []byte) (Rhea, error) {
 	return rhea, nil
 }
 
-// ReadRhea reads in a a gzip'd Rhea dump (https://www.rhea-db.org/help/download) into bytes.
+// ReadGzippedXml reads in a a gzip'd Rhea dump (https://www.rhea-db.org/help/download) into bytes.
 func ReadGzippedXml(gzipPath string) ([]byte, error) {
 	// Get gz'd file bytes
 	xmlFile, err := os.Open(gzipPath)
@@ -332,6 +332,24 @@ func ReadGzippedXml(gzipPath string) ([]byte, error) {
 		return []byte{}, err
 	}
 	return rheaBytes, nil
+}
+
+// Read reads in a gzip'd Rhea dump and converts it into a higher-level
+// rhea struct.
+func Read(path string) (Rhea, error) {
+	// Read the Compressed Rhea XML to bytes
+	var rhea Rhea
+	rheaBytes, err := ReadGzippedXml(path)
+	if err != nil {
+		return rhea, err
+	}
+
+	// Parse the Rhea bytes into the rhea struct
+	rhea, err = Parse(rheaBytes)
+	if err != nil {
+		return rhea, err
+	}
+	return rhea, nil
 }
 
 /******************************************************************************
@@ -354,7 +372,7 @@ func (rhea *Rhea) Export() ([]byte, error) {
 
 /******************************************************************************
 
-Rhea2Uniprot tsv
+RheaToUniprot tsv
 
 Rhea conveniently provides a TSV list of reaction IDs to Uniprot accession numbers.
 These can be used to map Rhea reactions to protein sequences, which is very useful
@@ -380,16 +398,16 @@ RHEA_ID DIRECTION       MASTER_ID       ID
 
 ******************************************************************************/
 
-// Rhea2Uniprot represents a single line of the TSV file.
-type Rhea2Uniprot struct {
+// RheaToUniprot represents a single line of the TSV file.
+type RheaToUniprot struct {
 	RheaID    int
 	Direction string
 	MasterID  int
 	UniprotID string
 }
 
-// ParseRhea2UniprotTsv parses a rhea2uniprot TSV file and sends values to a channel.
-func ParseRhea2UniprotTsv(r io.Reader, lines chan<- Rhea2Uniprot) {
+// ParseRheaToUniprotTsv parses a rhea2uniprot TSV file and sends values to a channel.
+func ParseRheaToUniprotTsv(r io.Reader, lines chan<- RheaToUniprot) {
 	start := true
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -414,20 +432,20 @@ func ParseRhea2UniprotTsv(r io.Reader, lines chan<- Rhea2Uniprot) {
 		if err != nil {
 			panic(err)
 		}
-		lines <- Rhea2Uniprot{RheaID: rheaId, Direction: lineSplit[1], MasterID: masterId, UniprotID: lineSplit[3]}
+		lines <- RheaToUniprot{RheaID: rheaId, Direction: lineSplit[1], MasterID: masterId, UniprotID: lineSplit[3]}
 	}
 	close(lines)
 }
 
-// ReadRhea2UniprotSprot reads in the rhea2uniprot sprot TSV file (not gzipped) and sends values into a channel.
-func ReadRhea2UniprotSprot(path string, lines chan Rhea2Uniprot) {
+// ReadRheaToUniprotSprot reads in the rhea2uniprot sprot TSV file (not gzipped) and sends values into a channel.
+func ReadRheaToUniprotSprot(path string, lines chan RheaToUniprot) {
 	file, _ := os.Open(path)
-	go ParseRhea2UniprotTsv(file, lines)
+	go ParseRheaToUniprotTsv(file, lines)
 }
 
-// ReadRhea2UniprotTrembl reads in the rhea2uniprot trembl TSV file (gzipped) and sends values into channel.
-func ReadRhea2UniprotTrembl(path string, lines chan Rhea2Uniprot) {
+// ReadRheaToUniprotTrembl reads in the rhea2uniprot trembl TSV file (gzipped) and sends values into channel.
+func ReadRheaToUniprotTrembl(path string, lines chan RheaToUniprot) {
 	file, _ := os.Open(path)
 	r, _ := gzip.NewReader(file)
-	go ParseRhea2UniprotTsv(r, lines)
+	go ParseRheaToUniprotTsv(r, lines)
 }

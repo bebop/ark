@@ -12,13 +12,15 @@ import (
 	"net/http"
 	"os"
 	"testing"
+
+	"github.com/allyourbasepair/allbase/rhea"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var db *sqlx.DB
 var minioClient *minio.Client
 
 func TestMain(m *testing.M) {
-	code := m.Run()
 
 	pool, err := dockertest.NewPool("")
 	if err != nil {
@@ -75,17 +77,37 @@ func TestMain(m *testing.M) {
 		log.Fatalf("error while listing buckets: %v", err)
 	}
 
-	// Shows buckets are set up
+	// Begin SQLite
+	db, err = sqlx.Open("sqlite3", ":memory:")
+	if err != nil {
+		log.Fatalf("Failed to open sqlite in memory: %s", err)
+	}
 
-	// When you're done, kill and remove the container
-	if err = pool.Purge(resource); err != nil {
+	// Execute our schema in memory
+	_, err = db.Exec(schema)
+	if err != nil {
+		log.Fatalf("Failed to execute schema: %s", err)
+	}
+
+	// Run the rest of our tests
+	code := m.Run()
+
+	//// You can't defer this because os.Exit doesn't care for defer
+	if err := pool.Purge(resource); err != nil {
 		log.Fatalf("Could not purge resource: %s", err)
 	}
 
-	//// You can't defer this because os.Exit doesn't care for defer
-	//if err := pool.Purge(resource); err != nil {
-	//	log.Fatalf("Could not purge resource: %s", err)
-	//}
-
 	os.Exit(code)
+}
+
+func TestRheaInsert(t *testing.T) {
+	rhea, err := rhea.Read("rhea/data/rhea_mini.rdf.gz")
+	if err != nil {
+		log.Fatalf("Could not read rhea: %s", err)
+	}
+
+	err = RheaInsert(db, rhea)
+	if err != nil {
+		log.Fatalf("Could not insert rhea: %s", err)
+	}
 }

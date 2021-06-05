@@ -1,7 +1,6 @@
 package rhea
 
 import (
-	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
@@ -9,20 +8,13 @@ import (
 	"testing"
 )
 
-var db *sql.DB
 var rhea Rhea
 
 func TestMain(m *testing.M) {
-	// Read the Compressed Rhea XML to bytes
-	rheaBytes, err := ReadGzippedXml("data/rhea.rdf.gz")
+	var err error
+	rhea, err = Read("data/rhea_mini.rdf.gz")
 	if err != nil {
-		log.Fatalf("Failed to read rhea")
-	}
-
-	// Parse the Rhea bytes into the rhea struct
-	rhea, err = ParseRhea(rheaBytes)
-	if err != nil {
-		log.Fatalf("Failed to parse rhea")
+		log.Fatalf("Failed to read rhea: %v", err)
 	}
 
 	// Start running tests
@@ -38,11 +30,11 @@ func ExampleExportRhea() {
 	// Output: {"reactionParticipants":[{"reactionside":"http://rdf.rhea-db.org/10000_L","contains":1,"containsn":f
 }
 
-func TestReadRhea2Uniprot(t *testing.T) {
-	lines := make(chan Rhea2Uniprot, 100)
-	go ReadRhea2UniprotTrembl("data/rhea2uniprot_sprot_minimized.tsv.gz", lines)
+func TestReadRheaToUniprot(t *testing.T) {
+	lines := make(chan RheaToUniprot, 100)
+	go ReadRheaToUniprotTrembl("data/rhea2uniprot_sprot_minimized.tsv.gz", lines)
 
-	var line Rhea2Uniprot
+	var line RheaToUniprot
 	for l := range lines {
 		line = l
 	}
@@ -52,11 +44,11 @@ func TestReadRhea2Uniprot(t *testing.T) {
 	}
 }
 
-func ExampleReadRhea2UniprotSprot() {
-	lines := make(chan Rhea2Uniprot, 100)
-	go ReadRhea2UniprotSprot("data/rhea2uniprot_sprot_minimized.tsv", lines)
+func ExampleReadRheaToUniprotSprot() {
+	lines := make(chan RheaToUniprot, 100)
+	go ReadRheaToUniprotSprot("data/rhea2uniprot_sprot_minimized.tsv", lines)
 
-	var line Rhea2Uniprot
+	var line RheaToUniprot
 	for l := range lines {
 		line = l
 	}

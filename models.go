@@ -2,6 +2,8 @@ package allbase
 
 import (
 	"database/sql"
+	"github.com/allyourbasepair/allbase/rhea"
+	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
 )
 
@@ -147,4 +149,109 @@ type GenbankFull struct {
 	Seqhashes       []Seqhash
 	Genbank         Genbank
 	GenbankFeatures []GenbankFeature
+}
+
+/******************************************************************************
+
+Rhea
+
+******************************************************************************/
+
+// RheaInsert inserts the Rhea database into an SQLite database with proper normalization for advanced queries.
+func RheaInsert(db *sqlx.DB, rhea rhea.Rhea) error {
+	// Start transaction with database for insertion. This ensures if there are any problems, they are seamlessly rolled back
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	// First, insert ChEBIs and Compounds
+	compoundKeys := make(map[string]bool)
+	for _, compound := range rhea.Compounds {
+		// Insert root chebi. Ie, what this current compound's subclass is
+		_, err = tx.Exec("INSERT OR IGNORE INTO chebi(accession) VALUES (?)", compound.SubclassOfChEBI)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		// Insert the chebi of the current compound. If it is already inserted, update the subclassification
+		_, err = tx.Exec("INSERT INTO chebi(accession, subclassof) VALUES (?, ?) ON CONFLICT (accession) DO UPDATE SET subclassof = ?", compound.ChEBI, compound.SubclassOfChEBI, compound.SubclassOfChEBI)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		// Insert the compound itself
+		_, err = tx.Exec("INSERT INTO compound(id, accession, position, name, htmlname, formula, charge, chebi, polymerizationindex, compoundtype) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING", compound.ID, compound.Accession, compound.Position, compound.Name, compound.HTMLName, compound.Formula, compound.Charge, compound.ChEBI, compound.PolymerizationIndex, compound.CompoundType)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		// If the compound isn't a small molecule or polymer, that means it would be a reactive part of a larger compound. So we add it in
+		if (compound.CompoundType != "SmallMolecule") && (compound.CompoundType != "Polymer") {
+			_, err = tx.Exec("INSERT INTO reactivepart(id, accession, name, htmlname, compound) VALUES (?, ?, ?, ?, ?)", compound.CompoundID, compound.CompoundAccession, compound.CompoundName, compound.CompoundHTMLName, compound.Accession)
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
+		// Add compound.Access to the compoundKeys map
+		compoundKeys[compound.Accession] = true
+	}
+
+	// Next, insert the ReactionSides and ReactionParticipants
+	for _, reactionParticipant := range rhea.ReactionParticipants {
+		// Insert ReactionSide, which is needed to insert the ReactionParticipant
+		_, err = tx.Exec("INSERT INTO reactionside(accession) VALUES (?) ON CONFLICT DO NOTHING", reactionParticipant.ReactionSide)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		// Insert the ReactionParticipants
+		_, err = tx.Exec("INSERT INTO reactionparticipant(reactionside, contains, containsn, minus, plus, compound) VALUES (?, ?, ?, ?, ?, ?)", reactionParticipant.ReactionSide, reactionParticipant.Contains, reactionParticipant.ContainsN, reactionParticipant.Minus, reactionParticipant.Plus, reactionParticipant.Compound)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// Insert the Reactions themselves
+	for _, reaction := range rhea.Reactions {
+		// Insert Reaction
+		_, err = tx.Exec("INSERT INTO reaction(id, directional, accession, status, comment, equation, htmlequation, ischemicallybalanced, istransport, ec, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", reaction.ID, reaction.Directional, reaction.Accession, reaction.Status, reaction.Comment, reaction.Equation, reaction.HTMLEquation, reaction.IsChemicallyBalanced, reaction.IsTransport, reaction.Ec, reaction.Location)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// Insert ReactionsideReaction. Basically, these represent the substrates, products, or substratesOrProducts of a given reaction
+		for _, substrate := range reaction.Substrates {
+			_, err = tx.Exec("INSERT INTO reactionsidereaction(reaction, reactionside, reactionsidereactiontype) VALUES (?, ?, 'substrate')", reaction.Accession, substrate)
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
+		for _, product := range reaction.Products {
+			_, err = tx.Exec("INSERT INTO reactionsidereaction(reaction, reactionside, reactionsidereactiontype) VALUES (?, ?, 'product')", reaction.Accession, product)
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
+		for _, substrateorproduct := range reaction.SubstrateOrProducts {
+			_, err = tx.Exec("INSERT INTO reactionsidereaction(reaction, reactionside, reactionsidereactiontype) VALUES (?, ?, 'substrateorproduct')", reaction.Accession, substrateorproduct)
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
+
+	}
+
+	// Commit
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
 }
