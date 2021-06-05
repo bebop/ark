@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func ExampleExportJSON() {
+func ExampleRhea_ExportJSON() {
 	// Convert rhea to JSON
 	rheaJson, _ := rhea.ExportJSON()
 

@@ -54,6 +54,7 @@ func TestMain(m *testing.M) {
 		if resp.StatusCode != http.StatusOK {
 			return fmt.Errorf("status code not OK")
 		}
+		resp.Body.Close()
 		return nil
 	}); err != nil {
 		log.Fatalf("Could not connect to docker: %s", err)

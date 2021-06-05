@@ -284,7 +284,7 @@ func Parse(rheaBytes []byte) (Rhea, error) {
 		for _, subclass := range description.Subclass {
 			if subclass.Resource == "http://rdf.rhea-db.org/ReactivePart" {
 				newCompound, ok := compoundMap[compoundParticipantMap[description.About]]
-				if ok != true {
+				if !ok {
 					return Rhea{}, errors.New("Could not find " + description.About)
 				}
 				newCompound.ID = description.ID
@@ -311,7 +311,6 @@ func Parse(rheaBytes []byte) (Rhea, error) {
 	}
 	return rhea, nil
 }
-
 
 // ReadGzippedXml reads in a a gzip'd Rhea dump (https://www.rhea-db.org/help/download) into bytes.
 func ReadGzippedXml(gzipPath string) ([]byte, error) {
