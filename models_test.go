@@ -11,9 +11,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 	"testing"
 
 	"github.com/allyourbasepair/allbase/rhea"
+	"github.com/koeng101/poly/parsers/uniprot"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -107,5 +109,22 @@ func TestRheaInsert(t *testing.T) {
 	err = RheaInsert(db, rhea)
 	if err != nil {
 		log.Fatalf("Could not insert rhea: %s", err)
+	}
+}
+
+func TestUniprotInsert(t *testing.T) {
+	var wg sync.WaitGroup
+	uniprotSprot, errors, err := uniprot.ReadUniprot("data/uniprot_sprot_mini.xml.gz")
+	if err != nil {
+		log.Fatalf("Failed to read uniprot on error: %s", err)
+	}
+	wg.Add(1)
+	go InsertUniprot(db, "sprot", uniprotSprot, errors, &wg)
+	wg.Wait()
+
+	for err := range errors {
+		if err.Error() != "EOF" {
+			log.Fatalf("Failed on error: %s", err)
+		}
 	}
 }

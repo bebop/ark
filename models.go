@@ -5,6 +5,10 @@ import (
 	"github.com/allyourbasepair/allbase/rhea"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
+	"github.com/koeng101/poly"
+	"github.com/koeng101/poly/parsers/uniprot"
+	"strings"
+	"sync"
 )
 
 var schema = `
@@ -36,8 +40,9 @@ CREATE TABLE genbankfeatures (
 -- Create Uniprot Table --
 CREATE TABLE uniprot (
 	accession TEXT PRIMARY KEY,
-	uniprothash TEXT NOT NULL, -- adler32 checksum
-	uniprot JSON NOT NULL,
+	database TEXT NOT NULL,
+	-- uniprothash TEXT NOT NULL, -- adler32 checksum
+	-- uniprot JSON NOT NULL,
 	seqhash TEXT NOT NULL REFERENCES seqhash(seqhash)
 );
 
@@ -253,4 +258,60 @@ func RheaInsert(db *sqlx.DB, rhea rhea.Rhea) error {
 		return err
 	}
 	return nil
+}
+
+/******************************************************************************
+
+Uniprot
+
+******************************************************************************/
+
+func InsertUniprot(db *sqlx.DB, uniprotDatabase string, entries chan uniprot.Entry, errors chan error, wg *sync.WaitGroup) {
+	var counter int
+	var err error
+	defer wg.Done()
+	tx, err := db.Begin()
+	if err != nil {
+		errors <- err
+	}
+	for {
+		entry, more := <-entries
+		if more {
+			counter++
+			// Insert seqhashes
+			sequence := strings.ToUpper(entry.Sequence.Value)
+			seqhash, err := poly.Hash(sequence, "PROTEIN", false, false)
+			_, err = tx.Exec("INSERT OR IGNORE INTO seqhash(seqhash,sequence,circular,doublestranded,seqhashtype) VALUES (?,?,?,?,?)", seqhash, sequence, false, false, "PROTEIN")
+			if err != nil {
+				errors <- err
+				continue
+			}
+
+			// Insert uniprot
+			_, err = tx.Exec("INSERT INTO uniprot(database,accession,seqhash) VALUES (?,?,?)", uniprotDatabase, entry.Accession[0], seqhash)
+			if err != nil {
+				errors <- err
+				continue
+			}
+			if counter >= 10000 {
+				counter = 0
+				err = tx.Commit()
+				if err != nil {
+					errors <- err
+					continue
+				}
+				tx, err = db.Begin()
+				if err != nil {
+					errors <- err
+					continue
+				}
+			}
+		} else {
+			err = tx.Commit()
+			if err != nil {
+				errors <- err
+			}
+			return
+		}
+	}
 }
