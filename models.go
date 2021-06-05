@@ -281,6 +281,10 @@ func InsertUniprot(db *sqlx.DB, uniprotDatabase string, entries chan uniprot.Ent
 			// Insert seqhashes
 			sequence := strings.ToUpper(entry.Sequence.Value)
 			seqhash, err := poly.Hash(sequence, "PROTEIN", false, false)
+			if err != nil {
+				errors <- err
+				continue
+			}
 			_, err = tx.Exec("INSERT OR IGNORE INTO seqhash(seqhash,sequence,circular,doublestranded,seqhashtype) VALUES (?,?,?,?,?)", seqhash, sequence, false, false, "PROTEIN")
 			if err != nil {
 				errors <- err
