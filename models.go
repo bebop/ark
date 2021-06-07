@@ -2,11 +2,11 @@ package allbase
 
 import (
 	"database/sql"
+	"github.com/TimothyStiles/poly"
+	"github.com/TimothyStiles/poly/parsers/uniprot"
 	"github.com/allyourbasepair/allbase/rhea"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
-	"github.com/koeng101/poly"
-	"github.com/koeng101/poly/parsers/uniprot"
 	"strings"
 	"sync"
 )
@@ -26,8 +26,8 @@ CREATE TABLE seqhash (
 -- Create Genbank Table --
 CREATE TABLE genbank (
 	accession TEXT PRIMARY KEY,
-	genbankhash TEXT NOT NULL, -- adler32 checksum
-	genbank TEXT NOT NULL, 
+	-- genbankhash TEXT NOT NULL, -- adler32 checksum
+	-- genbank TEXT NOT NULL, 
 	seqhash TEXT NOT NULL REFERENCES seqhash(seqhash)
 );
 
@@ -266,7 +266,7 @@ Uniprot
 
 ******************************************************************************/
 
-func InsertUniprot(db *sqlx.DB, uniprotDatabase string, entries chan uniprot.Entry, errors chan error, wg *sync.WaitGroup) {
+func UniprotInsert(db *sqlx.DB, uniprotDatabase string, entries chan uniprot.Entry, errors chan error, wg *sync.WaitGroup) {
 	var counter int
 	var err error
 	defer wg.Done()
@@ -318,4 +318,97 @@ func InsertUniprot(db *sqlx.DB, uniprotDatabase string, entries chan uniprot.Ent
 			return
 		}
 	}
+}
+
+/******************************************************************************
+
+Genbank
+
+******************************************************************************/
+
+func GenbankInsert(db *sqlx.DB, genbankList []poly.Sequence) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	for _, genbank := range genbankList {
+		seqhash, err := genbank.Hash()
+		if err != nil {
+			return err
+		}
+		var sequenceType string
+		var circular bool
+		var doubleStranded bool
+		switch seqhash[3] {
+		case 'D':
+			sequenceType = "DNA"
+		case 'R':
+			sequenceType = "RNA"
+		}
+
+		switch seqhash[4] {
+		case 'L':
+			circular = false
+		case 'C':
+			circular = true
+		}
+
+		switch seqhash[5] {
+		case 'L':
+			doubleStranded = false
+		case 'D':
+			doubleStranded = true
+		}
+
+		// Insert initial seqhash
+		_, err = tx.Exec("INSERT OR IGNORE INTO seqhash(seqhash,sequence,circular,doublestranded,seqhashtype) VALUES (?,?,?,?,?)", seqhash, strings.ToUpper(genbank.Sequence), circular, doubleStranded, sequenceType)
+		if err != nil {
+			return err
+		}
+
+		// Insert genbank file
+		_, err = tx.Exec("INSERT INTO genbank(accession, seqhash) VALUES (?,?)", genbank.Meta.Locus.Name, seqhash)
+		if err != nil {
+			return err
+		}
+
+		// For each protein, insert seqhash of the protein, insert hash of the current gene, and then add in a genbankfeatures
+		for _, feature := range genbank.Features {
+			if feature.Type == "CDS" {
+				translation := feature.Attributes["translation"]
+				if translation != "" {
+					// Insert protein seqhash
+					proteinSeqhash, err := poly.Hash(translation, "PROTEIN", false, false)
+					if err != nil {
+						return err
+					}
+					_, err = tx.Exec("INSERT OR IGNORE INTO seqhash(seqhash,sequence,circular,doublestranded,seqhashtype) VALUES (?,?,?,?,?)", proteinSeqhash, translation, false, false, "PROTEIN")
+					if err != nil {
+						return err
+					}
+					// Insert gene seqhash
+					geneSequence := feature.GetSequence()
+					geneSeqhash, err := poly.Hash(geneSequence, sequenceType, false, true)
+					if err != nil {
+						return err
+					}
+					_, err = tx.Exec("INSERT OR IGNORE INTO seqhash(seqhash,sequence,circular,doublestranded,seqhashtype,translation) VALUES(?,?,?,?,?,?)", geneSeqhash, geneSequence, false, true, sequenceType, proteinSeqhash)
+					if err != nil {
+						return err
+					}
+					// Insert reference to the feature
+					_, err = tx.Exec("INSERT INTO genbankfeatures(seqhash,genbank) VALUES (?,?)", geneSeqhash, genbank.Meta.Locus.Name)
+					if err != nil {
+						return err
+					}
+				}
+			}
+		}
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

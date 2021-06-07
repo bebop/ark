@@ -3,6 +3,7 @@ package allbase
 import (
 	"context"
 	"fmt"
+	"github.com/TimothyStiles/poly"
 	"github.com/jmoiron/sqlx"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -14,8 +15,8 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/TimothyStiles/poly/parsers/uniprot"
 	"github.com/allyourbasepair/allbase/rhea"
-	"github.com/koeng101/poly/parsers/uniprot"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -114,17 +115,25 @@ func TestRheaInsert(t *testing.T) {
 
 func TestUniprotInsert(t *testing.T) {
 	var wg sync.WaitGroup
-	uniprotSprot, errors, err := uniprot.ReadUniprot("data/uniprot_sprot_mini.xml.gz")
+	uniprotSprot, errors, err := uniprot.Read("data/uniprot_sprot_mini.xml.gz")
 	if err != nil {
 		log.Fatalf("Failed to read uniprot on error: %s", err)
 	}
 	wg.Add(1)
-	go InsertUniprot(db, "sprot", uniprotSprot, errors, &wg)
+	go UniprotInsert(db, "sprot", uniprotSprot, errors, &wg)
 	wg.Wait()
 
 	for err := range errors {
 		if err.Error() != "EOF" {
-			log.Fatalf("Failed on error: %s", err)
+			log.Fatalf("Failed on error during uniprot parsing or insertion: %s", err)
 		}
+	}
+}
+
+func TestGenbankInsert(t *testing.T) {
+	sequences := poly.ReadGbkFlatGz("data/flatGbk_test.seq.gz")
+	err := GenbankInsert(db, sequences)
+	if err != nil {
+		log.Fatalf("Failed on error during genbank insertion: %s", err)
 	}
 }
