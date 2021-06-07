@@ -1,12 +1,14 @@
 package allbase
 
 import (
+	"compress/gzip"
 	"database/sql"
 	"github.com/TimothyStiles/poly"
 	"github.com/TimothyStiles/poly/parsers/uniprot"
 	"github.com/allyourbasepair/allbase/rhea"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
+	"os"
 	"strings"
 	"sync"
 )
@@ -54,7 +56,7 @@ CREATE TABLE IF NOT EXISTS chebi (
 );
 
 CREATE TABLE IF NOT EXISTS compound (
-        id INT,
+        id INT NOT NULL UNIQUE,
         accession TEXT PRIMARY KEY,
         position TEXT,
         name TEXT,
@@ -110,7 +112,7 @@ CREATE TABLE IF NOT EXISTS reactionparticipant (
 -- Uniprot to reaction
 
 CREATE TABLE IF NOT EXISTS uniprot_to_reaction (
-        reaction TEXT REFERENCES reaction(accession),
+        reaction TEXT REFERENCES reaction(id),
         uniprot TEXT REFERENCES uniprot(accession)
 );
 `
@@ -260,9 +262,64 @@ func RheaInsert(db *sqlx.DB, rhea rhea.Rhea) error {
 	return nil
 }
 
+func RheaTsvInsert(db *sqlx.DB, path string, gzipped bool) error {
+	lines := make(chan rhea.RheaToUniprot, 10000)
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	// Handle gzipped TSV insert
+	if gzipped {
+		r, err := gzip.NewReader(file)
+		if err != nil {
+			return err
+		}
+		go rhea.ParseRheaToUniprotTsv(r, lines)
+	} else {
+		go rhea.ParseRheaToUniprotTsv(file, lines)
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	var counter int
+	for {
+		line, more := <-lines
+		if more {
+			counter++
+			_, err := tx.Exec("INSERT INTO uniprot_to_reaction(reaction,uniprot) VALUES (?,?)", line.RheaID, line.UniprotID)
+			if err != nil {
+				_ = tx.Rollback()
+				return err
+			}
+			if counter >= 10000 {
+				counter = 0
+				err = tx.Commit()
+				if err != nil {
+					_ = tx.Rollback()
+					return err
+				}
+				tx, err = db.Begin()
+				if err != nil {
+					return err
+				}
+			}
+		} else {
+			err = tx.Commit()
+			if err != nil {
+				_ = tx.Rollback()
+				return err
+			}
+			return nil
+		}
+	}
+}
+
 /******************************************************************************
 
 Uniprot
+
+we should set this to operate like the above rheatouniprot tsv stuff
 
 ******************************************************************************/
 

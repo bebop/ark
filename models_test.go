@@ -101,7 +101,8 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestRheaInsert(t *testing.T) {
+func TestUniprotInsert(t *testing.T) {
+	// First, test Rhea insert. We need both to test uniprot2rhea
 	rhea, err := rhea.Read("rhea/data/rhea_mini.rdf.gz")
 	if err != nil {
 		log.Fatalf("Could not read rhea: %s", err)
@@ -111,9 +112,8 @@ func TestRheaInsert(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Could not insert rhea: %s", err)
 	}
-}
 
-func TestUniprotInsert(t *testing.T) {
+	// Then uniprot
 	var wg sync.WaitGroup
 	uniprotSprot, errors, err := uniprot.Read("data/uniprot_sprot_mini.xml.gz")
 	if err != nil {
@@ -127,6 +127,12 @@ func TestUniprotInsert(t *testing.T) {
 		if err.Error() != "EOF" {
 			log.Fatalf("Failed on error during uniprot parsing or insertion: %s", err)
 		}
+	}
+
+	// Finally, UniprotToRhea
+	err = RheaTsvInsert(db, "data/rhea2uniprot_test.tsv.gz", true)
+	if err != nil {
+		log.Fatalf("Failed to insert RheaTsvInsert on: %s", err)
 	}
 }
 
