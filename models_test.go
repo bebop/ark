@@ -85,7 +85,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Execute our schema in memory
-	_, err = db.Exec(schema)
+	_, err = db.Exec(Schema)
 	if err != nil {
 		log.Fatalf("Failed to execute schema: %s", err)
 	}
