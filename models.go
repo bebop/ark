@@ -13,7 +13,7 @@ import (
 	"sync"
 )
 
-var schema = `
+var Schema = `
 
 -- Create Seqhash Table --
 CREATE TABLE seqhash (
