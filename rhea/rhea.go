@@ -232,7 +232,7 @@ func NewReactionParticipant(description Description, containsx ContainsX, compou
 			Plus:         false,
 			Accession:    containsx.Content}
 	}
-	newReactionParticipant.Compound = compoundParticipantMap[description.About]
+	newReactionParticipant.Compound = compoundParticipantMap[description.Contains.Resource]
 	return newReactionParticipant, nil
 }
 
