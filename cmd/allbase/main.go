@@ -1,15 +1,16 @@
 package main
 
 import (
+	"log"
+	"path/filepath"
+	"sync"
+
 	"github.com/TimothyStiles/poly"
 	"github.com/TimothyStiles/poly/parsers/uniprot"
 	"github.com/allyourbasepair/allbase"
 	"github.com/allyourbasepair/allbase/rhea"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
-	"log"
-	"path/filepath"
-	"sync"
 )
 
 func main() {
@@ -27,7 +28,7 @@ func main() {
 
 	// Insert Rhea
 	log.Printf("Inserting rhea")
-	rhea, err := rhea.Read("rhea/rhea.rdf.gz")
+	rhea, err := rhea.Read("rhea/data/rhea_mini.rdf.gz")
 	if err != nil {
 		log.Fatalf("Could not read rhea: %s", err)
 	}
