@@ -3,17 +3,18 @@ package allbase
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"sync"
+	"testing"
+
 	"github.com/TimothyStiles/poly"
 	"github.com/jmoiron/sqlx"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/ory/dockertest/v3"
 	dc "github.com/ory/dockertest/v3/docker"
-	"log"
-	"net/http"
-	"os"
-	"sync"
-	"testing"
 
 	"github.com/TimothyStiles/poly/parsers/uniprot"
 	"github.com/allyourbasepair/allbase/rhea"
