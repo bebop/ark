@@ -1,16 +1,17 @@
-package allbase
+package models
 
 import (
 	"compress/gzip"
 	"database/sql"
+	"os"
+	"strings"
+	"sync"
+
 	"github.com/TimothyStiles/poly"
 	"github.com/TimothyStiles/poly/parsers/uniprot"
 	"github.com/allyourbasepair/allbase/rhea"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
-	"os"
-	"strings"
-	"sync"
 )
 
 var Schema = `

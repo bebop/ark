@@ -1,4 +1,4 @@
-package allbase
+package models
 
 import (
 	"context"
