@@ -1,19 +1,20 @@
-package allbase
+package models
 
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"sync"
+	"testing"
+
 	"github.com/TimothyStiles/poly"
 	"github.com/jmoiron/sqlx"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/ory/dockertest/v3"
 	dc "github.com/ory/dockertest/v3/docker"
-	"log"
-	"net/http"
-	"os"
-	"sync"
-	"testing"
 
 	"github.com/TimothyStiles/poly/parsers/uniprot"
 	"github.com/allyourbasepair/allbase/rhea"
@@ -103,7 +104,7 @@ func TestMain(m *testing.M) {
 
 func TestUniprotInsert(t *testing.T) {
 	// First, test Rhea insert. We need both to test uniprot2rhea
-	rhea, err := rhea.Read("rhea/data/rhea_mini.rdf.gz")
+	rhea, err := rhea.Read("../rhea/data/rhea_mini.rdf.gz")
 	if err != nil {
 		log.Fatalf("Could not read rhea: %s", err)
 	}
@@ -115,7 +116,7 @@ func TestUniprotInsert(t *testing.T) {
 
 	// Then uniprot
 	var wg sync.WaitGroup
-	uniprotSprot, errors, err := uniprot.Read("data/uniprot_sprot_mini.xml.gz")
+	uniprotSprot, errors, err := uniprot.Read("../data/uniprot_sprot_mini.xml.gz")
 	if err != nil {
 		log.Fatalf("Failed to read uniprot on error: %s", err)
 	}
@@ -130,14 +131,14 @@ func TestUniprotInsert(t *testing.T) {
 	}
 
 	// Finally, UniprotToRhea
-	err = RheaTsvInsert(db, "data/rhea2uniprot_test.tsv.gz", true)
+	err = RheaTsvInsert(db, "../data/rhea2uniprot_test.tsv.gz", true)
 	if err != nil {
 		log.Fatalf("Failed to insert RheaTsvInsert on: %s", err)
 	}
 }
 
 func TestGenbankInsert(t *testing.T) {
-	sequences := poly.ReadGbkFlatGz("data/flatGbk_test.seq.gz")
+	sequences := poly.ReadGbkFlatGz("../data/flatGbk_test.seq.gz")
 	err := GenbankInsert(db, sequences)
 	if err != nil {
 		log.Fatalf("Failed on error during genbank insertion: %s", err)
