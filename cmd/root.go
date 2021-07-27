@@ -35,11 +35,10 @@ func init() {
 	rootCmd.PersistentFlags().StringP("author", "a", "Timothy Stiles, Keoni Gandall", "author name for copyright attribution")
 	rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "MIT")
 	rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
-	viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author"))
-	viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))
+	// viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author"))
+	// viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))
 	viper.SetDefault("author", "Timothy Stiles, Keoni Gandall")
 	viper.SetDefault("license", "MIT")
-
 	rootCmd.AddCommand(localCmd)
 	rootCmd.AddCommand(cleanCmd)
 }

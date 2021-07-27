@@ -23,7 +23,6 @@ var localCmd = &cobra.Command{
 }
 
 func local() {
-
 	// TODO: Check to see if the database already exists. Tells the user to run clean if they want a new install.
 	if _, err := os.Stat("allbase.db"); !os.IsNotExist(err) {
 		log.Fatal("Database already exists. Run 'allbase clean' to remove it.")
