@@ -57,7 +57,7 @@ func local() {
 	// Insert Uniprot
 	log.Printf("Inserting uniprot sprot")
 	var wg sync.WaitGroup
-	uniprotSprot, errors, err := uniprot.Read("uniprot/uniprot_sprot.xml.gz")
+	uniprotSprot, errors, err := uniprot.Read("data/uniprot_sprot_mini.xml.gz")
 	if err != nil {
 		log.Fatalf("Failed to read uniprot on error: %s", err)
 	}
@@ -71,21 +71,22 @@ func local() {
 		}
 	}
 
-	log.Printf("Inserting uniprot trembl")
-	var wg2 sync.WaitGroup
-	uniprotTrembl, errors, err := uniprot.Read("uniprot/uniprot_trembl.xml.gz")
-	if err != nil {
-		log.Fatalf("Failed to read uniprot on error: %s", err)
-	}
-	wg2.Add(1)
-	go models.UniprotInsert(db, "trembl", uniprotTrembl, errors, &wg2)
-	wg2.Wait()
+	// log.Printf("Inserting uniprot trembl")
+	// var wg2 sync.WaitGroup
+	// uniprotTrembl, errors, err := uniprot.Read("uniprot/uniprot_trembl.xml.gz")
+	// if err != nil {
+	// 	log.Fatalf("Failed to read uniprot on error: %s", err)
+	// }
+	// wg2.Add(1)
+	// go models.UniprotInsert(db, "trembl", uniprotTrembl, errors, &wg2)
+	// wg2.Wait()
 
-	for err := range errors {
-		if err.Error() != "EOF" {
-			log.Fatalf("Failed on error during uniprot trembl parsing or insertion: %s", err)
-		}
-	}
+	// for err := range errors {
+	// 	if err.Error() != "EOF" {
+	// 		log.Fatalf("Failed on error during uniprot trembl parsing or insertion: %s", err)
+	// 	}
+	// }
+	// TODO: Use in big build command.
 
 	// Insert Genbank
 	matches, err := filepath.Glob("genbank/*")
@@ -103,13 +104,13 @@ func local() {
 
 	// Insert tsv
 	log.Printf("Inserting rhea->uniprot sprot")
-	err = models.RheaTsvInsert(db, "data/rhea2uniprot_sprot.tsv", false)
+	err = models.RheaTsvInsert(db, "rhea/data/rhea2uniprot_sprot_minimized.tsv", false)
 	if err != nil {
 		log.Fatalf("Failed to insert RheaTsvInsert sprot on: %s", err)
 	}
 
 	log.Printf("Inserting rhea->uniprot trembl")
-	err = models.RheaTsvInsert(db, "data/rhea2uniprot_trembl.tsv.gz", true)
+	err = models.RheaTsvInsert(db, "data/rhea2uniprot_test.tsv.gz", true)
 	if err != nil {
 		log.Fatalf("Failed to insert RheaTsvInsert trembl on: %s", err)
 	}
