@@ -1,3 +1,4 @@
 allbase.db
+.DS_Store
 data/rhea.rdf.gz
 cmd/main
