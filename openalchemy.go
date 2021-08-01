@@ -11,6 +11,7 @@ import (
 	_ "os"
 	"strings"
 )
+// equ, short for equation, is a struct intended to break up an equation string into its id, reactants and products
 type equ struct {
 	id int
 	reactants []string
@@ -21,8 +22,9 @@ type equ struct {
 func main() {
 
 	database, _ := sql.Open("sqlite3", "./allbase.db")
+	// get_pathways parameters: 1 - database, 2 - target compound, 3 - # of reaction steps (do not go beyond 6 for now or there will be too many paths) 
 	get_pathways(database, "calycosin", 5)
-	// run add_nodes(database) if database does not have nodes table or if it needs to be updated
+
 
 }
 // Recursively searches throughout the database and fetches the pathways that lead to your target compound.
