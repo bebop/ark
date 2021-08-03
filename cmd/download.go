@@ -23,7 +23,30 @@ var downloadCmd = &cobra.Command{
 }
 
 func download() {
-	//
+
+	writePath := "../data/build"
+
+	err := getFile("https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz", writePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_sprot.tsv", writePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_trembl.tsv.gz", writePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.xml.gz", writePath)
+
+	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.xml.gz", writePath)
+
+	go getGenbank()
+
 }
 
 func getGenbank() error {
@@ -48,27 +71,25 @@ func getGenbank() error {
 		title := s.Text()
 		fmt.Println(title)
 		link, _ := s.Attr("href")
-		fmt.Println(link)
+
+		// parse url for file extention
+		parsedURL, err := url.Parse(link)
+		if err != nil {
+			log.Fatal(err)
+		}
+		filename := filepath.Base(parsedURL.Path)
+		extension := filepath.Ext(filename)
+
+		if extension == ".gz" {
+			fmt.Println("retrieving: " + link)
+			go getFile(link, "../data/build/genbank")
+		}
 	})
 	return nil
 }
 
-// Rhea:
-// https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+func getFile(fileURL string, writePath string) error {
 
-// Rhea TSV sprot:
-// https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot%5Fsprot.tsv
-
-// Rhea TSV trembl:
-// https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot%5Ftrembl.tsv.gz
-
-// Uniprot sprot:
-// https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.xml.gz
-
-// Uniprot trembl:
-// https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.xml.gz
-
-func getFile(fileURL string) error {
 	response, err := http.Get(fileURL)
 	if err != nil {
 		log.Fatal(err)
@@ -99,16 +120,16 @@ func getFile(fileURL string) error {
 		reader = response.Body
 	}
 
-	err = os.MkdirAll("../data/build", os.ModePerm)
+	err = os.MkdirAll(writePath, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var pathname string
 	if extension == ".gz" {
-		pathname = filepath.Join("../data/build", filename[0:len(filename)-len(extension)])
+		pathname = filepath.Join(writePath, filename[0:len(filename)-len(extension)])
 	} else {
-		pathname = filepath.Join("../data/build", filename)
+		pathname = filepath.Join(writePath, filename)
 	}
 	// create a new file to write the uncompressed data to
 	file, err := os.Create(pathname)
