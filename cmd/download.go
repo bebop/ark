@@ -6,7 +6,9 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
+	"path/filepath"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/spf13/cobra"
@@ -66,43 +68,59 @@ func getGenbank() error {
 // Uniprot trembl:
 // https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.xml.gz
 
-func getRhea() error {
-	// get the compressed rhea file
-	res, err := http.Get("https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz")
+func getFile(fileURL string) error {
+	response, err := http.Get(fileURL)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// not sure why Golang http stdlib needs to close this but here we are
-	defer res.Body.Close()
-
-	// if the status code is whack, bail
-	if res.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+	defer response.Body.Close()
+	if response.StatusCode != 200 {
+		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
 	}
 
-	// open the compressed file
-	r, err := gzip.NewReader(res.Body)
+	// parse url for file extention
+	parsedURL, err := url.Parse(fileURL)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer r.Close()
+	filename := filepath.Base(parsedURL.Path)
+	extension := filepath.Ext(filename)
+
+	var reader io.Reader
+
+	if extension == ".gz" {
+		// open the compressed file
+		reader, err = gzip.NewReader(response.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		// open the uncompressed file
+		reader = response.Body
+	}
 
 	err = os.MkdirAll("../data/build", os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	var pathname string
+	if extension == ".gz" {
+		pathname = filepath.Join("../data/build", filename[0:len(filename)-len(extension)])
+	} else {
+		pathname = filepath.Join("../data/build", filename)
+	}
 	// create a new file to write the uncompressed data to
-	f, err := os.Create("../data/build/rhea.rdf")
+	file, err := os.Create(pathname)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer f.Close()
+	defer file.Close()
 
 	// copy the uncompressed file to disk
-	if _, err := io.Copy(f, r); err != nil {
+	if _, err := io.Copy(file, reader); err != nil {
 		log.Fatal(err)
 	}
+
 	return nil
 }
