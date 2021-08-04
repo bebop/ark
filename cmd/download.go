@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"archive/tar"
 	"compress/gzip"
 	"fmt"
 	"io"
@@ -47,20 +48,74 @@ func download() {
 
 	go getGenbank()
 
+	go getChembl()
+
 }
 
-func getGenbank() error {
-	res, err := http.Get("https://ftp.ncbi.nlm.nih.gov/genbank/")
+func getChembl() error {
+
+	response, err := http.Get("https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/chembl_29_sqlite.tar.gz")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+	defer response.Body.Close()
+	if response.StatusCode != 200 {
+		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
+	}
+
+	// unzip the tarball
+	zipReader, err := gzip.NewReader(response.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer zipReader.Close()
+
+	// unpack the tarball
+	tarReader := tar.NewReader(zipReader)
+
+	for {
+		header, err := tarReader.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println("Saving " + header.Name + " from CHEMBL")
+		if _, err := io.Copy(os.Stdout, tarReader); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println()
+
+		// create a new file to write the uncompressed data to
+		file, err := os.Create(header.Name)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
+
+		// copy the uncompressed file to disk
+		if _, err := io.Copy(file, tarReader); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	return nil
+}
+
+func getGenbank() error {
+	response, err := http.Get("https://ftp.ncbi.nlm.nih.gov/genbank/")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer response.Body.Close()
+	if response.StatusCode != 200 {
+		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
 	}
 
 	// Load the HTML document
-	doc, err := goquery.NewDocumentFromReader(res.Body)
+	doc, err := goquery.NewDocumentFromReader(response.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
