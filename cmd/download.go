@@ -49,13 +49,13 @@ func download() {
 	// get Rhea to chaotic uniprot mappings - larger than sprot but still relatively small.
 	go getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_trembl.tsv.gz", writePath)
 
-	// CHEMBL Sqlite file - 20GB decompressed. This WILL decompress and save to file.
+	// CHEMBL Sqlite file - ~20GB decompressed. This WILL decompress and save to file.
 	go getChembl(writePath)
 
 	// curated uniprot - ~1GB compressed. This WILL decompress and save to file.
 	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.xml.gz", writePath)
 
-	// chaotic uniprot - 160GB compressed. This WILL decompress and save to file.
+	// chaotic uniprot - ~160GB compressed. This WILL decompress and save to file.
 	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.xml.gz", writePath)
 
 	// literally get all of annotated genbank - Not sure how big it is as of writing this but it's a lot.
