@@ -72,16 +72,16 @@ func getChembl() error {
 		log.Fatal(err)
 	}
 
-	// iterate over the list of chembl releasers to find the latest Sqlite version
-	doc.Find("a").Each(func(i int, s *goquery.Selection) {
+	// iterate over the list of chembl releases to find the latest Sqlite version
+	doc.Find("a").Each(func(i int, selection *goquery.Selection) {
 
 		// get element link
-		href, _ := s.Attr("href")
+		link, _ := selection.Attr("href")
 
 		// if it's a sqlite file, download it
-		if strings.Contains(href, "sqlite.tar.gz") {
-			fmt.Println("retrieving: " + href)
-			chembl, err := http.Get(href)
+		if strings.Contains(link, "sqlite.tar.gz") {
+			fmt.Println("retrieving: " + link)
+			chembl, err := http.Get(link)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -156,11 +156,9 @@ func getGenbank() error {
 	}
 
 	// Find the review items
-	doc.Find("a").Each(func(i int, s *goquery.Selection) {
-		// For each item found, get the title
-		title := s.Text()
-		fmt.Println(title)
-		link, _ := s.Attr("href")
+	doc.Find("a").Each(func(i int, selection *goquery.Selection) {
+		// For each item found, get the link
+		link, _ := selection.Attr("href")
 
 		// parse url for file extention
 		parsedURL, err := url.Parse(link)
