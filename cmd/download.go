@@ -18,7 +18,8 @@ import (
 
 var downloadCmd = &cobra.Command{
 	Use:   "download",
-	Short: "Download data for standard deploy build",
+	Short: "Download data for standard deploy build. Run at your own risk.",
+	Long:  "Download literally downloads all the base data needed to build a standard allbase deployment the amount of data is dummy high to casually test on your personal machine. Run at your own risk.",
 	Run: func(cmd *cobra.Command, args []string) {
 		download()
 	},
@@ -59,7 +60,6 @@ func download() {
 
 	// literally get all of annotated genbank - Not sure how big it is as of writing this but it's a lot.
 	go getGenbank(writePath)
-
 }
 
 // getChembl checks the latest release for Chembl, downloads and unpacks their sqlite release tarball and saves it to disk write path.
@@ -114,7 +114,6 @@ func getGenbank(writePath string) {
 	}
 
 	for _, link := range links {
-
 		parsedURL, err := url.Parse(link)
 		if err != nil {
 			log.Fatal(err)
@@ -238,7 +237,7 @@ func getTarballFile(responseBody io.ReadCloser, fileNamePattern string, writePat
 		if err != nil {
 			log.Fatal(err)
 		}
-		if strings.Contains(header.Name, fileNamePattern) { // assuming that our tarball will only contain one file that will match our patten.
+		if strings.Contains(header.Name, fileNamePattern) { // assuming that our tarball will only contain one file that will match our pattern.
 			filename = filepath.Base(header.Name)
 			break
 		}
@@ -246,7 +245,6 @@ func getTarballFile(responseBody io.ReadCloser, fileNamePattern string, writePat
 
 	// if the file exists write to disk
 	if filename != "" {
-
 		// if the filepath does not exist, create it
 		err = os.MkdirAll(writePath, os.ModePerm)
 		if err != nil {
