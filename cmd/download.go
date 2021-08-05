@@ -55,115 +55,94 @@ func download() {
 
 func getChembl() error {
 
-	//  get list of latest chembl data
-	response, err := http.Get("https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/")
+	links, err := getPageLinks("https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var sqliteFileLink string
+
+	// find the sqlite file link
+	for _, link := range links {
+		// if it's a sqlite tarball save it's link
+		if strings.Contains(link, "sqlite.tar.gz") {
+			sqliteFileLink = link
+			break
+		}
+	}
+
+	// if we didn't find it, bail.
+	if sqliteFileLink == "" {
+		log.Fatal("could not find sqlite file")
+	}
+
+	// get the tarball from the server that contains the sqlite file
+	response, err := http.Get(sqliteFileLink)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer response.Body.Close()
 
-	// if the server ain't good, bail
+	// if server ain't good, bail
 	if response.StatusCode != 200 {
 		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
 	}
 
-	// load the chembl list so we can parse it to find the latest Sqlite version
-	doc, err := goquery.NewDocumentFromReader(response.Body)
+	// unzip the tarball
+	tarball, err := gzip.NewReader(response.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer tarball.Close()
 
-	// iterate over the list of chembl releases to find the latest Sqlite version
-	doc.Find("a").Each(func(i int, selection *goquery.Selection) {
+	// create a new tarball reader to iterate through like a directory
+	directory := tar.NewReader(tarball)
+	var filename string // will save the filename of the file we're writing
+	// iterate through the tarball and save sqlite file name.
+	for {
+		header, err := directory.Next() // this creates a side effect that we'll exploit outside of this loop to actually save the file
 
-		// get element link
-		link, _ := selection.Attr("href")
-
-		// if it's a sqlite file, download it
-		if strings.Contains(link, "sqlite.tar.gz") {
-			fmt.Println("retrieving: " + link)
-			chembl, err := http.Get(link)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer chembl.Body.Close()
-
-			// if chembl server ain't good, bail
-			if chembl.StatusCode != 200 {
-				log.Fatalf("status code error: %d %s", chembl.StatusCode, chembl.Status)
-			}
-
-			// unzip tarball
-			tarball, err := gzip.NewReader(chembl.Body)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer tarball.Close()
-
-			// unpack tarball
-			tarReader := tar.NewReader(tarball)
-
-			// iterate over the files in the tarball. If it's a sqlite file, save to disk, and break.
-			for {
-
-				header, err := tarReader.Next()
-
-				if err == io.EOF {
-					break
-				}
-
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				// If it's a sqlite file, save to disk, and break
-				if filepath.Ext(header.Name) == ".db" {
-
-					// create a new file to write the uncompressed data to
-					file, err := os.Create(filepath.Join("../data/build", header.Name))
-					if err != nil {
-						log.Fatal(err)
-					}
-					defer file.Close()
-
-					// copy the uncompressed file to disk
-					if _, err := io.Copy(file, tarReader); err != nil {
-						log.Fatal(err)
-					}
-					break
-				}
-			}
+		if err == io.EOF { // this is the signal that we're done if we haven't already found the file we're looking for
+			break
 		}
-	})
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if filepath.Ext(header.Name) == ".db" { // assuming that our CHEMBL tarball will only contain one db.
+			filename = header.Name
+			break
+		}
+	}
+
+	// if the db exists write to disk
+	if filename != "" {
+		// write disk to file
+		file, err := os.Create(filepath.Join("../data/build", filename))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
+
+		// copy the uncompressed file to disk
+		if _, err := io.Copy(file, directory); err != nil { // that side effect I mentioned in the above for loop makes this possible to do out of loop.
+			log.Fatal(err)
+		}
+	}
 	return nil
 }
 
 func getGenbank() error {
 
-	// get list of latest genbank data
-	response, err := http.Get("https://ftp.ncbi.nlm.nih.gov/genbank/")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer response.Body.Close()
-
-	// if the server ain't good, bail
-	if response.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
-	}
-
-	// Load the HTML document
-	doc, err := goquery.NewDocumentFromReader(response.Body)
+	links, err := getPageLinks("https://ftp.ncbi.nlm.nih.gov/genbank")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Find the review items
-	doc.Find("a").Each(func(i int, selection *goquery.Selection) {
-		// For each item found, get the link
-		link, _ := selection.Attr("href")
+	for _, link := range links {
 
-		// parse url to into struct to later get filename and extension
 		parsedURL, err := url.Parse(link)
 		if err != nil {
 			log.Fatal(err)
@@ -176,7 +155,7 @@ func getGenbank() error {
 			fmt.Println("retrieving: " + link)
 			go getFile(link, "../data/build/genbank")
 		}
-	})
+	}
 	return nil
 }
 
@@ -243,4 +222,31 @@ func getFile(fileURL string, writePath string) error {
 	}
 
 	return nil
+}
+
+func getPageLinks(url string) ([]string, error) {
+
+	// get the page
+	response, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer response.Body.Close()
+	if response.StatusCode != 200 {
+		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
+	}
+	doc, err := goquery.NewDocumentFromReader(response.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var links []string
+	doc.Find("a").Each(func(i int, selection *goquery.Selection) {
+		// For each item found, get the link
+		link, _ := selection.Attr("href")
+		if link != "" {
+			links = append(links, link)
+		}
+	})
+	return links, nil
 }
