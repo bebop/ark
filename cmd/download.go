@@ -62,6 +62,7 @@ func getChembl() error {
 	}
 	defer response.Body.Close()
 
+	// if the server ain't good, bail
 	if response.StatusCode != 200 {
 		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
 	}
@@ -93,14 +94,14 @@ func getChembl() error {
 			}
 
 			// unzip tarball
-			gz, err := gzip.NewReader(chembl.Body)
+			tarball, err := gzip.NewReader(chembl.Body)
 			if err != nil {
 				log.Fatal(err)
 			}
-			defer gz.Close()
+			defer tarball.Close()
 
 			// unpack tarball
-			tarReader := tar.NewReader(gz)
+			tarReader := tar.NewReader(tarball)
 
 			// iterate over the files in the tarball. If it's a sqlite file, save to disk, and break.
 			for {
@@ -132,19 +133,21 @@ func getChembl() error {
 					break
 				}
 			}
-
 		}
-
 	})
 	return nil
 }
 
 func getGenbank() error {
+
+	// get list of latest genbank data
 	response, err := http.Get("https://ftp.ncbi.nlm.nih.gov/genbank/")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer response.Body.Close()
+
+	// if the server ain't good, bail
 	if response.StatusCode != 200 {
 		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
 	}
@@ -160,15 +163,16 @@ func getGenbank() error {
 		// For each item found, get the link
 		link, _ := selection.Attr("href")
 
-		// parse url for file extention
+		// parse url to into struct to later get filename and extension
 		parsedURL, err := url.Parse(link)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		filename := filepath.Base(parsedURL.Path)
 		extension := filepath.Ext(filename)
 
-		if extension == ".gz" {
+		if extension == ".gz" { // if it's a gzipped file it's a genbank file so download and unzip it
 			fmt.Println("retrieving: " + link)
 			go getFile(link, "../data/build/genbank")
 		}
@@ -178,11 +182,15 @@ func getGenbank() error {
 
 func getFile(fileURL string, writePath string) error {
 
+	// get the file from the server
 	response, err := http.Get(fileURL)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer response.Body.Close()
+
+	// if server ain't good, bail
 	if response.StatusCode != 200 {
 		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
 	}
@@ -197,6 +205,7 @@ func getFile(fileURL string, writePath string) error {
 
 	var reader io.Reader
 
+	// if the file is a gzipped file, decompress and read it else just read it
 	if extension == ".gz" {
 		// open the compressed file
 		reader, err = gzip.NewReader(response.Body)
@@ -208,6 +217,7 @@ func getFile(fileURL string, writePath string) error {
 		reader = response.Body
 	}
 
+	// if the filepath does not exist, create it
 	err = os.MkdirAll(writePath, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
@@ -215,10 +225,11 @@ func getFile(fileURL string, writePath string) error {
 
 	var pathname string
 	if extension == ".gz" {
-		pathname = filepath.Join(writePath, filename[0:len(filename)-len(extension)])
+		pathname = filepath.Join(writePath, filename[0:len(filename)-len(extension)]) // trim off the .gz
 	} else {
 		pathname = filepath.Join(writePath, filename)
 	}
+
 	// create a new file to write the uncompressed data to
 	file, err := os.Create(pathname)
 	if err != nil {
