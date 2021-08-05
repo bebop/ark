@@ -145,7 +145,7 @@ func getFile(fileURL string, writePath string) error {
 		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
 	}
 
-	// parse url for file extention
+	// parse url for file extension
 	parsedURL, err := url.Parse(fileURL)
 	if err != nil {
 		log.Fatal(err)
