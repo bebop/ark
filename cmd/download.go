@@ -27,7 +27,6 @@ var downloadCmd = &cobra.Command{
 // download literally downloads all the base data needed to build a standard allbase deployment
 // the amount of data is dummy high to casually test on your personal machine. Run at your own risk.
 func download() {
-
 	writePath := "../data/build"
 
 	// Typically I'd write these functions to return errors but since I'm using go routines
@@ -65,7 +64,6 @@ func download() {
 
 // getChembl checks the latest release for Chembl, downloads and unpacks their sqlite release tarball and saves it to disk write path.
 func getChembl(writePath string) {
-
 	links, err := getPageLinks("https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/")
 
 	if err != nil {
@@ -109,7 +107,6 @@ func getChembl(writePath string) {
 
 // getGenbank checks the latest release of Genbank, grabs all files ending with .gz extension. Decompresses them and saves to disk location specified by writePath.
 func getGenbank(writePath string) {
-
 	writePathDirectory := filepath.Join(writePath, "genbank")
 	links, err := getPageLinks("https://ftp.ncbi.nlm.nih.gov/genbank")
 	if err != nil {
@@ -134,7 +131,6 @@ func getGenbank(writePath string) {
 }
 
 func getFile(fileURL string, writePath string) {
-
 	// get the file from the server
 	response, err := http.Get(fileURL)
 	if err != nil {
@@ -197,7 +193,6 @@ func getFile(fileURL string, writePath string) {
 }
 
 func getPageLinks(url string) ([]string, error) {
-
 	// get the page
 	response, err := http.Get(url)
 	if err != nil {

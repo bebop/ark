@@ -39,6 +39,7 @@ func TestGetTarballFile(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error: %s", err)
 	}
+	defer response.Body.Close()
 	err = getTarballFile(response.Body, "README", tmpDataDir)
 	if err != nil {
 		t.Errorf("Error: %s", err)
