@@ -24,6 +24,8 @@ var downloadCmd = &cobra.Command{
 	},
 }
 
+// download literally downloads all the base data needed to build a standard allbase deployment
+// the amount of data is dummy high to casually test on your personal machine. Run at your own risk.
 func download() {
 
 	writePath := "../data/build"
@@ -43,13 +45,13 @@ func download() {
 		log.Fatal(err)
 	}
 
+	go getChembl()
+
 	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.xml.gz", writePath)
 
 	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.xml.gz", writePath)
 
 	go getGenbank()
-
-	go getChembl()
 
 }
 
