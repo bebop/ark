@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/spf13/cobra"
@@ -54,53 +55,87 @@ func download() {
 
 func getChembl() error {
 
-	response, err := http.Get("https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/chembl_29_sqlite.tar.gz")
+	//  get list of latest chembl data
+	response, err := http.Get("https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer response.Body.Close()
+
 	if response.StatusCode != 200 {
 		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
 	}
 
-	// unzip the tarball
-	zipReader, err := gzip.NewReader(response.Body)
+	// load the chembl list so we can parse it to find the latest Sqlite version
+	doc, err := goquery.NewDocumentFromReader(response.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer zipReader.Close()
 
-	// unpack the tarball
-	tarReader := tar.NewReader(zipReader)
+	// iterate over the list of chembl releasers to find the latest Sqlite version
+	doc.Find("a").Each(func(i int, s *goquery.Selection) {
 
-	for {
-		header, err := tarReader.Next()
-		if err == io.EOF {
-			break
+		// get element link
+		href, _ := s.Attr("href")
+
+		// if it's a sqlite file, download it
+		if strings.Contains(href, "sqlite.tar.gz") {
+			fmt.Println("retrieving: " + href)
+			chembl, err := http.Get(href)
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer chembl.Body.Close()
+
+			// if chembl server ain't good, bail
+			if chembl.StatusCode != 200 {
+				log.Fatalf("status code error: %d %s", chembl.StatusCode, chembl.Status)
+			}
+
+			// unzip tarball
+			gz, err := gzip.NewReader(chembl.Body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer gz.Close()
+
+			// unpack tarball
+			tarReader := tar.NewReader(gz)
+
+			// iterate over the files in the tarball. If it's a sqlite file, save to disk, and break.
+			for {
+
+				header, err := tarReader.Next()
+
+				if err == io.EOF {
+					break
+				}
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				// If it's a sqlite file, save to disk, and break
+				if filepath.Ext(header.Name) == ".db" {
+
+					// create a new file to write the uncompressed data to
+					file, err := os.Create(filepath.Join("../data/build", header.Name))
+					if err != nil {
+						log.Fatal(err)
+					}
+					defer file.Close()
+
+					// copy the uncompressed file to disk
+					if _, err := io.Copy(file, tarReader); err != nil {
+						log.Fatal(err)
+					}
+					break
+				}
+			}
+
 		}
-		if err != nil {
-			log.Fatal(err)
-		}
 
-		fmt.Println("Saving " + header.Name + " from CHEMBL")
-		if _, err := io.Copy(os.Stdout, tarReader); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println()
-
-		// create a new file to write the uncompressed data to
-		file, err := os.Create(header.Name)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer file.Close()
-
-		// copy the uncompressed file to disk
-		if _, err := io.Copy(file, tarReader); err != nil {
-			log.Fatal(err)
-		}
-	}
-
+	})
 	return nil
 }
 
