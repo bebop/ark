@@ -30,23 +30,24 @@ func download() {
 
 	writePath := "../data/build"
 
+	// Typically I'd write these functions to return errors but since I'm using go routines
+	// the blocking nature of using channels to report errors would either make the
+	// concurrency of go routines moot or make it so the returned errors were not returned until
+	// all of the go routines were done which in this case kind of makes reporting errors a bit useless.
+
+	// The solution here is that all of the functions called by the go routines will just log fatal errors.
+
+	// I suppose it may be of some use to report when go routines are finished for the user's sake but that isn't a priority for
+	// this pull request.
+
 	// get Rhea - relatively small.
-	err := getFile("https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz", writePath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	go getFile("https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz", writePath)
 
 	// get Rhea to curated uniprot mappings - relatively small.
-	err = getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_sprot.tsv", writePath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	go getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_sprot.tsv", writePath)
 
 	// get Rhea to chaotic uniprot mappings - larger than sprot but still relatively small.
-	err = getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_trembl.tsv.gz", writePath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	go getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_trembl.tsv.gz", writePath)
 
 	// CHEMBL Sqlite file - 20GB decompressed. This WILL decompress and save to file.
 	go getChembl(writePath)
@@ -62,7 +63,8 @@ func download() {
 
 }
 
-func getChembl(writePath string) error {
+// getChembl checks the latest release for Chembl, downloads and unpacks their sqlite release tarball and saves it to disk write path.
+func getChembl(writePath string) {
 
 	links, err := getPageLinks("https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/")
 
@@ -98,13 +100,15 @@ func getChembl(writePath string) error {
 		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
 	}
 
-	// extra our sqlite file from the tarball and write to disk
+	// extract our sqlite file from the tarball and write to disk
 	err = getTarballFile(response.Body, ".db", writePath)
-
-	return err
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
-func getGenbank(writePath string) error {
+// getGenbank checks the latest release of Genbank, grabs all files ending with .gz extension. Decompresses them and saves to disk location specified by writePath.
+func getGenbank(writePath string) {
 
 	writePathDirectory := filepath.Join(writePath, "genbank")
 	links, err := getPageLinks("https://ftp.ncbi.nlm.nih.gov/genbank")
@@ -127,10 +131,9 @@ func getGenbank(writePath string) error {
 			go getFile(link, writePathDirectory)
 		}
 	}
-	return err
 }
 
-func getFile(fileURL string, writePath string) error {
+func getFile(fileURL string, writePath string) {
 
 	// get the file from the server
 	response, err := http.Get(fileURL)
@@ -191,8 +194,6 @@ func getFile(fileURL string, writePath string) error {
 	if _, err := io.Copy(file, reader); err != nil {
 		log.Fatal(err)
 	}
-
-	return err
 }
 
 func getPageLinks(url string) ([]string, error) {
@@ -222,6 +223,7 @@ func getPageLinks(url string) ([]string, error) {
 	return links, err
 }
 
+// getTarballFile takes a gzipped tarball via Reader and extracts the first file to match fileNamePattern and then writes it to disk at writePath.
 func getTarballFile(responseBody io.ReadCloser, fileNamePattern string, writePath string) error {
 	// unzip the tarball
 	tarball, err := gzip.NewReader(responseBody)
@@ -242,7 +244,7 @@ func getTarballFile(responseBody io.ReadCloser, fileNamePattern string, writePat
 			log.Fatal(err)
 		}
 		if strings.Contains(header.Name, fileNamePattern) { // assuming that our tarball will only contain one file that will match our patten.
-			filename = header.Name
+			filename = filepath.Base(header.Name)
 			break
 		}
 	}
