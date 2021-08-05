@@ -131,7 +131,7 @@ func getChembl() error {
 			log.Fatal(err)
 		}
 	}
-	return nil
+	return err
 }
 
 func getGenbank() error {
@@ -156,7 +156,7 @@ func getGenbank() error {
 			go getFile(link, "../data/build/genbank")
 		}
 	}
-	return nil
+	return err
 }
 
 func getFile(fileURL string, writePath string) error {
@@ -221,7 +221,7 @@ func getFile(fileURL string, writePath string) error {
 		log.Fatal(err)
 	}
 
-	return nil
+	return err
 }
 
 func getPageLinks(url string) ([]string, error) {
@@ -248,5 +248,5 @@ func getPageLinks(url string) ([]string, error) {
 			links = append(links, link)
 		}
 	})
-	return links, nil
+	return links, err
 }
