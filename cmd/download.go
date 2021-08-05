@@ -30,32 +30,39 @@ func download() {
 
 	writePath := "../data/build"
 
+	// get Rhea - relatively small.
 	err := getFile("https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz", writePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// get Rhea to curated uniprot mappings - relatively small.
 	err = getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_sprot.tsv", writePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// get Rhea to chaotic uniprot mappings - larger than sprot but still relatively small.
 	err = getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_trembl.tsv.gz", writePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	go getChembl()
+	// CHEMBL Sqlite file - 20GB decompressed. This WILL decompress and save to file.
+	go getChembl(writePath)
 
+	// curated uniprot - ~1GB compressed. This WILL decompress and save to file.
 	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.xml.gz", writePath)
 
+	// chaotic uniprot - 160GB compressed. This WILL decompress and save to file.
 	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.xml.gz", writePath)
 
-	go getGenbank()
+	// literally get all of annotated genbank - Not sure how big it is as of writing this but it's a lot.
+	go getGenbank(writePath)
 
 }
 
-func getChembl() error {
+func getChembl(writePath string) error {
 
 	links, err := getPageLinks("https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/")
 
@@ -92,13 +99,14 @@ func getChembl() error {
 	}
 
 	// extra our sqlite file from the tarball and write to disk
-	err = getTarballFile(response.Body, ".db", "../data/build/chembl")
+	err = getTarballFile(response.Body, ".db", writePath)
 
 	return err
 }
 
-func getGenbank() error {
+func getGenbank(writePath string) error {
 
+	writePathDirectory := filepath.Join(writePath, "genbank")
 	links, err := getPageLinks("https://ftp.ncbi.nlm.nih.gov/genbank")
 	if err != nil {
 		log.Fatal(err)
@@ -116,7 +124,7 @@ func getGenbank() error {
 
 		if extension == ".gz" { // if it's a gzipped file it's a genbank file so download and unzip it
 			fmt.Println("retrieving: " + link)
-			go getFile(link, "../data/build/genbank")
+			go getFile(link, writePathDirectory)
 		}
 	}
 	return err
