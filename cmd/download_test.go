@@ -1,16 +1,21 @@
 package cmd
 
 import (
+	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 )
 
-func TestGetGenbank(t *testing.T) {
-	// getGenbank()
-}
 func TestGetFile(t *testing.T) {
-	getFile("https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz", "../data/build")
-	getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_sprot.tsv", "../data/build")
+	tmpDataDir, err := ioutil.TempDir("", "data-*")
+	if err != nil {
+		t.Errorf("Error: %s", err)
+	}
+	defer os.RemoveAll(tmpDataDir)
+
+	getFile("https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz", tmpDataDir)
+	getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_sprot.tsv", tmpDataDir)
 }
 
 func TestGetPageLinks(t *testing.T) {
@@ -24,11 +29,17 @@ func TestGetPageLinks(t *testing.T) {
 }
 
 func TestGetTarballFile(t *testing.T) {
+	tmpDataDir, err := ioutil.TempDir("", "data-*")
+	if err != nil {
+		t.Errorf("Error: %s", err)
+	}
+	defer os.RemoveAll(tmpDataDir)
+
 	response, err := http.Get("https://github.com/TimothyStiles/poly/archive/refs/tags/v0.0.0.tar.gz")
 	if err != nil {
 		t.Errorf("Error: %s", err)
 	}
-	err = getTarballFile(response.Body, "README", "../data/test")
+	err = getTarballFile(response.Body, "README", tmpDataDir)
 	if err != nil {
 		t.Errorf("Error: %s", err)
 	}
