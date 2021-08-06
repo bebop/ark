@@ -132,7 +132,7 @@ func getChembl(writePath string) {
 	}
 }
 
-// getGenbank checks the latest release of Genbank, grabs all files ending with .gz extension. Decompresses them and saves to disk location specified by writePath.
+// getGenbank checks the latest release of Genbank, grabs all files ending with .gz extension and saves to disk location specified by writePath.
 func getGenbank(writePath string) {
 	writePathDirectory := filepath.Join(writePath, "genbank")
 	links, err := getPageLinks("https://ftp.ncbi.nlm.nih.gov/genbank")
@@ -149,7 +149,7 @@ func getGenbank(writePath string) {
 		filename := filepath.Base(parsedURL.Path)
 		extension := filepath.Ext(filename)
 
-		if extension == ".gz" { // if it's a gzipped file it's a genbank file so download and unzip it
+		if extension == ".gz" { // if it's a gzipped file it's a genbank file so download it
 			fmt.Println("retrieving: " + link)
 			go getFile(link, writePathDirectory)
 		}
@@ -199,6 +199,7 @@ func getFile(fileURL string, writePath string) {
 	}
 }
 
+// getPageLinks returns a slice of all the links on the page at the specified url.
 func getPageLinks(url string) ([]string, error) {
 	// get the page
 	response, err := http.Get(url)
@@ -206,19 +207,23 @@ func getPageLinks(url string) ([]string, error) {
 		log.Fatal(err)
 	}
 	defer response.Body.Close()
+
+	// if server ain't good, bail
 	if response.StatusCode != 200 {
 		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
 	}
+
+	// parse the page into a document goquery can use
 	doc, err := goquery.NewDocumentFromReader(response.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	// initialize links slice to hold all the links pulled from following mapping
 	var links []string
-	doc.Find("a").Each(func(i int, selection *goquery.Selection) {
+	doc.Find("a").Each(func(i int, selection *goquery.Selection) { // use a goquery selector to get all links on the page
 		// For each item found, get the link
 		link, _ := selection.Attr("href")
-		if link != "" {
+		if link != "" { // if the link is not empty append it to the slice
 			links = append(links, link)
 		}
 	})
