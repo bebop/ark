@@ -143,40 +143,20 @@ func getFile(fileURL string, writePath string) {
 		log.Fatalf("status code error: %d %s", response.StatusCode, response.Status)
 	}
 
-	// parse url for file extension
-	parsedURL, err := url.Parse(fileURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	filename := filepath.Base(parsedURL.Path)
-	extension := filepath.Ext(filename)
-
-	var reader io.Reader
-
-	// if the file is a gzipped file, decompress and read it else just read it
-	if extension == ".gz" {
-		// open the compressed file
-		reader, err = gzip.NewReader(response.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		// open the uncompressed file
-		reader = response.Body
-	}
-
 	// if the filepath does not exist, create it
 	err = os.MkdirAll(writePath, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var pathname string
-	if extension == ".gz" {
-		pathname = filepath.Join(writePath, filename[0:len(filename)-len(extension)]) // trim off the .gz
-	} else {
-		pathname = filepath.Join(writePath, filename)
+	// parse url for filename
+	parsedURL, err := url.Parse(fileURL)
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	filename := filepath.Base(parsedURL.Path)
+	pathname := filepath.Join(writePath, filename)
 
 	// create a new file to write the uncompressed data to
 	file, err := os.Create(pathname)
@@ -186,7 +166,7 @@ func getFile(fileURL string, writePath string) {
 	defer file.Close()
 
 	// copy the uncompressed file to disk
-	if _, err := io.Copy(file, reader); err != nil {
+	if _, err := io.Copy(file, response.Body); err != nil {
 		log.Fatal(err)
 	}
 }
