@@ -41,7 +41,6 @@ func init() {
 	viper.SetDefault("license", "MIT")
 	rootCmd.AddCommand(localCmd)
 	rootCmd.AddCommand(cleanCmd)
-	rootCmd.AddCommand(downloadCmd)
 }
 
 func initConfig() {
