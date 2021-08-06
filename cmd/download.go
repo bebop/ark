@@ -226,7 +226,6 @@ func getPageLinks(url string) ([]string, error) {
 
 // getTarballFile takes a gzipped tarball via Reader and extracts the first file to match fileNamePattern and then writes it to disk at writePath.
 func getTarballFile(responseBody io.ReadCloser, fileNamePattern string, writePath string) error {
-
 	// unzip the tarball
 	tarball, err := gzip.NewReader(responseBody)
 	if err != nil {
