@@ -16,6 +16,33 @@ import (
 	"github.com/spf13/cobra"
 )
 
+/******************************************************************************
+Allbase needs an easy and reproducible way to grab all of the data it uses.
+Some people would try to download everything manually with wget or curl but
+that's bonkers and I'm not maintaining that.
+
+Instead I've made a multi-threaded webscraper.
+
+It will download and store the latest versions of the following:
+
+	- Rhea RDF file
+	- Rhea to Uniprot Sprot mapping file
+	- Rhea to Uniprot Trembl mapping file
+	- CHEMBL sqlite file
+	- Uniprot Sprot XML file
+	- Uniprot Trembl XML file
+	- All of Genbank's files
+
+Given that these urls are likely not to change I doubt there will be many if
+any stability issues from upstream data sources.
+
+TODO: Create flags so that each data source can be downloaded individually.
+TODO: Create way to track, report, and resume progress of downloads.
+
+TTFN,
+Tim
+******************************************************************************/
+
 var downloadCmd = &cobra.Command{
 	Use:   "download",
 	Short: "Download data for standard deploy build. Run at your own risk.",
@@ -49,16 +76,16 @@ func download() {
 	// get Rhea to chaotic uniprot mappings - larger than sprot but still relatively small.
 	go getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_trembl.tsv.gz", writePath)
 
-	// CHEMBL Sqlite file - ~20GB decompressed. This WILL decompress and save to file.
+	// get CHEMBL Sqlite file - ~300MB compressed.
 	go getChembl(writePath)
 
-	// curated uniprot - ~1GB compressed. This WILL decompress and save to file.
+	// get curated sprot uniprot - ~1GB compressed.
 	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.xml.gz", writePath)
 
-	// chaotic uniprot - ~160GB compressed. This WILL decompress and save to file.
+	// get chaotic trembl uniprot - ~160GB compressed.
 	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.xml.gz", writePath)
 
-	// literally get all of annotated genbank - Not sure how big it is as of writing this but it's a lot.
+	// gets all of annotated genbank - Not sure how big it is as of writing this but it's a lot.
 	go getGenbank(writePath)
 }
 
@@ -199,6 +226,7 @@ func getPageLinks(url string) ([]string, error) {
 
 // getTarballFile takes a gzipped tarball via Reader and extracts the first file to match fileNamePattern and then writes it to disk at writePath.
 func getTarballFile(responseBody io.ReadCloser, fileNamePattern string, writePath string) error {
+
 	// unzip the tarball
 	tarball, err := gzip.NewReader(responseBody)
 	if err != nil {
@@ -231,6 +259,8 @@ func getTarballFile(responseBody io.ReadCloser, fileNamePattern string, writePat
 			log.Fatal(err)
 		}
 
+		filename += ".gz"
+
 		// create empty file to write to
 		file, err := os.Create(filepath.Join(writePath, filename))
 
@@ -240,8 +270,13 @@ func getTarballFile(responseBody io.ReadCloser, fileNamePattern string, writePat
 
 		defer file.Close()
 
-		// copy the uncompressed file to disk
-		if _, err := io.Copy(file, directory); err != nil { // that side effect I mentioned in the above for loop makes this possible to do out of loop.
+		// compresses the file since it's likely large
+		archiver := gzip.NewWriter(file)
+		archiver.Name = filename
+		defer archiver.Close()
+
+		// copy the compressed file to disk
+		if _, err := io.Copy(archiver, directory); err != nil { // that side effect I mentioned in the above for loop makes this possible to do out of loop.
 			log.Fatal(err)
 		}
 	}
