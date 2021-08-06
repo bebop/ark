@@ -156,6 +156,7 @@ func getGenbank(writePath string) {
 	}
 }
 
+// getFile downloads the file at the specified url and saves it to the specified writePath.
 func getFile(fileURL string, writePath string) {
 	// get the file from the server
 	response, err := http.Get(fileURL)
@@ -185,14 +186,14 @@ func getFile(fileURL string, writePath string) {
 	filename := filepath.Base(parsedURL.Path)
 	pathname := filepath.Join(writePath, filename)
 
-	// create a new file to write the uncompressed data to
+	// create a new file to write the data to it
 	file, err := os.Create(pathname)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	// copy the uncompressed file to disk
+	// copy the file to disk
 	if _, err := io.Copy(file, response.Body); err != nil {
 		log.Fatal(err)
 	}
