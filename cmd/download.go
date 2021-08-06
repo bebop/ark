@@ -19,11 +19,14 @@ import (
 /******************************************************************************
 Allbase needs an easy and reproducible way to grab all of the data it uses.
 Some people would try to download everything manually with wget or curl but
-that's bonkers and I'm not maintaining that.
+that's bonkers and I'm not maintaining that. Instead I've made a multi-threaded webscraper.
 
-Instead I've made a multi-threaded webscraper.
+To be honest most of you reading this will probably just want to use the build
+command which will download AND insert all of the data into allbase for you
+without any intermediary files but I'm leaving this here for the time being until
+the build command is implemented.
 
-It will download and store the latest versions of the following:
+Download will download and store the latest versions of the following:
 
 	- Rhea RDF file
 	- Rhea to Uniprot Sprot mapping file
