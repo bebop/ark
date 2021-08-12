@@ -267,8 +267,6 @@ func getTarballFile(responseBody io.ReadCloser, fileNamePattern string, writePat
 			log.Fatal(err)
 		}
 
-		filename += ".gz"
-
 		// create empty file to write to
 		file, err := os.Create(filepath.Join(writePath, filename))
 
