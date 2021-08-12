@@ -278,13 +278,8 @@ func getTarballFile(responseBody io.ReadCloser, fileNamePattern string, writePat
 
 		defer file.Close()
 
-		// compresses the file since it's likely large
-		archiver := gzip.NewWriter(file)
-		archiver.Name = filename
-		defer archiver.Close()
-
 		// copy the compressed file to disk
-		if _, err := io.Copy(archiver, directory); err != nil { // that side effect I mentioned in the above for loop makes this possible to do out of loop.
+		if _, err := io.Copy(file, directory); err != nil { // that side effect I mentioned in the above for loop makes this possible to do out of loop.
 			log.Fatal(err)
 		}
 	}
