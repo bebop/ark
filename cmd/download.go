@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/spf13/cobra"
@@ -51,15 +52,13 @@ var downloadCmd = &cobra.Command{
 	Short: "Download data for standard deploy build. Run at your own risk.",
 	Long:  "Download literally downloads all the base data needed to build a standard allbase deployment the amount of data is dummy high to casually test on your personal machine. Run at your own risk.",
 	Run: func(cmd *cobra.Command, args []string) {
-		download()
+		download("../data/build")
 	},
 }
 
 // download literally downloads all the base data needed to build a standard allbase deployment
 // the amount of data is dummy high to casually test on your personal machine. Run at your own risk.
-func download() {
-	writePath := "../data/build"
-
+func download(writePath string) {
 	// Typically I'd write these functions to return errors but since I'm using go routines
 	// the blocking nature of using channels to report errors would either make the
 	// concurrency of go routines moot or make it so the returned errors were not returned until
@@ -70,30 +69,42 @@ func download() {
 	// I suppose it may be of some use to report when go routines are finished for the user's sake but that isn't a priority for
 	// this pull request.
 
+	var waitGroup sync.WaitGroup
+
 	// get Rhea - relatively small.
-	go getFile("https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz", writePath)
+	waitGroup.Add(1)
+	go getFile("https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz", writePath, &waitGroup)
 
 	// get Rhea to curated uniprot mappings - relatively small.
-	go getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_sprot.tsv", writePath)
+	waitGroup.Add(1)
+	go getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_sprot.tsv", writePath, &waitGroup)
 
 	// get Rhea to chaotic uniprot mappings - larger than sprot but still relatively small.
-	go getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_trembl.tsv.gz", writePath)
+	waitGroup.Add(1)
+	go getFile("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_trembl.tsv.gz", writePath, &waitGroup)
 
 	// get CHEMBL Sqlite file - ~300MB compressed.
-	go getChembl(writePath)
+	waitGroup.Add(1)
+	go getChembl(writePath, &waitGroup)
 
 	// get curated sprot uniprot - ~1GB compressed.
-	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.xml.gz", writePath)
+	waitGroup.Add(1)
+	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.xml.gz", writePath, &waitGroup)
 
 	// get chaotic trembl uniprot - ~160GB compressed.
-	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.xml.gz", writePath)
+	waitGroup.Add(1)
+	go getFile("https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.xml.gz", writePath, &waitGroup)
 
 	// gets all of annotated genbank - Not sure how big it is as of writing this but it's a lot.
-	go getGenbank(writePath)
+	waitGroup.Add(1)
+	go getGenbank(writePath, &waitGroup)
+
+	waitGroup.Wait()
 }
 
 // getChembl checks the latest release for Chembl, downloads and unpacks their sqlite release tarball and saves it to disk write path.
-func getChembl(writePath string) {
+func getChembl(writePath string, waitGroup *sync.WaitGroup) {
+	defer waitGroup.Done()
 	links, err := getPageLinks("https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/")
 
 	if err != nil {
@@ -136,13 +147,18 @@ func getChembl(writePath string) {
 }
 
 // getGenbank checks the latest release of Genbank, grabs all files ending with .gz extension and saves to disk location specified by writePath.
-func getGenbank(writePath string) {
+func getGenbank(writePath string, waitGroup *sync.WaitGroup) {
+	defer waitGroup.Done() // this is a go routine so we need to tell it when we're done. https://gobyexample.com/waitgroups
+
 	writePathDirectory := filepath.Join(writePath, "genbank")
 	links, err := getPageLinks("https://ftp.ncbi.nlm.nih.gov/genbank")
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// set waitgroup to track all of the go routines pulling files
+	var getFileWaitGroup sync.WaitGroup
+	// get all of the links that end with .gz
 	for _, link := range links {
 		parsedURL, err := url.Parse(link)
 		if err != nil {
@@ -154,13 +170,19 @@ func getGenbank(writePath string) {
 
 		if extension == ".gz" { // if it's a gzipped file it's a genbank file so download it
 			fmt.Println("retrieving: " + link)
-			go getFile(link, writePathDirectory)
+			getFileWaitGroup.Add(1)
+			go getFile(link, writePathDirectory, &getFileWaitGroup)
 		}
 	}
+	getFileWaitGroup.Wait()
 }
 
 // getFile downloads the file at the specified url and saves it to the specified writePath.
-func getFile(fileURL string, writePath string) {
+func getFile(fileURL string, writePath string, waitGroup *sync.WaitGroup) {
+	// waitgroups are what go uses to track how many go routines are running.
+	// this defer statement tells the calling function that we're done with the waitgroup
+	defer waitGroup.Done()
+
 	// get the file from the server
 	response, err := http.Get(fileURL)
 	if err != nil {
