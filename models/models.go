@@ -470,3 +470,17 @@ func GenbankInsert(db *sqlx.DB, genbankList []poly.Sequence) error {
 
 	return nil
 }
+
+/******************************************************************************
+
+Chembl
+
+******************************************************************************/
+
+func ChemblAttach(db *sqlx.DB, chembl string) error {
+	_, err := db.Exec("ATTACH DATABASE ? AS chembl", chembl)
+	if err != nil {
+		return err
+	}
+	return nil
+}

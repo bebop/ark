@@ -3,9 +3,11 @@ package models
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sync"
 	"testing"
 
@@ -142,5 +144,38 @@ func TestGenbankInsert(t *testing.T) {
 	err := GenbankInsert(db, sequences)
 	if err != nil {
 		log.Fatalf("Failed on error during genbank insertion: %s", err)
+	}
+}
+
+func TestChemblAttach(t *testing.T) {
+	tmpDataDir, err := ioutil.TempDir("", "data-*")
+	if err != nil {
+		t.Errorf("Failed to create temporary data directory")
+	}
+	defer os.RemoveAll(tmpDataDir)
+
+	tmpChemblFilePath := filepath.Join(tmpDataDir, "chembl.db")
+
+	// Read Chembl schema
+	schemaStringBytes, err := ioutil.ReadFile("../data/chembl_schema.sql")
+	if err != nil {
+		t.Errorf("Failed to open chembl schema: %s", err)
+	}
+
+	// Begin SQLite
+	chemblDB, err := sqlx.Open("sqlite3", tmpChemblFilePath)
+	if err != nil {
+		t.Errorf("Failed to open sqlite in %s: %s", tmpChemblFilePath, err)
+	}
+
+	// Execute our schema in memory
+	_, err = chemblDB.Exec(string(schemaStringBytes))
+	if err != nil {
+		t.Errorf("Failed to execute schema: %s", err)
+	}
+
+	err = ChemblAttach(db, tmpChemblFilePath)
+	if err != nil {
+		t.Errorf("Failed to attach chembl with error %s", err)
 	}
 }
