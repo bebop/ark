@@ -2,7 +2,8 @@ package main
 
 import "database/sql"
 
-// Authors: Jordan Strasser, David Lambert (SQL Hero)
+/* Authors: Jordan Strasser, Keoni Gandall, David Lambert (SQL Assist)
+*/ 
 
 import (
 	"fmt"
