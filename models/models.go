@@ -3,18 +3,22 @@ package models
 import (
 	"compress/gzip"
 	"database/sql"
+	"fmt"
 	"os"
 	"strings"
 	"sync"
 
 	"github.com/TimothyStiles/poly"
-	"github.com/TimothyStiles/poly/parsers/uniprot"
+	"github.com/TimothyStiles/poly/io/uniprot"
+	"github.com/TimothyStiles/poly/seqhash"
 	"github.com/allyourbasepair/allbase/rhea"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
 )
 
 var Schema = `
+PRAGMA journal_mode=WAL;
+PRAGMA foreign_keys = ON;
 
 -- Create Seqhash Table --
 CREATE TABLE seqhash (
@@ -37,7 +41,7 @@ CREATE TABLE genbank (
 -- Create Genbank Features Table --
 CREATE TABLE genbankfeatures (
 	seqhash TEXT NOT NULL REFERENCES seqhash(seqhash),
-	genbank TEXT NOT NULL REFERENCES genbank(id)
+	genbank TEXT NOT NULL REFERENCES genbank(accession)
 );
 
 -- Create Uniprot Table --
@@ -57,7 +61,7 @@ CREATE TABLE IF NOT EXISTS chebi (
 );
 
 CREATE TABLE IF NOT EXISTS compound (
-        id INT NOT NULL UNIQUE,
+        id INT NOT NULL,
         accession TEXT PRIMARY KEY,
         position TEXT,
         name TEXT,
@@ -113,7 +117,7 @@ CREATE TABLE IF NOT EXISTS reactionparticipant (
 -- Uniprot to reaction
 
 CREATE TABLE IF NOT EXISTS uniprot_to_reaction (
-        reaction TEXT REFERENCES reaction(id),
+        reaction TEXT REFERENCES reaction(accession),
         uniprot TEXT REFERENCES uniprot(accession)
 );
 `
@@ -279,7 +283,7 @@ func RheaTsvInsert(db *sqlx.DB, path string, gzipped bool) error {
 	} else {
 		go rhea.ParseRheaToUniprotTsv(file, lines)
 	}
-	tx, err := db.Begin()
+	tx, err := db.Beginx()
 	if err != nil {
 		return err
 	}
@@ -288,22 +292,28 @@ func RheaTsvInsert(db *sqlx.DB, path string, gzipped bool) error {
 		line, more := <-lines
 		if more {
 			counter++
-			_, err := tx.Exec("INSERT INTO uniprot_to_reaction(reaction,uniprot) VALUES (?,?)", line.RheaID, line.UniprotID)
-			if err != nil {
-				_ = tx.Rollback()
-				return err
-			}
-			if counter >= 10000 {
-				counter = 0
-				err = tx.Commit()
+			var accession string
+			err = tx.Get(&accession, "SELECT accession FROM reaction WHERE id = ?", line.RheaID)
+			if err == nil {
+				_, err := tx.Exec("INSERT OR IGNORE INTO uniprot_to_reaction(reaction,uniprot) VALUES (?,?)", accession, line.UniprotID)
 				if err != nil {
 					_ = tx.Rollback()
 					return err
 				}
-				tx, err = db.Begin()
-				if err != nil {
-					return err
+				if counter >= 10000 {
+					counter = 0
+					err = tx.Commit()
+					if err != nil {
+						_ = tx.Rollback()
+						return err
+					}
+					tx, err = db.Beginx()
+					if err != nil {
+						return err
+					}
 				}
+			} else {
+				fmt.Println(line.RheaID)
 			}
 		} else {
 			err = tx.Commit()
@@ -338,7 +348,7 @@ func UniprotInsert(db *sqlx.DB, uniprotDatabase string, entries chan uniprot.Ent
 			counter++
 			// Insert seqhashes
 			sequence := strings.ToUpper(entry.Sequence.Value)
-			seqhash, err := poly.Hash(sequence, "PROTEIN", false, false)
+			seqhash, err := seqhash.Hash(sequence, "PROTEIN", false, false)
 			if err != nil {
 				errors <- err
 				continue
@@ -389,29 +399,30 @@ func GenbankInsert(db *sqlx.DB, genbankList []poly.Sequence) error {
 	if err != nil {
 		return err
 	}
-	for _, genbank := range genbankList {
-		seqhash, err := genbank.Hash()
+	for _, gbk := range genbankList {
+		// FIX THIS
+		sq, err := seqhash.Hash(gbk.Sequence, "DNA", false, true)
 		if err != nil {
 			return err
 		}
 		var sequenceType string
 		var circular bool
 		var doubleStranded bool
-		switch seqhash[3] {
+		switch sq[3] {
 		case 'D':
 			sequenceType = "DNA"
 		case 'R':
 			sequenceType = "RNA"
 		}
 
-		switch seqhash[4] {
+		switch sq[4] {
 		case 'L':
 			circular = false
 		case 'C':
 			circular = true
 		}
 
-		switch seqhash[5] {
+		switch sq[5] {
 		case 'L':
 			doubleStranded = false
 		case 'D':
@@ -419,24 +430,24 @@ func GenbankInsert(db *sqlx.DB, genbankList []poly.Sequence) error {
 		}
 
 		// Insert initial seqhash
-		_, err = tx.Exec("INSERT OR IGNORE INTO seqhash(seqhash,sequence,circular,doublestranded,seqhashtype) VALUES (?,?,?,?,?)", seqhash, strings.ToUpper(genbank.Sequence), circular, doubleStranded, sequenceType)
+		_, err = tx.Exec("INSERT OR IGNORE INTO seqhash(seqhash,sequence,circular,doublestranded,seqhashtype) VALUES (?,?,?,?,?)", sq, strings.ToUpper(gbk.Sequence), circular, doubleStranded, sequenceType)
 		if err != nil {
 			return err
 		}
 
 		// Insert genbank file
-		_, err = tx.Exec("INSERT INTO genbank(accession, seqhash) VALUES (?,?)", genbank.Meta.Locus.Name, seqhash)
+		_, err = tx.Exec("INSERT INTO genbank(accession, seqhash) VALUES (?,?)", gbk.Meta.Locus.Name, sq)
 		if err != nil {
 			return err
 		}
 
 		// For each protein, insert seqhash of the protein, insert hash of the current gene, and then add in a genbankfeatures
-		for _, feature := range genbank.Features {
+		for _, feature := range gbk.Features {
 			if feature.Type == "CDS" {
 				translation := feature.Attributes["translation"]
 				if translation != "" {
 					// Insert protein seqhash
-					proteinSeqhash, err := poly.Hash(translation, "PROTEIN", false, false)
+					proteinSeqhash, err := seqhash.Hash(translation, "PROTEIN", false, false)
 					if err != nil {
 						return err
 					}
@@ -446,7 +457,7 @@ func GenbankInsert(db *sqlx.DB, genbankList []poly.Sequence) error {
 					}
 					// Insert gene seqhash
 					geneSequence := feature.GetSequence()
-					geneSeqhash, err := poly.Hash(geneSequence, sequenceType, false, true)
+					geneSeqhash, err := seqhash.Hash(geneSequence, sequenceType, false, true)
 					if err != nil {
 						return err
 					}
@@ -455,7 +466,7 @@ func GenbankInsert(db *sqlx.DB, genbankList []poly.Sequence) error {
 						return err
 					}
 					// Insert reference to the feature
-					_, err = tx.Exec("INSERT INTO genbankfeatures(seqhash,genbank) VALUES (?,?)", geneSeqhash, genbank.Meta.Locus.Name)
+					_, err = tx.Exec("INSERT INTO genbankfeatures(seqhash,genbank) VALUES (?,?)", geneSeqhash, gbk.Meta.Locus.Name)
 					if err != nil {
 						return err
 					}
