@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/TimothyStiles/poly"
-	"github.com/TimothyStiles/poly/parsers/uniprot"
+	"github.com/TimothyStiles/poly/io/genbank"
+	"github.com/TimothyStiles/poly/io/uniprot"
 	"github.com/allyourbasepair/allbase/models"
 	"github.com/allyourbasepair/allbase/rhea"
 	"github.com/jmoiron/sqlx"
@@ -94,7 +94,7 @@ func local() {
 	}
 	for _, match := range matches {
 		log.Printf("Inserting genbank file %s", match)
-		sequences := poly.ReadGbkFlatGz("data/flatGbk_test.seq.gz")
+		sequences := genbank.ReadFlatGz("data/flatGbk_test.seq.gz")
 		err := models.GenbankInsert(db, sequences)
 		if err != nil {
 			log.Fatalf("Failed on error during genbank insertion: %s", err)
