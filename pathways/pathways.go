@@ -82,7 +82,7 @@ func GetTotalPathways(target_molecule string, levels int) []pathdata {
 	db.Close()
 	return result
 }
-//
+//GetTotalPathways but limited to a single organism
 func OrganismFilteredPathways(GBOrganism string, target_molecule string, levels int) []pathdata {
 	query, err := LoadSQLFile("./queries/organism_filtered_pathways.sql")
 	if err != nil {
