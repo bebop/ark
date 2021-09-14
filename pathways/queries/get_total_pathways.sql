@@ -28,9 +28,8 @@ WITH stitch AS (
 			from
 			stitch c
 			inner join stitch d on c.rxn_id = d.rxn_id
-			where c.cmpd_id = %d
+			where c.cmpd_id = ?
 			and sub_id NOT IN (SELECT ids from not_one)
-			-- and c.rxn_id IN (SELECT id FROM native_rxns)
 			and type2 = 'substrate'
 			and type1 <> 'substrate'
 			UNION ALL
@@ -42,11 +41,10 @@ WITH stitch AS (
 				stitch e
 				inner join stitch f on e.rxn_id = f.rxn_id
 				inner join chain on e.cmpd_id = chain.sub_id
-				where lvl < %d
+				where lvl < ?
 				and f.reactionsidereactiontype LIKE '%substrate%'
 				and e.reactionsidereactiontype NOT LIKE '%substrate%'
 				and f.cmpd_id NOT IN (SELECT ids FROM not_one)
-				-- and e.rxn_id IN (SELECT id FROM native_rxns)
 				and instr(chain.name_path, f.name) = 0
 				)
 				select * from chain

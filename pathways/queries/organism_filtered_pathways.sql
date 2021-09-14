@@ -15,7 +15,7 @@ select s.translation
 from genbank g inner join genbankfeatures gf 
 on g.accession = gf.genbank 
 inner join seqhash s on gf.seqhash = s.seqhash 
-WHERE g.accession LIKE 'CP060121' -- organism param
+WHERE g.accession = ? -- organism param
 ) 
 ),
 -- native_rxns selects from 'case' because uniprot_to_reaction includes the base parent reactions that are undirectional. 
@@ -52,14 +52,14 @@ WHERE g.accession LIKE 'CP060121' -- organism param
 		-- recursively goes through stitch, finding the substrates of substrates, until the level param is reached 
 		-- filters reactions to only return ones native to the organism of interest 
 		chain as ( 
-		select c.rxn_id as rxn, c.reactionsidereactiontype as type1, c.cmpd_id as prod_id, c.name as prod_name,
+		select c.rxn_id as rxn_id, c.reactionsidereactiontype as type1, c.cmpd_id as prod_id, c.name as prod_name,
 			d.reactionsidereactiontype as type2, d.cmpd_id as sub_id, d.name as sub_name, 0 as lvl,
 			c.name|| ',' ||d.name as name_path,
 			cast(c.rxn_id as text) as id_path
 			from
 			stitch c
 			inner join stitch d on c.rxn_id = d.rxn_id
-			where c.cmpd_id = 3952 -- param
+			where c.cmpd_id = ? 
 			and d.cmpd_id NOT IN (select * from common_compounds)
 			and type2  = 'substrate'
 			and type1 <> 'substrate'
@@ -72,7 +72,7 @@ WHERE g.accession LIKE 'CP060121' -- organism param
 				stitch e
 				inner join stitch f on e.rxn_id = f.rxn_id
 				inner join chain on e.cmpd_id = chain.sub_id
-				where lvl < 2 -- param
+				where lvl < ? 
 				and f.reactionsidereactiontype LIKE '%substrate%'
 				and e.reactionsidereactiontype NOT LIKE '%substrate%'
 				and f.cmpd_id NOT IN (select * from common_compounds)
