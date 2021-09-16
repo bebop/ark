@@ -4,7 +4,6 @@ import (
 	"testing"
 )
 
-
 func TestGetTotalPathways(t *testing.T) {
 	result := GetTotalPathways("calycosin", 4)
 	if len(result) != 9 {
@@ -18,7 +17,7 @@ func TestNameToId(t *testing.T) {
 	}
 }
 
-func TestOrganismFilteredPathways(t *testing.T){
+func TestOrganismFilteredPathways(t *testing.T) {
 	result := OrganismFilteredPathways("CP060121", "XMP", 1)
 	if len(result) != 37 {
 		t.Error("Expected 37 path branches, Got ", len(result))
