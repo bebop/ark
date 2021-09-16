@@ -4,13 +4,13 @@ package pathways
 
 import (
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"io/ioutil"
 	"path/filepath"
 
+	"github.com/jmoiron/sqlx"
+
 	_ "github.com/mattn/go-sqlite3"
 )
-
 
 //Reads and loads SQL files as string
 func LoadSQLFile(path string) (string, error) {
@@ -25,16 +25,18 @@ func LoadSQLFile(path string) (string, error) {
 	return string(stuff), nil
 
 }
+
 //Easy database connector
 func ConnectDB() (*sqlx.DB, error) {
 	var db *sqlx.DB
 	var err error
-	db, err = sqlx.Connect("sqlite3", "./allbase.db")
+	db, err = sqlx.Connect("sqlite3", "./allbasetest.db")
 	if err != nil {
 		err.Error()
 	}
 	return db, err
 }
+
 //Gets id from compound name if it exists in allbase
 func NameToId(name string) int {
 	db, err := ConnectDB()
@@ -51,8 +53,9 @@ func NameToId(name string) int {
 	}
 	return id
 }
+
 type pathdata struct {
-	Rxn_id, Prod_id, Sub_id, Lvl int
+	Rxn_id, Prod_id, Sub_id, Lvl                          int
 	Type1, Prod_name, Type2, Sub_name, Name_path, Id_path string
 }
 
@@ -62,7 +65,7 @@ This query excludes any compound that occurs more than 100 times in nodes. That 
 but once we start including things like NADPH, ATP, H2O, we step into combinatorial explosions.
 id_path shows you the chain of equations starting from the top, and path shows you the actual compoounds
 that build up a path, which is usually just the most significant reactants and products.
- */
+*/
 func GetTotalPathways(target_molecule string, levels int) []pathdata {
 	query, err := LoadSQLFile("./queries/get_total_pathways.sql")
 	if err != nil {
@@ -78,11 +81,11 @@ func GetTotalPathways(target_molecule string, levels int) []pathdata {
 	if err != nil {
 		err.Error()
 	}
-	fmt.Println(len(result))
 	db.Close()
 	return result
 }
-//
+
+//GetTotalPathways but limited to a single organism
 func OrganismFilteredPathways(GBOrganism string, target_molecule string, levels int) []pathdata {
 	query, err := LoadSQLFile("./queries/organism_filtered_pathways.sql")
 	if err != nil {
@@ -101,6 +104,3 @@ func OrganismFilteredPathways(GBOrganism string, target_molecule string, levels 
 	db.Close()
 	return result
 }
-
-
-
