@@ -12,7 +12,7 @@ func TestGetTotalPathways(t *testing.T) {
 }
 
 func TestNameToId(t *testing.T) {
-	if id := NameToId("XMP"); id != 5036 {
+	if id, _ := NameToId("XMP"); id != 5036 {
 		t.Error("Expected: 5036, Got: ", id)
 	}
 }

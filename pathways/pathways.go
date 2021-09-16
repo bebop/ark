@@ -23,7 +23,6 @@ func LoadSQLFile(path string) (string, error) {
 		return "", err
 	}
 	return string(stuff), nil
-
 }
 
 //Easy database connector
@@ -32,26 +31,27 @@ func ConnectDB() (*sqlx.DB, error) {
 	var err error
 	db, err = sqlx.Connect("sqlite3", "./allbasetest.db")
 	if err != nil {
-		err.Error()
+		return db, err
 	}
 	return db, err
 }
 
 //Gets id from compound name if it exists in allbase
-func NameToId(name string) int {
+func NameToId(name string) (int, error) {
 	db, err := ConnectDB()
-	if err != nil {
-		err.Error()
-	}
+
 	var id int
+	if err != nil {
+		return id, err
+	}
 	query := "SELECT id FROM compound WHERE name = ?"
 	err = db.Get(&id, query, name)
 	if err != nil {
 		fmt.Println("Compound not available yet. Improving Alchemy soon.")
-		err.Error()
+		return id, err
 		//whenever there's an error here we need to log desired compounds
 	}
-	return id
+	return id, err
 }
 
 type pathdata struct {
@@ -75,11 +75,11 @@ func GetTotalPathways(target_molecule string, levels int) []pathdata {
 	if err != nil {
 		err.Error()
 	}
-	target_id := NameToId(target_molecule)
+	target_id, _ := NameToId(target_molecule)
 	result := []pathdata{}
 	err = db.Select(&result, query, target_id, levels)
 	if err != nil {
-		err.Error()
+
 	}
 	db.Close()
 	return result
@@ -89,13 +89,13 @@ func GetTotalPathways(target_molecule string, levels int) []pathdata {
 func OrganismFilteredPathways(GBOrganism string, target_molecule string, levels int) []pathdata {
 	query, err := LoadSQLFile("./queries/organism_filtered_pathways.sql")
 	if err != nil {
-		err.Error()
+		// add proper error handling here.
 	}
 	db, err := ConnectDB()
 	if err != nil {
-		err.Error()
+		// add proper error handling here.
 	}
-	target_id := NameToId(target_molecule)
+	target_id, _ := NameToId(target_molecule)
 	result := []pathdata{}
 	err = db.Select(&result, query, GBOrganism, target_id, levels)
 	if err != nil {
