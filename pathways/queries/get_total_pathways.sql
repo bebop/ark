@@ -1,3 +1,4 @@
+--Authors: Jordan Strasser, David Lambert (SQL Help)
 WITH stitch AS (
 	select a.accession, a.id as rxn_id,
 		b.reactionside,

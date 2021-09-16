@@ -1,6 +1,6 @@
 package pathways
 
-// Authors: Jordan Strasser, David Lambert (SQL Assistance)
+// Authors: Jordan Strasser, (Your_name_here)
 
 import (
 	"io/ioutil"
