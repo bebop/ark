@@ -3,8 +3,8 @@ package pathways
 // Authors: Jordan Strasser, David Lambert (SQL Assistance)
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 
 	"github.com/jmoiron/sqlx"
@@ -37,21 +37,19 @@ func ConnectDB() (*sqlx.DB, error) {
 }
 
 //Gets id from compound name if it exists in allbase
-func NameToId(name string) (int, error) {
+func NameToId(name string) int {
 	db, err := ConnectDB()
-
-	var id int
 	if err != nil {
-		return id, err
+		log.Fatalf("Couldn't connect to DB: %d", err)
 	}
+	var id int
 	query := "SELECT id FROM compound WHERE name = ?"
 	err = db.Get(&id, query, name)
 	if err != nil {
-		fmt.Println("Compound not available yet. Improving Alchemy soon.")
-		return id, err
+		log.Fatalf("Query didn't work, could be SQL query, could be Golang struct: %d", err)
 		//whenever there's an error here we need to log desired compounds
 	}
-	return id, err
+	return id
 }
 
 type pathdata struct {
@@ -69,17 +67,17 @@ that build up a path, which is usually just the most significant reactants and p
 func GetTotalPathways(target_molecule string, levels int) []pathdata {
 	query, err := LoadSQLFile("./queries/get_total_pathways.sql")
 	if err != nil {
-		err.Error()
+		log.Fatalf("Could not load SQL file: %d", err)
 	}
 	db, err := ConnectDB()
 	if err != nil {
-		err.Error()
+		log.Fatalf("Could not connect to DB: %d", err)
 	}
-	target_id, _ := NameToId(target_molecule)
+	target_id := NameToId(target_molecule)
 	result := []pathdata{}
 	err = db.Select(&result, query, target_id, levels)
 	if err != nil {
-
+		log.Fatalf("Could not perform query either because SQL error or Golang struct: %d", err)
 	}
 	db.Close()
 	return result
@@ -89,17 +87,17 @@ func GetTotalPathways(target_molecule string, levels int) []pathdata {
 func OrganismFilteredPathways(GBOrganism string, target_molecule string, levels int) []pathdata {
 	query, err := LoadSQLFile("./queries/organism_filtered_pathways.sql")
 	if err != nil {
-		// add proper error handling here.
+		log.Fatalf("Could not load SQL file: %d", err)
 	}
 	db, err := ConnectDB()
 	if err != nil {
-		// add proper error handling here.
+		log.Fatalf("Could not connect to DB: %d", err)
 	}
-	target_id, _ := NameToId(target_molecule)
+	target_id := NameToId(target_molecule)
 	result := []pathdata{}
 	err = db.Select(&result, query, GBOrganism, target_id, levels)
 	if err != nil {
-		err.Error()
+		log.Fatalf("Could not perform query either because SQL error or Golang struct: %d", err)
 	}
 	db.Close()
 	return result
