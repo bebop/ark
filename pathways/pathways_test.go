@@ -1,25 +1,31 @@
 package pathways
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestGetTotalPathways(t *testing.T) {
 	result := GetTotalPathways("calycosin", 4)
 	if len(result) != 9 {
-		t.Error("Expected: len(result) = 9, Got: ", len(result))
+		t.Error("Expected: len(result) = 9, got: ", len(result))
 	}
 }
 
 func TestNameToId(t *testing.T) {
 	if id := NameToId("XMP"); id != 5036 {
-		t.Error("Expected: 5036, Got: ", id)
+		t.Error("Expected: 5036, got: ", id)
 	}
 }
 
 func TestOrganismFilteredPathways(t *testing.T) {
 	result := OrganismFilteredPathways("CP060121", "XMP", 1)
 	if len(result) != 37 {
-		t.Error("Expected 37 path branches, Got ", len(result))
+		t.Error("Expected 37 path branches, got: ", len(result))
+	}
+}
+
+func TestGetDNA(t *testing.T) {
+	pathways := OrganismFilteredPathways("CP060121", "XMP", 1)
+	DNAseqs := GetDNA(pathways, 1)
+	if len(DNAseqs) != 25 {
+		t.Error("Expected 25 key-value pairs, got: ", len(DNAseqs))
 	}
 }

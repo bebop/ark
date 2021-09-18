@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"path/filepath"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
-
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -56,6 +56,10 @@ type pathdata struct {
 	Rxn_id, Prod_id, Sub_id, Lvl                          int
 	Type1, Prod_name, Type2, Sub_name, Name_path, Id_path string
 }
+type DNA struct {
+	Id int
+	Sequence, Seqhash, Genbank string
+}
 
 /*
 Recursively searches throughout the database and fetches the pathways that lead to your target compound.
@@ -101,4 +105,45 @@ func OrganismFilteredPathways(GBOrganism string, target_molecule string, levels 
 	}
 	db.Close()
 	return result
+}
+/*
+Input is pathway data from OrganismFilteredPathways or GetTotalPathways (if Genbank/Uniprot are complete in allbase)
+and the pathway depth (levels) you want
+Returns a map:
+key = compound path, e.g. "XMP->guanine", which ignores the intermediary steps
+value = list of DNA structs, which contains info about the DNA sequences you need
+to add to an organism for it to do this chemical reaction. An individual DNA struct has Rhea reaction ID,
+gene sequence, gene seqhash, and the genbank ID of the organism from which the gene comes.
+ */
+
+func GetDNA(pathways []pathdata, levels int) map[string][]DNA {
+	RawQuery, err := LoadSQLFile("./queries/DNA_Gen.sql")
+	if err != nil {
+		log.Fatalf("Could not load SQL file: %d", err)
+	}
+	db, err := ConnectDB()
+	if err != nil {
+		log.Fatalf("Could not connect to DB: %d", err)
+	}
+	PathwayToDNA := make(map[string][]DNA)
+
+	for _, pathway := range pathways {
+		if pathway.Lvl == levels {
+			IdList := strings.Split(pathway.Id_path, ",")
+			query, args, err := sqlx.In(RawQuery, IdList)
+			if err != nil {
+				log.Fatalf("Sqlx.In() did not work properly: %d", err)
+			}
+			result := []DNA{}
+			query = db.Rebind(query)
+			err = db.Select(&result, query, args...)
+			if err != nil {
+				log.Fatalf("DNA parts could not be processed because of SQL or Golang struct: %d", err)
+			}
+			compounds := strings.Split(pathway.Name_path, ",")
+			newString := compounds[0] + "->" + compounds[len(compounds)-1]
+			PathwayToDNA[newString] = result
+		}
+	}
+	return PathwayToDNA
 }
