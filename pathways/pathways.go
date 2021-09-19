@@ -57,7 +57,7 @@ type pathdata struct {
 	Type1, Prod_name, Type2, Sub_name, Name_path, Id_path string
 }
 type DNA struct {
-	Id int
+	Id                         int
 	Sequence, Seqhash, Genbank string
 }
 
@@ -106,6 +106,7 @@ func OrganismFilteredPathways(GBOrganism string, target_molecule string, levels 
 	db.Close()
 	return result
 }
+
 /*
 Input is pathway data from OrganismFilteredPathways or GetTotalPathways (if Genbank/Uniprot are complete in allbase)
 and the pathway depth (levels) you want
@@ -114,7 +115,7 @@ key = compound path, e.g. "XMP->guanine", which ignores the intermediary steps
 value = list of DNA structs, which contains info about the DNA sequences you need
 to add to an organism for it to do this chemical reaction. An individual DNA struct has Rhea reaction ID,
 gene sequence, gene seqhash, and the genbank ID of the organism from which the gene comes.
- */
+*/
 
 func GetDNA(pathways []pathdata, levels int) map[string][]DNA {
 	RawQuery, err := LoadSQLFile("./queries/DNA_Gen.sql")
