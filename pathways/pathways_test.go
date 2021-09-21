@@ -1,8 +1,7 @@
 package pathways
 
 import (
-	 "testing"
-
+	"testing"
 )
 
 func TestLoadSQLFile(t *testing.T) {
@@ -26,8 +25,8 @@ func TestGetTotalPathways(t *testing.T) {
 	}
 	_, err = GetTotalPathways("NotAvail", 4)
 	if err == nil {
-	 		t.Error("Error check not working for unavail compounds")
-		}
+		t.Error("Error check not working for unavail compounds")
+	}
 
 }
 
@@ -36,11 +35,11 @@ func TestNameToId(t *testing.T) {
 		t.Error("Expected: 5036, got: ", err)
 	}
 	_, err := NameToId("NotThere")
-		if err == nil {
-			t.Error("Error checker is not working for NameToID")
-		}
-
+	if err == nil {
+		t.Error("Error checker is not working for NameToID")
 	}
+
+}
 
 func TestOrganismFilteredPathways(t *testing.T) {
 	result, err := OrganismFilteredPathways("CP060121", "XMP", 1)
@@ -49,8 +48,8 @@ func TestOrganismFilteredPathways(t *testing.T) {
 	}
 	//intentionally broken. having GBOrganism not there doesn't actually throw an error, just an empty list
 	result, err = OrganismFilteredPathways("NotThere", "XMP", 1)
-	if len(result) != 0  {
-		t.Error("Error check failed for broken GB Organism ID" )
+	if len(result) != 0 {
+		t.Error("Error check failed for broken GB Organism ID")
 	}
 	//intentionally broken
 	_, err = OrganismFilteredPathways("CP060121", "NotThere", 1)
