@@ -22,7 +22,7 @@ func LoadSQLFile(path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(stuff), nil
+	return string(stuff), err
 }
 
 //Easy database connector
@@ -37,7 +37,7 @@ func ConnectDB() (*sqlx.DB, error) {
 }
 
 //Gets id from compound name if it exists in allbase
-func NameToId(name string) int {
+func NameToId(name string) (int, error) {
 	db, err := ConnectDB()
 	if err != nil {
 		log.Fatalf("Couldn't connect to DB: %d", err)
@@ -46,10 +46,10 @@ func NameToId(name string) int {
 	query := "SELECT id FROM compound WHERE name = ?"
 	err = db.Get(&id, query, name)
 	if err != nil {
-		log.Fatalf("Query didn't work, could be SQL query, could be Golang struct: %d", err)
+		return 0, err
 		//whenever there's an error here we need to log desired compounds
 	}
-	return id
+	return id, err
 }
 
 type pathdata struct {
@@ -68,43 +68,49 @@ but once we start including things like NADPH, ATP, H2O, we step into combinator
 id_path shows you the chain of equations starting from the top, and path shows you the actual compoounds
 that build up a path, which is usually just the most significant reactants and products.
 */
-func GetTotalPathways(target_molecule string, levels int) []pathdata {
+func GetTotalPathways(target_molecule string, levels int) ([]pathdata, error) {
 	query, err := LoadSQLFile("./queries/get_total_pathways.sql")
 	if err != nil {
-		log.Fatalf("Could not load SQL file: %d", err)
+		return nil, err
 	}
 	db, err := ConnectDB()
 	if err != nil {
-		log.Fatalf("Could not connect to DB: %d", err)
+		return nil, err
 	}
-	target_id := NameToId(target_molecule)
+	target_id, err := NameToId(target_molecule)
+	if err != nil {
+		return nil, err
+	}
 	result := []pathdata{}
 	err = db.Select(&result, query, target_id, levels)
 	if err != nil {
-		log.Fatalf("Could not perform query either because SQL error or Golang struct: %d", err)
+		return result, err
 	}
 	db.Close()
-	return result
+	return result, err
 }
 
 //GetTotalPathways but limited to a single organism
-func OrganismFilteredPathways(GBOrganism string, target_molecule string, levels int) []pathdata {
+func OrganismFilteredPathways(GBOrganism string, target_molecule string, levels int) ([]pathdata, error) {
 	query, err := LoadSQLFile("./queries/organism_filtered_pathways.sql")
 	if err != nil {
-		log.Fatalf("Could not load SQL file: %d", err)
+		return nil, err
 	}
 	db, err := ConnectDB()
 	if err != nil {
-		log.Fatalf("Could not connect to DB: %d", err)
+		return nil, err
 	}
-	target_id := NameToId(target_molecule)
+	target_id, err := NameToId(target_molecule)
+	if err != nil {
+		return nil, err
+	}
 	result := []pathdata{}
 	err = db.Select(&result, query, GBOrganism, target_id, levels)
 	if err != nil {
-		log.Fatalf("Could not perform query either because SQL error or Golang struct: %d", err)
+		return result, err
 	}
 	db.Close()
-	return result
+	return result, err
 }
 
 /*
@@ -117,14 +123,14 @@ to add to an organism for it to do this chemical reaction. An individual DNA str
 gene sequence, gene seqhash, and the genbank ID of the organism from which the gene comes.
 */
 
-func GetDNA(pathways []pathdata, levels int) map[string][]DNA {
+func GetDNA(pathways []pathdata, levels int) (map[string][]DNA, error) {
 	RawQuery, err := LoadSQLFile("./queries/DNA_Gen.sql")
 	if err != nil {
-		log.Fatalf("Could not load SQL file: %d", err)
+		return nil, err
 	}
 	db, err := ConnectDB()
 	if err != nil {
-		log.Fatalf("Could not connect to DB: %d", err)
+		return nil, err
 	}
 	PathwayToDNA := make(map[string][]DNA)
 
@@ -133,18 +139,18 @@ func GetDNA(pathways []pathdata, levels int) map[string][]DNA {
 			IdList := strings.Split(pathway.Id_path, ",")
 			query, args, err := sqlx.In(RawQuery, IdList)
 			if err != nil {
-				log.Fatalf("Sqlx.In() did not work properly: %d", err)
+				return PathwayToDNA, err
 			}
 			result := []DNA{}
 			query = db.Rebind(query)
 			err = db.Select(&result, query, args...)
 			if err != nil {
-				log.Fatalf("DNA parts could not be processed because of SQL or Golang struct: %d", err)
+				return PathwayToDNA, err
 			}
 			compounds := strings.Split(pathway.Name_path, ",")
 			newString := compounds[0] + "->" + compounds[len(compounds)-1]
 			PathwayToDNA[newString] = result
 		}
 	}
-	return PathwayToDNA
+	return PathwayToDNA, err
 }
