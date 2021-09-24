@@ -12,7 +12,7 @@ var rhea Rhea
 
 func TestMain(m *testing.M) {
 	var err error
-	rhea, err = Read("data/rhea_mini.rdf.gz")
+	rhea, err = Read("data/rhea.rdf.gz")
 	if err != nil {
 		log.Fatalf("Failed to read rhea: %v", err)
 	}

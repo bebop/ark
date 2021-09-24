@@ -265,7 +265,7 @@ func Parse(rheaBytes []byte) (Rhea, error) {
 
 		for _, subclass := range description.Subclass {
 			switch subclass.Resource {
-			case "http://rdf.rhea-db.org/BidirectionalReaction", "http://rdf.rhea-db.org/DirectionalReaction":
+			case "http://rdf.rhea-db.org/Reaction", "http://rdf.rhea-db.org/BidirectionalReaction", "http://rdf.rhea-db.org/DirectionalReaction":
 				newReaction := NewReaction(description, subclass)
 				rhea.Reactions = append(rhea.Reactions, newReaction)
 			case "http://rdf.rhea-db.org/SmallMolecule", "http://rdf.rhea-db.org/Polymer":
