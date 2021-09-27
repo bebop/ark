@@ -15,7 +15,6 @@ func TestLoadSQLFile(t *testing.T) {
 	if err == nil {
 		t.Error("Error check not working")
 	}
-
 }
 
 func TestGetTotalPathways(t *testing.T) {
@@ -27,9 +26,7 @@ func TestGetTotalPathways(t *testing.T) {
 	if err == nil {
 		t.Error("Error check not working for unavail compounds")
 	}
-
 }
-
 func TestNameToId(t *testing.T) {
 	if id, err := NameToId("XMP"); id != 5036 {
 		t.Error("Expected: 5036, got: ", err)
@@ -38,16 +35,14 @@ func TestNameToId(t *testing.T) {
 	if err == nil {
 		t.Error("Error checker is not working for NameToID")
 	}
-
 }
-
 func TestOrganismFilteredPathways(t *testing.T) {
 	result, err := OrganismFilteredPathways("CP060121", "XMP", 1)
 	if len(result) != 37 {
 		t.Error("Expected 37 path branches, got: ", len(result), err)
 	}
 	//intentionally broken. having GBOrganism not there doesn't actually throw an error, just an empty list
-	result, err = OrganismFilteredPathways("NotThere", "XMP", 1)
+	result, _ = OrganismFilteredPathways("NotThere", "XMP", 1)
 	if len(result) != 0 {
 		t.Error("Error check failed for broken GB Organism ID")
 	}
@@ -57,7 +52,6 @@ func TestOrganismFilteredPathways(t *testing.T) {
 		t.Error("Error check failed for broken target molecule")
 	}
 }
-
 func TestGetDNA(t *testing.T) {
 	pathways, _ := OrganismFilteredPathways("CP060121", "XMP", 1)
 	DNAseqs, err := GetDNA(pathways, 1)
