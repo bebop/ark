@@ -11,7 +11,7 @@ import (
 	"github.com/TimothyStiles/poly"
 	"github.com/TimothyStiles/poly/io/uniprot"
 	"github.com/TimothyStiles/poly/seqhash"
-	"github.com/allyourbasepair/allbase/rhea"
+	"github.com/allyourbasepair/allbase/pkg/rhea"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
 )
