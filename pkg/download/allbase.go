@@ -15,14 +15,8 @@ func Allbase() {
 	// I suppose it may be of some use to report when go routines are finished for the user's sake but that isn't a priority for
 	// this pull request.
 
-	// get Rhea - relatively small.
-	go File("https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz", writePath)
-
-	// get Rhea to curated uniprot mappings - relatively small.
-	go File("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_sprot.tsv", writePath)
-
-	// get Rhea to chaotic uniprot mappings - larger than sprot but still relatively small.
-	go File("https://ftp.expasy.org/databases/rhea/tsv/rhea2uniprot_trembl.tsv.gz", writePath)
+	// get Rhea - ~300MB total.
+	go Rhea(writePath)
 
 	// get CHEMBL Sqlite file - ~300MB compressed.
 	go Chembl(writePath)
