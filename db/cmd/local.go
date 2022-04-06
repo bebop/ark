@@ -9,7 +9,7 @@ import (
 	"github.com/TimothyStiles/poly/io/genbank"
 	"github.com/TimothyStiles/poly/io/uniprot"
 	"github.com/allyourbasepair/allbase/models"
-	"github.com/allyourbasepair/allbase/rhea"
+	"github.com/allyourbasepair/allbase/pkg/rhea"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 )
