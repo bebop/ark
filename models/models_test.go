@@ -110,7 +110,7 @@ func TestMain(m *testing.M) {
 
 func TestUniprotInsert(t *testing.T) {
 	// First, test Rhea insert. We need both to test uniprot2rhea
-	rhea, err := rhea.Read("../rhea/data/rhea_mini.rdf.gz")
+	rhea, err := rhea.Read("../data/rhea/rhea_mini.rdf.gz")
 	if err != nil {
 		log.Fatalf("Could not read rhea: %s", err)
 	}
