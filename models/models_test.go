@@ -5,6 +5,7 @@ import (
 	//"fmt"
 	"io/ioutil"
 	"log"
+
 	//"net/http"
 	"os"
 	"path/filepath"
@@ -13,13 +14,14 @@ import (
 
 	"github.com/TimothyStiles/poly/io/genbank"
 	"github.com/jmoiron/sqlx"
+
 	//"github.com/minio/minio-go/v7"
 	//"github.com/minio/minio-go/v7/pkg/credentials"
 	//"github.com/ory/dockertest/v3"
 	//dc "github.com/ory/dockertest/v3/docker"
 
 	"github.com/TimothyStiles/poly/io/uniprot"
-	"github.com/allyourbasepair/allbase/rhea"
+	"github.com/allyourbasepair/allbase/pkg/rhea"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -108,7 +110,7 @@ func TestMain(m *testing.M) {
 
 func TestUniprotInsert(t *testing.T) {
 	// First, test Rhea insert. We need both to test uniprot2rhea
-	rhea, err := rhea.Read("../rhea/data/rhea_mini.rdf.gz")
+	rhea, err := rhea.Read("../data/rhea/rhea_mini.rdf.gz")
 	if err != nil {
 		log.Fatalf("Could not read rhea: %s", err)
 	}
