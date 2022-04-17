@@ -21,9 +21,9 @@ When completed allbase will have:
 * [ ] Improved data streaming. Currently allbase downloads THEN inserts.
 * [ ] REST API endpoints to:
   * [ ] Query for metabolic pathways:
-    * [x] Breadth first search.
-    * [ ] Depth first search.
-    * [ ] A* search.
+    * [x] Breadth first search
+    * [ ] Depth first search
+    * [ ] A* search
   * [ ] Query for sequences across genbank and uniprot:
     * [ ] Super fast search using seqhash indentifiers.
     * [ ] Alignment (will be implemented in Poly).
