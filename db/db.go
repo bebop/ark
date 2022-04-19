@@ -55,6 +55,11 @@ type Config struct {
 	SSL bool
 }
 
+type query struct {
+	language string
+	query    string
+}
+
 // Pathway stores metabolic pathway and reaction information.
 type Pathway struct {
 	// ID is the pathway ID.
