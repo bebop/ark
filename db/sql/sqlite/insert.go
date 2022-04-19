@@ -13,6 +13,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// BuildSQL builds an sqlite database from the allbase base data sources.
 func BuildSQL() {
 	// TODO: Check to see if the database already exists. Tells the user to run clean if they want a new install.
 	if _, err := os.Stat("allbase.db"); !os.IsNotExist(err) {
