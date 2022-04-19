@@ -16,6 +16,7 @@ import (
 	"github.com/jmoiron/sqlx/types"
 )
 
+// why is this exported? errrrr.
 var Schema = `
 PRAGMA journal_mode=WAL;
 PRAGMA foreign_keys = ON;
