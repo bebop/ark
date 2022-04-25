@@ -1,5 +1,10 @@
 package db
 
+import (
+	"net/http"
+	"time"
+)
+
 // Database is an interface that all database backends should implement.
 type Database interface {
 
@@ -25,10 +30,17 @@ type Database interface {
 	Delete(key string) error
 
 	// Query returns a list of key/value pairs for the given query.
-	Query(query string) ([]map[string]string, error)
+	Query(query Query) ([]map[string]string, error)
 
 	// Close closes the database.
 	Close() error
+}
+
+type Query struct {
+	query    string
+	language string // consider making a query language interface?
+	date     time.Time
+	response http.Response
 }
 
 // Config is the configuration for a database.
@@ -55,11 +67,6 @@ type Config struct {
 	SSL bool
 }
 
-type query struct {
-	language string
-	query    string
-}
-
 // Pathway stores metabolic pathway and reaction information.
 type Pathway struct {
 	// ID is the pathway ID.
@@ -75,24 +82,12 @@ type Pathway struct {
 	Reactions []Reaction
 }
 
-// DNA stores DNA sequence information.
-type DNA struct {
+// Sequence interface that all stores sequences must satisfy
+type Sequence interface {
+	// GetHash
+	// GetSequence
 }
 
 // Protein stores protein sequence information.
 type Protein struct {
-}
-
-// Reaction stores information about a chemical reaction.
-type Reaction struct {
-	// ID is the reaction ID.
-	ID         string
-	Upstream   *Reagent
-	Downstream *Reagent
-}
-
-// Reagent stores information about a chemical reagent.
-type Reagent struct {
-	// ID is the reagent ID.
-	ID string
 }
