@@ -27,15 +27,16 @@ type Database interface {
 	// Set(key, value string) error
 
 	// Delete removes the value for the given key.
-	Delete(key string) error
+	// Delete(key string) error
 
-	// Query returns a list of key/value pairs for the given query.
-	Query(query Query) ([]map[string]string, error)
+	// Query returns a Query struct containing an http.Response struct and accompanying metadata
+	Query(query *Query) error
 
 	// Close closes the database.
 	Close() error
 }
 
+// Query is a struct containing the query to be executed and the response to be returned.
 type Query struct {
 	query    string
 	language string // consider making a query language interface?
@@ -43,7 +44,7 @@ type Query struct {
 	response http.Response
 }
 
-// Config is the configuration for a database.
+// Config is a struct containing a database configuration.
 type Config struct {
 	// Driver is the database driver.
 	Driver string
@@ -79,15 +80,11 @@ type Pathway struct {
 	Description string
 
 	// Reactions is a list of reactions in the pathway.
-	Reactions []Reaction
+	// Reactions []Reaction
 }
 
 // Sequence interface that all stores sequences must satisfy
 type Sequence interface {
 	// GetHash
 	// GetSequence
-}
-
-// Protein stores protein sequence information.
-type Protein struct {
 }
