@@ -93,21 +93,21 @@ type ReactionParticipant struct {
 // Reaction represents a Rhea reaction. Substrates, Products, and SubstrateOrProducts are all ReactionSide accession
 // numbers, which can be linked to the ReactionParticipant's ReactionSide accession
 type Reaction struct {
-	ID                   int      `json:"id" db:"id"`
-	Directional          bool     `json:"directional" db:"directional"`
-	Accession            string   `json:"accession" db:"accession"`
-	Status               string   `json:"status" db:"status"`
-	Comment              string   `json:"comment" db:"comment"`
-	Equation             string   `json:"equation" db:"equation"`
-	HTMLEquation         string   `json:"htmlequation" db:"htmlequation"`
-	IsChemicallyBalanced bool     `json:"ischemicallybalanced" db:"ischemicallybalanced"`
-	IsTransport          bool     `json:"istransport" db:"istransport"`
-	Ec                   string   `json:"ec" db:"ec"`
-	Location             string   `json:"location" db:"location"`
-	Citations            []string `json:"citations"`
-	Substrates           []string `json:"substrates"`
-	Products             []string `json:"products"`
-	SubstrateOrProducts  []string `json:"substrateOrProducts"`
+	ID                         int      `json:"id" db:"id"`
+	Directional                bool     `json:"directional" db:"directional"`
+	Accession                  string   `json:"accession" db:"accession"`
+	Status                     string   `json:"status" db:"status"`
+	Comment                    string   `json:"comment" db:"comment"`
+	Equation                   string   `json:"equation" db:"equation"`
+	HTMLEquation               string   `json:"htmlequation" db:"htmlequation"`
+	IsChemicallyBalanced       bool     `json:"ischemicallybalanced" db:"ischemicallybalanced"`
+	IsTransport                bool     `json:"istransport" db:"istransport"`
+	EnzymeClassificationNumber string   `json:"ec" db:"ec"`
+	Location                   string   `json:"location" db:"location"`
+	Citations                  []string `json:"citations"`
+	Substrates                 []string `json:"substrates"`
+	Products                   []string `json:"products"`
+	SubstrateOrProducts        []string `json:"substrateOrProducts"`
 }
 
 /******************************************************************************
@@ -122,21 +122,21 @@ which contains all of the higher level structs
 // NewReaction returns a Reaction.
 func NewReaction(description Description, subclass Subclass) Reaction {
 	return Reaction{
-		ID:                   description.ID,
-		Directional:          subclass.Resource == "http://rdf.rhea-db.org/DirectionalReaction",
-		Accession:            description.Accession,
-		Status:               description.Status.Resource,
-		Comment:              description.Comment,
-		Equation:             description.Equation,
-		HTMLEquation:         description.HTMLEquation,
-		IsChemicallyBalanced: description.IsChemicallyBalanced,
-		IsTransport:          description.IsTransport,
-		Ec:                   description.EC.Resource,
-		Citations:            description.CitationStrings(),
-		Substrates:           description.SubstrateAccessionIDs(),
-		Products:             description.ProductAccessionIDs(),
-		SubstrateOrProducts:  description.SubstrateOrProductAccessionIDs(),
-		Location:             description.Location.Resource}
+		ID:                         description.ID,
+		Directional:                subclass.Resource == "http://rdf.rhea-db.org/DirectionalReaction",
+		Accession:                  description.Accession,
+		Status:                     description.Status.Resource,
+		Comment:                    description.Comment,
+		Equation:                   description.Equation,
+		HTMLEquation:               description.HTMLEquation,
+		IsChemicallyBalanced:       description.IsChemicallyBalanced,
+		IsTransport:                description.IsTransport,
+		EnzymeClassificationNumber: description.EC.Resource,
+		Citations:                  description.CitationStrings(),
+		Substrates:                 description.SubstrateAccessionIDs(),
+		Products:                   description.ProductAccessionIDs(),
+		SubstrateOrProducts:        description.SubstrateOrProductAccessionIDs(),
+		Location:                   description.Location.Resource}
 }
 
 // NewCompound returns a Compound.
