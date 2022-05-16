@@ -17,29 +17,40 @@ import (
 	"github.com/jmoiron/sqlx/types"
 )
 
-func createSchema() string {
+func createSchema() []string {
 
-	// frequenty used strings in schema definition defined here for convenience
-	// and to avoid typos
+	// note some variables have wonky capitalizations
+	// this is because the SQLite driver is case-sensitive
+	// and we want to be consistent with the rest of the function
+
+	// frequenty used strings in schema definition defined here
+	// for convenience and to avoid typos
 	const (
-		TEXT                    = "TEXT"
-		INTEGER                 = "INTEGER"
-		BOOL                    = "BOOL"
-		NOTNULL                 = "NOT NULL"
-		PRIMARYKEY              = "PRIMARY KEY"
-		DEFAULTFALSE            = "DEFAULT FALSE"
-		DEFAULTTRUE             = "DEFAULT TRUE"
-		SEQHASH                 = "seqhash"
-		ACCESSION               = "accession"
-		REFERENCESEQHASH        = "REFERENCES seqhash(seqhash)"
-		REFERENCECHEBIACCESSION = "REFERENCES chebi(accession)"
-		ID                      = "id"
-		NAME                    = "name"
-		COMPOUND                = "compound"
-		CHEBI                   = "chebi"
-		HTMLNAME                = "htmlname"
-		REACTION                = "reaction"
+		TEXT                       = "TEXT"
+		INTEGER                    = "INTEGER"
+		BOOL                       = "BOOL"
+		NOTNULL                    = "NOT NULL"
+		PRIMARYKEY                 = "PRIMARY KEY"
+		DEFAULTFALSE               = "DEFAULT FALSE"
+		DEFAULTTRUE                = "DEFAULT TRUE"
+		SEQHASH                    = "seqhash"
+		ACCESSION                  = "accession"
+		REFERENCESEQHASH           = "REFERENCES seqhash(seqhash)"
+		REFERENCECHEBIACCESSION    = "REFERENCES chebi(accession)"
+		REFERENCECOMPOUNDACCESSION = "REFERENCES compound(accession)"
+		REFERENCEREACTIONACCESSION = "REFERENCES reaction(accession)"
+		ID                         = "id"
+		NAME                       = "name"
+		COMPOUND                   = "compound"
+		CHEBI                      = "chebi"
+		HTMLNAME                   = "htmlname"
+		REACTION                   = "reaction"
+		REACTIONSIDE               = "reactionside"
+		UNIPROT                    = "uniprot"
 	)
+
+	// each built string will be appended to this slice and returned at the end of the function
+	var tableStringSlice []string
 
 	// create seqhash table
 	seqhash := sqlbuilder.NewCreateTableBuilder()
@@ -50,8 +61,8 @@ func createSchema() string {
 	seqhash.Define("doublestranded", INTEGER, NOTNULL, DEFAULTTRUE)
 	seqhash.Define("seqhashtype", TEXT, NOTNULL, "CHECK (seqhashtype IN ('DNA', 'RNA', 'PROTEIN'))")
 	seqhash.Define("translations", TEXT, REFERENCESEQHASH)
-	seqhashTableString, args := seqhash.Build()
-	fmt.Println(seqhashTableString, args)
+	seqhashTableString, _ := seqhash.Build()
+	tableStringSlice = append(tableStringSlice, seqhashTableString)
 	// "CREATE TABLE IF NOT EXISTS seqhash (seqhash TEXT NOT NULL PRIMARY KEY, sequence TEXT NOT NULL, circular INTEGER NOT NULL DEFAULT FALSE, doublestranded INTEGER NOT NULL DEFAULT TRUE, seqhashtype TEXT NOT NULL CHECK (seqhashtype IN ('DNA', 'RNA', 'PROTEIN')), translations TEXT REFERENCES seqhash(seqhash))"
 
 	// create genbank table
@@ -59,21 +70,25 @@ func createSchema() string {
 	genbank.CreateTable("genbank").IfNotExists()
 	genbank.Define(ACCESSION, TEXT, PRIMARYKEY)
 	genbank.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
-	genbankTableString, args := genbank.Build()
-	fmt.Println(genbankTableString, args)
+	genbankTableString, _ := genbank.Build()
+	tableStringSlice = append(tableStringSlice, genbankTableString)
 
 	// create genbank features table
 	genbankfeatures := sqlbuilder.NewCreateTableBuilder()
 	genbankfeatures.CreateTable("genbankfeatures").IfNotExists()
 	genbankfeatures.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
 	genbankfeatures.Define(ACCESSION, TEXT, NOTNULL, "REFERENCES genbank(accession)")
+	genbankfeaturesTableString, _ := genbankfeatures.Build()
+	tableStringSlice = append(tableStringSlice, genbankfeaturesTableString)
 
 	// create uniprot table
 	uniprot := sqlbuilder.NewCreateTableBuilder()
-	uniprot.CreateTable("uniprot").IfNotExists()
+	uniprot.CreateTable(UNIPROT).IfNotExists()
 	uniprot.Define(ACCESSION, TEXT, PRIMARYKEY)
 	uniprot.Define("database", TEXT, NOTNULL)
 	uniprot.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
+	uniprotTableString, _ := uniprot.Build()
+	tableStringSlice = append(tableStringSlice, uniprotTableString)
 
 	//*** create rhea tables ***//
 
@@ -82,6 +97,8 @@ func createSchema() string {
 	chebi.CreateTable(CHEBI).IfNotExists()
 	chebi.Define(ACCESSION, TEXT, PRIMARYKEY)
 	chebi.Define("subclassof", TEXT, REFERENCECHEBIACCESSION)
+	chebiTableString, _ := chebi.Build()
+	tableStringSlice = append(tableStringSlice, chebiTableString)
 
 	// create compound table
 	compound := sqlbuilder.NewCreateTableBuilder()
@@ -96,6 +113,8 @@ func createSchema() string {
 	compound.Define(CHEBI, TEXT, REFERENCECHEBIACCESSION)
 	compound.Define("polymerizationindex", TEXT)
 	compound.Define("compoundtype", TEXT, NOTNULL, "CHECK(compoundtype IN ('SmallMolecule', 'Polymer', 'GenericPolypeptide', 'GenericPolynucleotide', 'GenericHeteropolysaccharide'))")
+	compoundTableString, _ := compound.Build()
+	tableStringSlice = append(tableStringSlice, compoundTableString)
 
 	// create reactivepart table
 	reactivepart := sqlbuilder.NewCreateTableBuilder()
@@ -104,7 +123,9 @@ func createSchema() string {
 	reactivepart.Define(ACCESSION, TEXT, PRIMARYKEY)
 	reactivepart.Define(NAME, TEXT)
 	reactivepart.Define(HTMLNAME, TEXT)
-	reactivepart.Define(COMPOUND, TEXT, NOTNULL, "REFERENCES compound(accession)")
+	reactivepart.Define(COMPOUND, TEXT, NOTNULL, REFERENCECOMPOUNDACCESSION)
+	reactivepartTableString, _ := reactivepart.Build()
+	tableStringSlice = append(tableStringSlice, reactivepartTableString)
 
 	// create reaction table
 	reaction := sqlbuilder.NewCreateTableBuilder()
@@ -120,23 +141,45 @@ func createSchema() string {
 	reaction.Define("istransport", BOOL, NOTNULL, DEFAULTFALSE)
 	reaction.Define("ec", TEXT)
 	reaction.Define("location", TEXT)
+	reactionTableString, _ := reaction.Build()
+	tableStringSlice = append(tableStringSlice, reactionTableString)
 
 	// create reactionside table
 	reactionside := sqlbuilder.NewCreateTableBuilder()
-	reactionside.CreateTable("reactionside").IfNotExists()
+	reactionside.CreateTable(REACTIONSIDE).IfNotExists()
 	reactionside.Define(ACCESSION, TEXT, PRIMARYKEY)
+	reactionsideTableString, _ := reactionside.Build()
+	tableStringSlice = append(tableStringSlice, reactionsideTableString)
 
 	// create reactionsidereaction table
 	reactionsidereaction := sqlbuilder.NewCreateTableBuilder()
 	reactionsidereaction.CreateTable("reactionsidereaction").IfNotExists()
-	reactionsidereaction.Define(REACTION, TEXT, NOTNULL, "REFERENCES reaction(accession)")
+	reactionsidereaction.Define(REACTION, TEXT, NOTNULL, REFERENCEREACTIONACCESSION)
+	reactionsidereactionTableString, _ := reactionsidereaction.Build()
+	tableStringSlice = append(tableStringSlice, reactionsidereactionTableString)
 
 	// create reactionparticipant table
+	reactionparticipant := sqlbuilder.NewCreateTableBuilder()
+	reactionparticipant.CreateTable("reactionparticipant").IfNotExists()
+	reactionparticipant.Define(COMPOUND, TEXT, REFERENCECOMPOUNDACCESSION)
+	reactionparticipant.Define(REACTIONSIDE, TEXT, NOTNULL, "REFERENCES reactionside(accession)")
+	reactionparticipant.Define("contains", INTEGER)
+	reactionparticipant.Define("containsn", BOOL, NOTNULL, DEFAULTFALSE)
+	reactionparticipant.Define("minus", BOOL, NOTNULL, DEFAULTFALSE)
+	reactionparticipant.Define("plus", BOOL, NOTNULL, DEFAULTFALSE)
+	reactionparticipantTableString, _ := reactionparticipant.Build()
+	tableStringSlice = append(tableStringSlice, reactionparticipantTableString)
 
 	// create uniprot_to_reaction table
+	uniprotToReaction := sqlbuilder.NewCreateTableBuilder()
+	uniprotToReaction.CreateTable("uniprot_to_reaction").IfNotExists()
+	uniprotToReaction.Define(REACTION, TEXT, REFERENCEREACTIONACCESSION)
+	uniprotToReaction.Define(UNIPROT, TEXT, "REFERENCES uniprot(accession)")
+	uniprotToReactionTableString, _ := uniprotToReaction.Build()
+	tableStringSlice = append(tableStringSlice, uniprotToReactionTableString)
 
-	// return schema as string
-	return ""
+	// return schema as string slice where each element is a table string
+	return tableStringSlice
 }
 
 /******************************************************************************
