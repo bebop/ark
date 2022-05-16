@@ -12,115 +12,132 @@ import (
 	"github.com/TimothyStiles/poly/io/uniprot"
 	"github.com/TimothyStiles/poly/seqhash"
 	"github.com/allyourbasepair/allbase/pkg/rhea"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
 )
 
-var Schema = `
-PRAGMA journal_mode=WAL;
-PRAGMA foreign_keys = ON;
+func createSchema() string {
 
--- Create Seqhash Table --
-CREATE TABLE seqhash (
-	seqhash TEXT PRIMARY KEY,
-	sequence TEXT NOT NULL,
-	circular BOOLEAN NOT NULL DEFAULT FALSE,
-	doublestranded BOOLEAN NOT NULL DEFAULT TRUE,
-	seqhashtype TEXT NOT NULL CHECK (seqhashtype IN ('DNA', 'RNA', 'PROTEIN')),
-	translation TEXT REFERENCES seqhash(seqhash)
-);
+	// frequenty used strings in schema definition defined here for convenience
+	// and to avoid typos
+	const (
+		TEXT                    = "TEXT"
+		INTEGER                 = "INTEGER"
+		BOOL                    = "BOOL"
+		NOTNULL                 = "NOT NULL"
+		PRIMARYKEY              = "PRIMARY KEY"
+		DEFAULTFALSE            = "DEFAULT FALSE"
+		DEFAULTTRUE             = "DEFAULT TRUE"
+		SEQHASH                 = "seqhash"
+		ACCESSION               = "accession"
+		REFERENCESEQHASH        = "REFERENCES seqhash(seqhash)"
+		REFERENCECHEBIACCESSION = "REFERENCES chebi(accession)"
+		ID                      = "id"
+		NAME                    = "name"
+		COMPOUND                = "compound"
+		CHEBI                   = "chebi"
+		HTMLNAME                = "htmlname"
+		REACTION                = "reaction"
+	)
 
--- Create Genbank Table --
-CREATE TABLE genbank (
-	accession TEXT PRIMARY KEY,
-	-- genbankhash TEXT NOT NULL, -- adler32 checksum
-	-- genbank TEXT NOT NULL, 
-	seqhash TEXT NOT NULL REFERENCES seqhash(seqhash)
-);
+	// create seqhash table
+	seqhash := sqlbuilder.NewCreateTableBuilder()
+	seqhash.CreateTable(SEQHASH).IfNotExists()
+	seqhash.Define(SEQHASH, TEXT, NOTNULL, PRIMARYKEY)
+	seqhash.Define("sequence", TEXT, NOTNULL)
+	seqhash.Define("circular", INTEGER, NOTNULL, DEFAULTFALSE)
+	seqhash.Define("doublestranded", INTEGER, NOTNULL, DEFAULTTRUE)
+	seqhash.Define("seqhashtype", TEXT, NOTNULL, "CHECK (seqhashtype IN ('DNA', 'RNA', 'PROTEIN'))")
+	seqhash.Define("translations", TEXT, REFERENCESEQHASH)
+	seqhashTableString, args := seqhash.Build()
+	fmt.Println(seqhashTableString, args)
+	// "CREATE TABLE IF NOT EXISTS seqhash (seqhash TEXT NOT NULL PRIMARY KEY, sequence TEXT NOT NULL, circular INTEGER NOT NULL DEFAULT FALSE, doublestranded INTEGER NOT NULL DEFAULT TRUE, seqhashtype TEXT NOT NULL CHECK (seqhashtype IN ('DNA', 'RNA', 'PROTEIN')), translations TEXT REFERENCES seqhash(seqhash))"
 
--- Create Genbank Features Table --
-CREATE TABLE genbankfeatures (
-	seqhash TEXT NOT NULL REFERENCES seqhash(seqhash),
-	genbank TEXT NOT NULL REFERENCES genbank(accession)
-);
+	// create genbank table
+	genbank := sqlbuilder.NewCreateTableBuilder()
+	genbank.CreateTable("genbank").IfNotExists()
+	genbank.Define(ACCESSION, TEXT, PRIMARYKEY)
+	genbank.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
+	genbankTableString, args := genbank.Build()
+	fmt.Println(genbankTableString, args)
 
--- Create Uniprot Table --
-CREATE TABLE uniprot (
-	accession TEXT PRIMARY KEY,
-	database TEXT NOT NULL,
-	-- uniprothash TEXT NOT NULL, -- adler32 checksum
-	-- uniprot JSON NOT NULL,
-	seqhash TEXT NOT NULL REFERENCES seqhash(seqhash)
-);
+	// create genbank features table
+	genbankfeatures := sqlbuilder.NewCreateTableBuilder()
+	genbankfeatures.CreateTable("genbankfeatures").IfNotExists()
+	genbankfeatures.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
+	genbankfeatures.Define(ACCESSION, TEXT, NOTNULL, "REFERENCES genbank(accession)")
 
--- Rhea
+	// create uniprot table
+	uniprot := sqlbuilder.NewCreateTableBuilder()
+	uniprot.CreateTable("uniprot").IfNotExists()
+	uniprot.Define(ACCESSION, TEXT, PRIMARYKEY)
+	uniprot.Define("database", TEXT, NOTNULL)
+	uniprot.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
 
-CREATE TABLE IF NOT EXISTS chebi (
-        accession TEXT PRIMARY KEY,
-        subclassof TEXT REFERENCES chebi(accession)
-);
+	//*** create rhea tables ***//
 
-CREATE TABLE IF NOT EXISTS compound (
-        id INT NOT NULL,
-        accession TEXT PRIMARY KEY,
-        position TEXT,
-        name TEXT,
-        htmlname TEXT,
-        formula TEXT,
-        charge TEXT,
-        chebi TEXT REFERENCES chebi(accession),
-        polymerizationindex TEXT,
-        compoundtype TEXT NOT NULL CHECK(compoundtype IN ('SmallMolecule', 'Polymer', 'GenericPolypeptide', 'GenericPolynucleotide', 'GenericHeteropolysaccharide'))
-);
+	// create chebi table <- what is chebi @Koeng101? chembl?
+	chebi := sqlbuilder.NewCreateTableBuilder()
+	chebi.CreateTable(CHEBI).IfNotExists()
+	chebi.Define(ACCESSION, TEXT, PRIMARYKEY)
+	chebi.Define("subclassof", TEXT, REFERENCECHEBIACCESSION)
 
-CREATE TABLE IF NOT EXISTS reactivepart (
-        id INT,
-        accession TEXT PRIMARY KEY,
-        name TEXT,
-        htmlname TEXT,
-        compound TEXT NOT NULL REFERENCES compound(accession)
-);
+	// create compound table
+	compound := sqlbuilder.NewCreateTableBuilder()
+	compound.CreateTable(COMPOUND).IfNotExists()
+	compound.Define(ID, INTEGER, NOTNULL)
+	compound.Define(ACCESSION, TEXT, PRIMARYKEY)
+	compound.Define("position", TEXT)
+	compound.Define(NAME, TEXT)
+	compound.Define(HTMLNAME, TEXT)
+	compound.Define("formula", TEXT)
+	compound.Define("charge", TEXT)
+	compound.Define(CHEBI, TEXT, REFERENCECHEBIACCESSION)
+	compound.Define("polymerizationindex", TEXT)
+	compound.Define("compoundtype", TEXT, NOTNULL, "CHECK(compoundtype IN ('SmallMolecule', 'Polymer', 'GenericPolypeptide', 'GenericPolynucleotide', 'GenericHeteropolysaccharide'))")
 
-CREATE TABLE IF NOT EXISTS reaction (
-        id INT,
-        directional BOOL NOT NULL DEFAULT false,
-        accession TEXT PRIMARY KEY,
-        status TEXT,
-        comment TEXT,
-        equation TEXT,
-        htmlequation TEXT,
-        ischemicallybalanced BOOL NOT NULL DEFAULT true,
-        istransport BOOL NOT NULL DEFAULT false,
-        ec TEXT,
-        location TEXT
-);
+	// create reactivepart table
+	reactivepart := sqlbuilder.NewCreateTableBuilder()
+	reactivepart.CreateTable("reactivepart").IfNotExists()
+	reactivepart.Define(ID, INTEGER)
+	reactivepart.Define(ACCESSION, TEXT, PRIMARYKEY)
+	reactivepart.Define(NAME, TEXT)
+	reactivepart.Define(HTMLNAME, TEXT)
+	reactivepart.Define(COMPOUND, TEXT, NOTNULL, "REFERENCES compound(accession)")
 
-CREATE TABLE IF NOT EXISTS reactionside (
-        accession TEXT PRIMARY KEY
-);
+	// create reaction table
+	reaction := sqlbuilder.NewCreateTableBuilder()
+	reaction.CreateTable(REACTION).IfNotExists()
+	reaction.Define(ID, INTEGER)
+	reaction.Define("directional", BOOL, NOTNULL, DEFAULTFALSE)
+	reaction.Define(ACCESSION, TEXT, PRIMARYKEY)
+	reaction.Define("status", TEXT)
+	reaction.Define("comment", TEXT)
+	reaction.Define("equation", TEXT)
+	reaction.Define("htmlequation", TEXT)
+	reaction.Define("ischemicallybalanced", BOOL, NOTNULL, DEFAULTTRUE)
+	reaction.Define("istransport", BOOL, NOTNULL, DEFAULTFALSE)
+	reaction.Define("ec", TEXT)
+	reaction.Define("location", TEXT)
 
-CREATE TABLE IF NOT EXISTS reactionsidereaction (
-        reaction TEXT NOT NULL REFERENCES reaction(accession),
-        reactionside TEXT NOT NULL REFERENCES reactionside(accession),
-        reactionsidereactiontype TEXT NOT NULL CHECK(reactionsidereactiontype IN ('substrateorproduct', 'substrate', 'product'))
-);
+	// create reactionside table
+	reactionside := sqlbuilder.NewCreateTableBuilder()
+	reactionside.CreateTable("reactionside").IfNotExists()
+	reactionside.Define(ACCESSION, TEXT, PRIMARYKEY)
 
-CREATE TABLE IF NOT EXISTS reactionparticipant (
-        compound TEXT REFERENCES compound(accession),
-        reactionside TEXT NOT NULL REFERENCES reactionside(accession),
-        contains INTEGER,
-        containsn BOOL NOT NULL DEFAULT false,
-        minus BOOL NOT NULL DEFAULT false,
-        plus BOOL NOT NULL DEFAULT false
-);
+	// create reactionsidereaction table
+	reactionsidereaction := sqlbuilder.NewCreateTableBuilder()
+	reactionsidereaction.CreateTable("reactionsidereaction").IfNotExists()
+	reactionsidereaction.Define(REACTION, TEXT, NOTNULL, "REFERENCES reaction(accession)")
 
--- Uniprot to reaction
+	// create reactionparticipant table
 
-CREATE TABLE IF NOT EXISTS uniprot_to_reaction (
-        reaction TEXT REFERENCES reaction(accession),
-        uniprot TEXT REFERENCES uniprot(accession)
-);
-`
+	// create uniprot_to_reaction table
+
+	// return schema as string
+	return ""
+}
 
 /******************************************************************************
 
