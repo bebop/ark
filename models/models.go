@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"sync"
@@ -17,7 +18,32 @@ import (
 	"github.com/jmoiron/sqlx/types"
 )
 
-func createSchema() []string {
+func createDatabase(dbPath string) error {
+	if _, err := os.Stat(dbPath); !os.IsNotExist(err) {
+		log.Fatal("Database already exists. Run 'allbase clean' to remove it.")
+	}
+
+	// Begin SQLite
+	log.Println("Creating database...")
+	db, err := sqlx.Open("sqlite3", dbPath)
+
+	if err != nil {
+		log.Fatalf("Failed to open sqlite in %s: %s", dbPath, err)
+	}
+
+	defer db.Close()
+
+	// Execute our schema in memory
+
+	_, err = db.Exec(createSchema())
+	if err != nil {
+		log.Fatalf("Failed to execute schema: %s", err)
+	}
+
+	return nil
+}
+
+func createSchema() string {
 
 	// note some variables have wonky capitalizations
 	// this is because the SQLite driver is case-sensitive
@@ -26,27 +52,28 @@ func createSchema() []string {
 	// frequenty used strings in schema definition defined here
 	// for convenience and to avoid typos
 	const (
-		TEXT                       = "TEXT"
-		INTEGER                    = "INTEGER"
-		BOOL                       = "BOOL"
-		NOTNULL                    = "NOT NULL"
-		PRIMARYKEY                 = "PRIMARY KEY"
-		DEFAULTFALSE               = "DEFAULT FALSE"
-		DEFAULTTRUE                = "DEFAULT TRUE"
-		SEQHASH                    = "seqhash"
-		ACCESSION                  = "accession"
-		REFERENCESEQHASH           = "REFERENCES seqhash(seqhash)"
-		REFERENCECHEBIACCESSION    = "REFERENCES chebi(accession)"
-		REFERENCECOMPOUNDACCESSION = "REFERENCES compound(accession)"
-		REFERENCEREACTIONACCESSION = "REFERENCES reaction(accession)"
-		ID                         = "id"
-		NAME                       = "name"
-		COMPOUND                   = "compound"
-		CHEBI                      = "chebi"
-		HTMLNAME                   = "htmlname"
-		REACTION                   = "reaction"
-		REACTIONSIDE               = "reactionside"
-		UNIPROT                    = "uniprot"
+		TEXT                           = "TEXT"
+		INTEGER                        = "INT"
+		BOOL                           = "BOOL"
+		NOTNULL                        = "NOT NULL"
+		PRIMARYKEY                     = "PRIMARY KEY"
+		DEFAULTFALSE                   = "DEFAULT FALSE"
+		DEFAULTTRUE                    = "DEFAULT TRUE"
+		SEQHASH                        = "seqhash"
+		ACCESSION                      = "accession"
+		REFERENCESEQHASH               = "REFERENCES seqhash(seqhash)"
+		REFERENCECHEBIACCESSION        = "REFERENCES chebi(accession)"
+		REFERENCECOMPOUNDACCESSION     = "REFERENCES compound(accession)"
+		REFERENCEREACTIONACCESSION     = "REFERENCES reaction(accession)"
+		REFERENCEREACTIONSIDEACCESSION = "REFERENCES reactionside(accession)"
+		ID                             = "id"
+		NAME                           = "name"
+		COMPOUND                       = "compound"
+		CHEBI                          = "chebi"
+		HTMLNAME                       = "htmlname"
+		REACTION                       = "reaction"
+		REACTIONSIDE                   = "reactionside"
+		UNIPROT                        = "uniprot"
 	)
 
 	// each built string will be appended to this slice and returned at the end of the function
@@ -155,6 +182,8 @@ func createSchema() []string {
 	reactionsidereaction := sqlbuilder.NewCreateTableBuilder()
 	reactionsidereaction.CreateTable("reactionsidereaction").IfNotExists()
 	reactionsidereaction.Define(REACTION, TEXT, NOTNULL, REFERENCEREACTIONACCESSION)
+	reactionsidereaction.Define(REACTIONSIDE, TEXT, NOTNULL, REFERENCEREACTIONSIDEACCESSION)
+	reactionsidereaction.Define("reactionsidereactiontype", TEXT, NOTNULL, "CHECK(reactionsidereactiontype IN ('substrateorproduct', 'substrate', 'product'))")
 	reactionsidereactionTableString, _ := reactionsidereaction.Build()
 	tableStringSlice = append(tableStringSlice, reactionsidereactionTableString)
 
@@ -162,7 +191,7 @@ func createSchema() []string {
 	reactionparticipant := sqlbuilder.NewCreateTableBuilder()
 	reactionparticipant.CreateTable("reactionparticipant").IfNotExists()
 	reactionparticipant.Define(COMPOUND, TEXT, REFERENCECOMPOUNDACCESSION)
-	reactionparticipant.Define(REACTIONSIDE, TEXT, NOTNULL, "REFERENCES reactionside(accession)")
+	reactionparticipant.Define(REACTIONSIDE, TEXT, NOTNULL, REFERENCEREACTIONSIDEACCESSION)
 	reactionparticipant.Define("contains", INTEGER)
 	reactionparticipant.Define("containsn", BOOL, NOTNULL, DEFAULTFALSE)
 	reactionparticipant.Define("minus", BOOL, NOTNULL, DEFAULTFALSE)
@@ -179,7 +208,9 @@ func createSchema() []string {
 	tableStringSlice = append(tableStringSlice, uniprotToReactionTableString)
 
 	// return schema as string slice where each element is a table string
-	return tableStringSlice
+	schema := strings.Join(tableStringSlice, ";\n\n")
+
+	return schema
 }
 
 /******************************************************************************
