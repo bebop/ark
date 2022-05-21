@@ -34,8 +34,7 @@ func createDatabase(dbPath string) error {
 	defer db.Close()
 
 	// Execute our schema in memory
-
-	_, err = db.Exec(createSchema())
+	_, err = db.Exec(CreateSchema())
 	if err != nil {
 		log.Fatalf("Failed to execute schema: %s", err)
 	}
@@ -43,14 +42,16 @@ func createDatabase(dbPath string) error {
 	return nil
 }
 
-func createSchema() string {
+// CreateSchema generates the SQL for the database schema
+func CreateSchema() string {
 
-	// note some variables have wonky capitalizations
-	// this is because the SQLite driver is case-sensitive
-	// and we want to be consistent with the rest of the function
+	// Note:
+	// Some variables have wonky capitalizations.
+	// This is because the SQLite driver is case-sensitive
+	// and we want to be consistent with the rest of the function.
 
-	// frequenty used strings in schema definition defined here
-	// for convenience and to avoid typos
+	// Frequenty used strings in schema definition defined here
+	// for convenience and to avoid typos.
 	const (
 		TEXT                           = "TEXT"
 		INTEGER                        = "INT"
@@ -184,6 +185,7 @@ func createSchema() string {
 	reactionsidereaction.Define(REACTION, TEXT, NOTNULL, REFERENCEREACTIONACCESSION)
 	reactionsidereaction.Define(REACTIONSIDE, TEXT, NOTNULL, REFERENCEREACTIONSIDEACCESSION)
 	reactionsidereaction.Define("reactionsidereactiontype", TEXT, NOTNULL, "CHECK(reactionsidereactiontype IN ('substrateorproduct', 'substrate', 'product'))")
+	reactionsidereaction.Define("PRIMARY KEY(", REACTION, ", ", REACTIONSIDE, ")")
 	reactionsidereactionTableString, _ := reactionsidereaction.Build()
 	tableStringSlice = append(tableStringSlice, reactionsidereactionTableString)
 
@@ -196,6 +198,7 @@ func createSchema() string {
 	reactionparticipant.Define("containsn", BOOL, NOTNULL, DEFAULTFALSE)
 	reactionparticipant.Define("minus", BOOL, NOTNULL, DEFAULTFALSE)
 	reactionparticipant.Define("plus", BOOL, NOTNULL, DEFAULTFALSE)
+	reactionparticipant.Define("PRIMARY KEY(", COMPOUND, ", ", REACTIONSIDE, ")")
 	reactionparticipantTableString, _ := reactionparticipant.Build()
 	tableStringSlice = append(tableStringSlice, reactionparticipantTableString)
 
@@ -204,6 +207,7 @@ func createSchema() string {
 	uniprotToReaction.CreateTable("uniprot_to_reaction").IfNotExists()
 	uniprotToReaction.Define(REACTION, TEXT, REFERENCEREACTIONACCESSION)
 	uniprotToReaction.Define(UNIPROT, TEXT, "REFERENCES uniprot(accession)")
+	uniprotToReaction.Define("PRIMARY KEY(", REACTION, ", ", UNIPROT, ")")
 	uniprotToReactionTableString, _ := uniprotToReaction.Build()
 	tableStringSlice = append(tableStringSlice, uniprotToReactionTableString)
 

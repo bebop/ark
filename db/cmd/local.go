@@ -36,7 +36,7 @@ func local() {
 	}
 
 	// Execute our schema in memory
-	_, err = db.Exec(models.Schema)
+	_, err = db.Exec(models.CreateSchema())
 	if err != nil {
 		log.Fatalf("Failed to execute schema: %s", err)
 	}

@@ -135,8 +135,16 @@ CREATE TABLE IF NOT EXISTS uniprot_to_reaction (
 );
 `
 
+func TestCreateDabase(t *testing.T) {
+	err := createDatabase("../data/test.db")
+	if err != nil {
+		log.Fatalf("Failed on error during database creation: %s", err)
+	}
+	// cleanup database
+	os.Remove("../data/test.db")
+}
 func TestCreateSchema(t *testing.T) {
-	schema := createSchema()
+	schema := CreateSchema()
 	if schema != Schema {
 		log.Fatalf("Failed on error during schema creation")
 	}
@@ -205,7 +213,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Execute our schema in memory
-	_, err = db.Exec(Schema)
+	_, err = db.Exec(CreateSchema())
 	if err != nil {
 		log.Fatalf("Failed to execute schema: %s", err)
 	}
