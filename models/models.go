@@ -88,7 +88,7 @@ func CreateSchema() string {
 	seqhash.Define("circular", INTEGER, NOTNULL, DEFAULTFALSE)
 	seqhash.Define("doublestranded", INTEGER, NOTNULL, DEFAULTTRUE)
 	seqhash.Define("seqhashtype", TEXT, NOTNULL, "CHECK (seqhashtype IN ('DNA', 'RNA', 'PROTEIN'))")
-	seqhash.Define("translations", TEXT, REFERENCESEQHASH)
+	seqhash.Define("translation", TEXT, REFERENCESEQHASH)
 	seqhashTableString, _ := seqhash.Build()
 	tableStringSlice = append(tableStringSlice, seqhashTableString)
 	// "CREATE TABLE IF NOT EXISTS seqhash (seqhash TEXT NOT NULL PRIMARY KEY, sequence TEXT NOT NULL, circular INTEGER NOT NULL DEFAULT FALSE, doublestranded INTEGER NOT NULL DEFAULT TRUE, seqhashtype TEXT NOT NULL CHECK (seqhashtype IN ('DNA', 'RNA', 'PROTEIN')), translations TEXT REFERENCES seqhash(seqhash))"
@@ -105,7 +105,7 @@ func CreateSchema() string {
 	genbankfeatures := sqlbuilder.NewCreateTableBuilder()
 	genbankfeatures.CreateTable("genbankfeatures").IfNotExists()
 	genbankfeatures.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
-	genbankfeatures.Define(ACCESSION, TEXT, NOTNULL, "REFERENCES genbank(accession)")
+	genbankfeatures.Define("genbank", TEXT, NOTNULL, "REFERENCES genbank(accession)")
 	genbankfeaturesTableString, _ := genbankfeatures.Build()
 	tableStringSlice = append(tableStringSlice, genbankfeaturesTableString)
 
