@@ -1,18 +1,15 @@
-package models
+package schema_test
 
 import (
 	//"context"
 	//"fmt"
-	"io/ioutil"
+
 	"log"
 
 	//"net/http"
 	"os"
-	"path/filepath"
-	"sync"
 	"testing"
 
-	"github.com/TimothyStiles/poly/io/genbank"
 	"github.com/jmoiron/sqlx"
 
 	//"github.com/minio/minio-go/v7"
@@ -20,8 +17,6 @@ import (
 	//"github.com/ory/dockertest/v3"
 	//dc "github.com/ory/dockertest/v3/docker"
 
-	"github.com/TimothyStiles/poly/io/uniprot"
-	"github.com/allyourbasepair/allbase/pkg/rhea"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -120,78 +115,78 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestUniprotInsert(t *testing.T) {
-	// First, test Rhea insert. We need both to test uniprot2rhea
-	rhea, err := rhea.Read("../data/rhea/rhea_mini.rdf.gz")
-	if err != nil {
-		log.Fatalf("Could not read rhea: %s", err)
-	}
+// func TestUniprotInsert(t *testing.T) {
+// 	// First, test Rhea insert. We need both to test uniprot2rhea
+// 	rhea, err := rhea.Read("../data/rhea/rhea_mini.rdf.gz")
+// 	if err != nil {
+// 		log.Fatalf("Could not read rhea: %s", err)
+// 	}
 
-	err = RheaInsert(db, rhea)
-	if err != nil {
-		log.Fatalf("Could not insert rhea: %s", err)
-	}
+// 	err = RheaInsert(db, rhea)
+// 	if err != nil {
+// 		log.Fatalf("Could not insert rhea: %s", err)
+// 	}
 
-	// Then uniprot
-	var wg sync.WaitGroup
-	uniprotSprot, errors, err := uniprot.Read("../data/uniprot_sprot_mini.xml.gz")
-	if err != nil {
-		log.Fatalf("Failed to read uniprot on error: %s", err)
-	}
-	wg.Add(1)
-	go UniprotInsert(db, "sprot", uniprotSprot, errors, &wg)
-	wg.Wait()
+// 	// Then uniprot
+// 	var wg sync.WaitGroup
+// 	uniprotSprot, errors, err := uniprot.Read("../data/uniprot_sprot_mini.xml.gz")
+// 	if err != nil {
+// 		log.Fatalf("Failed to read uniprot on error: %s", err)
+// 	}
+// 	wg.Add(1)
+// 	go UniprotInsert(db, "sprot", uniprotSprot, errors, &wg)
+// 	wg.Wait()
 
-	for err := range errors {
-		if err.Error() != "EOF" {
-			log.Fatalf("Failed on error during uniprot parsing or insertion: %s", err)
-		}
-	}
+// 	for err := range errors {
+// 		if err.Error() != "EOF" {
+// 			log.Fatalf("Failed on error during uniprot parsing or insertion: %s", err)
+// 		}
+// 	}
 
-	// Finally, UniprotToRhea
-	err = RheaTsvInsert(db, "../data/rhea2uniprot_test.tsv.gz", true)
-	if err != nil {
-		log.Fatalf("Failed to insert RheaTsvInsert on: %s", err)
-	}
-}
+// 	// Finally, UniprotToRhea
+// 	err = RheaTsvInsert(db, "../data/rhea2uniprot_test.tsv.gz", true)
+// 	if err != nil {
+// 		log.Fatalf("Failed to insert RheaTsvInsert on: %s", err)
+// 	}
+// }
 
-func TestGenbankInsert(t *testing.T) {
-	sequences := genbank.ReadFlatGz("../data/flatGbk_test.seq.gz")
-	err := GenbankInsert(db, sequences)
-	if err != nil {
-		log.Fatalf("Failed on error during genbank insertion: %s", err)
-	}
-}
+// func TestGenbankInsert(t *testing.T) {
+// 	sequences := genbank.ReadFlatGz("../data/flatGbk_test.seq.gz")
+// 	err := GenbankInsert(db, sequences)
+// 	if err != nil {
+// 		log.Fatalf("Failed on error during genbank insertion: %s", err)
+// 	}
+// }
 
-func TestChemblAttach(t *testing.T) {
-	tmpDataDir, err := ioutil.TempDir("", "data-*")
-	if err != nil {
-		t.Errorf("Failed to create temporary data directory")
-	}
-	defer os.RemoveAll(tmpDataDir)
+// func TestChemblAttach(t *testing.T) {
+// 	tmpDataDir, err := ioutil.TempDir("", "data-*")
+// 	if err != nil {
+// 		t.Errorf("Failed to create temporary data directory")
+// 	}
+// 	defer os.RemoveAll(tmpDataDir)
 
-	tmpChemblFilePath := filepath.Join(tmpDataDir, "chembl.db")
+// 	tmpChemblFilePath := filepath.Join(tmpDataDir, "chembl.db")
 
-	// Read Chembl schema
-	schemaStringBytes, err := ioutil.ReadFile("../data/chembl_schema.sql")
-	if err != nil {
-		t.Errorf("Failed to open chembl schema: %s", err)
-	}
+// 	// Read Chembl schema
+// 	schemaStringBytes, err := ioutil.ReadFile("../data/chembl_schema.sql")
+// 	if err != nil {
+// 		t.Errorf("Failed to open chembl schema: %s", err)
+// 	}
 
-	// Begin SQLite
-	chemblDB, err := sqlx.Open("sqlite3", tmpChemblFilePath)
-	if err != nil {
-		t.Errorf("Failed to open sqlite in %s: %s", tmpChemblFilePath, err)
-	}
+// 	// Begin SQLite
+// 	chemblDB, err := sqlx.Open("sqlite3", tmpChemblFilePath)
+// 	if err != nil {
+// 		t.Errorf("Failed to open sqlite in %s: %s", tmpChemblFilePath, err)
+// 	}
 
-	// Execute our schema in memory
-	_, err = chemblDB.Exec(string(schemaStringBytes))
-	if err != nil {
-		t.Errorf("Failed to execute schema: %s", err)
-	}
+// 	// Execute our schema in memory
+// 	_, err = chemblDB.Exec(string(schemaStringBytes))
+// 	if err != nil {
+// 		t.Errorf("Failed to execute schema: %s", err)
+// 	}
 
-	err = ChemblAttach(db, tmpChemblFilePath)
-	if err != nil {
-		t.Errorf("Failed to attach chembl with error %s", err)
-	}
-}
+// 	err = ChemblAttach(db, tmpChemblFilePath)
+// 	if err != nil {
+// 		t.Errorf("Failed to attach chembl with error %s", err)
+// 	}
+// }
