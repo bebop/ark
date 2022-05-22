@@ -31,11 +31,14 @@ var db *sqlx.DB
 
 func TestCreateDatabase(t *testing.T) {
 	err := createDatabase("../data/test.db")
+
+	// cleanup database
+	defer os.Remove("../data/test.db")
+
 	if err != nil {
 		log.Fatalf("Failed on error during database creation: %s", err)
 	}
-	// cleanup database
-	os.Remove("../data/test.db")
+
 }
 
 func TestMain(m *testing.M) {

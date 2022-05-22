@@ -62,6 +62,7 @@ func CreateSchema() string {
 		DEFAULTTRUE                    = "DEFAULT TRUE"
 		SEQHASH                        = "seqhash"
 		ACCESSION                      = "accession"
+		GENBANK                        = "genbank"
 		REFERENCESEQHASH               = "REFERENCES seqhash(seqhash)"
 		REFERENCECHEBIACCESSION        = "REFERENCES chebi(accession)"
 		REFERENCECOMPOUNDACCESSION     = "REFERENCES compound(accession)"
@@ -95,7 +96,7 @@ func CreateSchema() string {
 
 	// create genbank table
 	genbank := sqlbuilder.NewCreateTableBuilder()
-	genbank.CreateTable("genbank").IfNotExists()
+	genbank.CreateTable(GENBANK).IfNotExists()
 	genbank.Define(ACCESSION, TEXT, PRIMARYKEY)
 	genbank.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
 	genbankTableString, _ := genbank.Build()
@@ -105,7 +106,7 @@ func CreateSchema() string {
 	genbankfeatures := sqlbuilder.NewCreateTableBuilder()
 	genbankfeatures.CreateTable("genbankfeatures").IfNotExists()
 	genbankfeatures.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
-	genbankfeatures.Define("genbank", TEXT, NOTNULL, "REFERENCES genbank(accession)")
+	genbankfeatures.Define(GENBANK, TEXT, NOTNULL, "REFERENCES genbank(accession)")
 	genbankfeaturesTableString, _ := genbankfeatures.Build()
 	tableStringSlice = append(tableStringSlice, genbankfeaturesTableString)
 
