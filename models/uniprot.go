@@ -557,7 +557,7 @@ func (uniprotL) LoadReactions(ctx context.Context, e boil.ContextExecutor, singu
 	}
 
 	query := NewQuery(
-		qm.Select("\"reaction\".\"id\", \"reaction\".\"directional\", \"reaction\".\"accession\", \"reaction\".\"status\", \"reaction\".\"comment\", \"reaction\".\"equation\", \"reaction\".\"htmlequation\", \"reaction\".\"ischemicallybalanced\", \"reaction\".\"istransport\", \"reaction\".\"ec\", \"reaction\".\"location\", \"a\".\"uniprot\""),
+		qm.Select("\"reaction\".\"id\", \"reaction\".\"directional\", \"reaction\".\"accession\", \"reaction\".\"status\", \"reaction\".\"comment\", \"reaction\".\"equation\", \"reaction\".\"html_equation\", \"reaction\".\"is_chemically_balanced\", \"reaction\".\"is_transport\", \"reaction\".\"ec\", \"reaction\".\"location\", \"a\".\"uniprot\""),
 		qm.From("\"reaction\""),
 		qm.InnerJoin("\"uniprot_to_reaction\" as \"a\" on \"reaction\".\"accession\" = \"a\".\"reaction\""),
 		qm.WhereIn("\"a\".\"uniprot\" in ?", args...),
@@ -578,7 +578,7 @@ func (uniprotL) LoadReactions(ctx context.Context, e boil.ContextExecutor, singu
 		one := new(Reaction)
 		var localJoinCol null.String
 
-		err = results.Scan(&one.ID, &one.Directional, &one.Accession, &one.Status, &one.Comment, &one.Equation, &one.Htmlequation, &one.Ischemicallybalanced, &one.Istransport, &one.Ec, &one.Location, &localJoinCol)
+		err = results.Scan(&one.ID, &one.Directional, &one.Accession, &one.Status, &one.Comment, &one.Equation, &one.HTMLEquation, &one.IsChemicallyBalanced, &one.IsTransport, &one.Ec, &one.Location, &localJoinCol)
 		if err != nil {
 			return errors.Wrap(err, "failed to scan eager loaded results for reaction")
 		}

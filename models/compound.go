@@ -28,12 +28,12 @@ type Compound struct {
 	Accession           null.String `boil:"accession" json:"accession,omitempty" toml:"accession" yaml:"accession,omitempty"`
 	Position            null.String `boil:"position" json:"position,omitempty" toml:"position" yaml:"position,omitempty"`
 	Name                null.String `boil:"name" json:"name,omitempty" toml:"name" yaml:"name,omitempty"`
-	Htmlname            null.String `boil:"htmlname" json:"htmlname,omitempty" toml:"htmlname" yaml:"htmlname,omitempty"`
+	HTMLName            null.String `boil:"html_name" json:"html_name,omitempty" toml:"html_name" yaml:"html_name,omitempty"`
 	Formula             null.String `boil:"formula" json:"formula,omitempty" toml:"formula" yaml:"formula,omitempty"`
 	Charge              null.String `boil:"charge" json:"charge,omitempty" toml:"charge" yaml:"charge,omitempty"`
 	Chebi               null.String `boil:"chebi" json:"chebi,omitempty" toml:"chebi" yaml:"chebi,omitempty"`
-	Polymerizationindex null.String `boil:"polymerizationindex" json:"polymerizationindex,omitempty" toml:"polymerizationindex" yaml:"polymerizationindex,omitempty"`
-	Compoundtype        string      `boil:"compoundtype" json:"compoundtype" toml:"compoundtype" yaml:"compoundtype"`
+	PolymerizationIndex null.String `boil:"polymerization_index" json:"polymerization_index,omitempty" toml:"polymerization_index" yaml:"polymerization_index,omitempty"`
+	CompoundType        string      `boil:"compound_type" json:"compound_type" toml:"compound_type" yaml:"compound_type"`
 
 	R *compoundR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L compoundL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -44,23 +44,23 @@ var CompoundColumns = struct {
 	Accession           string
 	Position            string
 	Name                string
-	Htmlname            string
+	HTMLName            string
 	Formula             string
 	Charge              string
 	Chebi               string
-	Polymerizationindex string
-	Compoundtype        string
+	PolymerizationIndex string
+	CompoundType        string
 }{
 	ID:                  "id",
 	Accession:           "accession",
 	Position:            "position",
 	Name:                "name",
-	Htmlname:            "htmlname",
+	HTMLName:            "html_name",
 	Formula:             "formula",
 	Charge:              "charge",
 	Chebi:               "chebi",
-	Polymerizationindex: "polymerizationindex",
-	Compoundtype:        "compoundtype",
+	PolymerizationIndex: "polymerization_index",
+	CompoundType:        "compound_type",
 }
 
 var CompoundTableColumns = struct {
@@ -68,23 +68,23 @@ var CompoundTableColumns = struct {
 	Accession           string
 	Position            string
 	Name                string
-	Htmlname            string
+	HTMLName            string
 	Formula             string
 	Charge              string
 	Chebi               string
-	Polymerizationindex string
-	Compoundtype        string
+	PolymerizationIndex string
+	CompoundType        string
 }{
 	ID:                  "compound.id",
 	Accession:           "compound.accession",
 	Position:            "compound.position",
 	Name:                "compound.name",
-	Htmlname:            "compound.htmlname",
+	HTMLName:            "compound.html_name",
 	Formula:             "compound.formula",
 	Charge:              "compound.charge",
 	Chebi:               "compound.chebi",
-	Polymerizationindex: "compound.polymerizationindex",
-	Compoundtype:        "compound.compoundtype",
+	PolymerizationIndex: "compound.polymerization_index",
+	CompoundType:        "compound.compound_type",
 }
 
 // Generated where
@@ -140,41 +140,41 @@ var CompoundWhere = struct {
 	Accession           whereHelpernull_String
 	Position            whereHelpernull_String
 	Name                whereHelpernull_String
-	Htmlname            whereHelpernull_String
+	HTMLName            whereHelpernull_String
 	Formula             whereHelpernull_String
 	Charge              whereHelpernull_String
 	Chebi               whereHelpernull_String
-	Polymerizationindex whereHelpernull_String
-	Compoundtype        whereHelperstring
+	PolymerizationIndex whereHelpernull_String
+	CompoundType        whereHelperstring
 }{
 	ID:                  whereHelperint64{field: "\"compound\".\"id\""},
 	Accession:           whereHelpernull_String{field: "\"compound\".\"accession\""},
 	Position:            whereHelpernull_String{field: "\"compound\".\"position\""},
 	Name:                whereHelpernull_String{field: "\"compound\".\"name\""},
-	Htmlname:            whereHelpernull_String{field: "\"compound\".\"htmlname\""},
+	HTMLName:            whereHelpernull_String{field: "\"compound\".\"html_name\""},
 	Formula:             whereHelpernull_String{field: "\"compound\".\"formula\""},
 	Charge:              whereHelpernull_String{field: "\"compound\".\"charge\""},
 	Chebi:               whereHelpernull_String{field: "\"compound\".\"chebi\""},
-	Polymerizationindex: whereHelpernull_String{field: "\"compound\".\"polymerizationindex\""},
-	Compoundtype:        whereHelperstring{field: "\"compound\".\"compoundtype\""},
+	PolymerizationIndex: whereHelpernull_String{field: "\"compound\".\"polymerization_index\""},
+	CompoundType:        whereHelperstring{field: "\"compound\".\"compound_type\""},
 }
 
 // CompoundRels is where relationship names are stored.
 var CompoundRels = struct {
 	CompoundChebi        string
-	Reactionparticipants string
-	Reactiveparts        string
+	ReactionParticipants string
+	ReactiveParts        string
 }{
 	CompoundChebi:        "CompoundChebi",
-	Reactionparticipants: "Reactionparticipants",
-	Reactiveparts:        "Reactiveparts",
+	ReactionParticipants: "ReactionParticipants",
+	ReactiveParts:        "ReactiveParts",
 }
 
 // compoundR is where relationships are stored.
 type compoundR struct {
 	CompoundChebi        *Chebi                   `boil:"CompoundChebi" json:"CompoundChebi" toml:"CompoundChebi" yaml:"CompoundChebi"`
-	Reactionparticipants ReactionparticipantSlice `boil:"Reactionparticipants" json:"Reactionparticipants" toml:"Reactionparticipants" yaml:"Reactionparticipants"`
-	Reactiveparts        ReactivepartSlice        `boil:"Reactiveparts" json:"Reactiveparts" toml:"Reactiveparts" yaml:"Reactiveparts"`
+	ReactionParticipants ReactionParticipantSlice `boil:"ReactionParticipants" json:"ReactionParticipants" toml:"ReactionParticipants" yaml:"ReactionParticipants"`
+	ReactiveParts        ReactivePartSlice        `boil:"ReactiveParts" json:"ReactiveParts" toml:"ReactiveParts" yaml:"ReactiveParts"`
 }
 
 // NewStruct creates a new relationship struct
@@ -189,27 +189,27 @@ func (r *compoundR) GetCompoundChebi() *Chebi {
 	return r.CompoundChebi
 }
 
-func (r *compoundR) GetReactionparticipants() ReactionparticipantSlice {
+func (r *compoundR) GetReactionParticipants() ReactionParticipantSlice {
 	if r == nil {
 		return nil
 	}
-	return r.Reactionparticipants
+	return r.ReactionParticipants
 }
 
-func (r *compoundR) GetReactiveparts() ReactivepartSlice {
+func (r *compoundR) GetReactiveParts() ReactivePartSlice {
 	if r == nil {
 		return nil
 	}
-	return r.Reactiveparts
+	return r.ReactiveParts
 }
 
 // compoundL is where Load methods for each relationship are stored.
 type compoundL struct{}
 
 var (
-	compoundAllColumns            = []string{"id", "accession", "position", "name", "htmlname", "formula", "charge", "chebi", "polymerizationindex", "compoundtype"}
-	compoundColumnsWithoutDefault = []string{"id", "compoundtype"}
-	compoundColumnsWithDefault    = []string{"accession", "position", "name", "htmlname", "formula", "charge", "chebi", "polymerizationindex"}
+	compoundAllColumns            = []string{"id", "accession", "position", "name", "html_name", "formula", "charge", "chebi", "polymerization_index", "compound_type"}
+	compoundColumnsWithoutDefault = []string{"id", "compound_type"}
+	compoundColumnsWithDefault    = []string{"accession", "position", "name", "html_name", "formula", "charge", "chebi", "polymerization_index"}
 	compoundPrimaryKeyColumns     = []string{"accession"}
 	compoundGeneratedColumns      = []string{}
 )
@@ -503,32 +503,32 @@ func (o *Compound) CompoundChebi(mods ...qm.QueryMod) chebiQuery {
 	return Chebis(queryMods...)
 }
 
-// Reactionparticipants retrieves all the reactionparticipant's Reactionparticipants with an executor.
-func (o *Compound) Reactionparticipants(mods ...qm.QueryMod) reactionparticipantQuery {
+// ReactionParticipants retrieves all the reaction_participant's ReactionParticipants with an executor.
+func (o *Compound) ReactionParticipants(mods ...qm.QueryMod) reactionParticipantQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("\"reactionparticipant\".\"compound\"=?", o.Accession),
+		qm.Where("\"reaction_participant\".\"compound\"=?", o.Accession),
 	)
 
-	return Reactionparticipants(queryMods...)
+	return ReactionParticipants(queryMods...)
 }
 
-// Reactiveparts retrieves all the reactivepart's Reactiveparts with an executor.
-func (o *Compound) Reactiveparts(mods ...qm.QueryMod) reactivepartQuery {
+// ReactiveParts retrieves all the reactive_part's ReactiveParts with an executor.
+func (o *Compound) ReactiveParts(mods ...qm.QueryMod) reactivePartQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("\"reactivepart\".\"compound\"=?", o.Accession),
+		qm.Where("\"reactive_part\".\"compound\"=?", o.Accession),
 	)
 
-	return Reactiveparts(queryMods...)
+	return ReactiveParts(queryMods...)
 }
 
 // LoadCompoundChebi allows an eager lookup of values, cached into the
@@ -639,9 +639,9 @@ func (compoundL) LoadCompoundChebi(ctx context.Context, e boil.ContextExecutor, 
 	return nil
 }
 
-// LoadReactionparticipants allows an eager lookup of values, cached into the
+// LoadReactionParticipants allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (compoundL) LoadReactionparticipants(ctx context.Context, e boil.ContextExecutor, singular bool, maybeCompound interface{}, mods queries.Applicator) error {
+func (compoundL) LoadReactionParticipants(ctx context.Context, e boil.ContextExecutor, singular bool, maybeCompound interface{}, mods queries.Applicator) error {
 	var slice []*Compound
 	var object *Compound
 
@@ -679,8 +679,8 @@ func (compoundL) LoadReactionparticipants(ctx context.Context, e boil.ContextExe
 	}
 
 	query := NewQuery(
-		qm.From(`reactionparticipant`),
-		qm.WhereIn(`reactionparticipant.compound in ?`, args...),
+		qm.From(`reaction_participant`),
+		qm.WhereIn(`reaction_participant.compound in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -688,22 +688,22 @@ func (compoundL) LoadReactionparticipants(ctx context.Context, e boil.ContextExe
 
 	results, err := query.QueryContext(ctx, e)
 	if err != nil {
-		return errors.Wrap(err, "failed to eager load reactionparticipant")
+		return errors.Wrap(err, "failed to eager load reaction_participant")
 	}
 
-	var resultSlice []*Reactionparticipant
+	var resultSlice []*ReactionParticipant
 	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice reactionparticipant")
+		return errors.Wrap(err, "failed to bind eager loaded slice reaction_participant")
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results in eager load on reactionparticipant")
+		return errors.Wrap(err, "failed to close results in eager load on reaction_participant")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for reactionparticipant")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for reaction_participant")
 	}
 
-	if len(reactionparticipantAfterSelectHooks) != 0 {
+	if len(reactionParticipantAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -711,12 +711,12 @@ func (compoundL) LoadReactionparticipants(ctx context.Context, e boil.ContextExe
 		}
 	}
 	if singular {
-		object.R.Reactionparticipants = resultSlice
+		object.R.ReactionParticipants = resultSlice
 		for _, foreign := range resultSlice {
 			if foreign.R == nil {
-				foreign.R = &reactionparticipantR{}
+				foreign.R = &reactionParticipantR{}
 			}
-			foreign.R.ReactionparticipantCompound = object
+			foreign.R.ReactionParticipantCompound = object
 		}
 		return nil
 	}
@@ -724,11 +724,11 @@ func (compoundL) LoadReactionparticipants(ctx context.Context, e boil.ContextExe
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
 			if queries.Equal(local.Accession, foreign.Compound) {
-				local.R.Reactionparticipants = append(local.R.Reactionparticipants, foreign)
+				local.R.ReactionParticipants = append(local.R.ReactionParticipants, foreign)
 				if foreign.R == nil {
-					foreign.R = &reactionparticipantR{}
+					foreign.R = &reactionParticipantR{}
 				}
-				foreign.R.ReactionparticipantCompound = local
+				foreign.R.ReactionParticipantCompound = local
 				break
 			}
 		}
@@ -737,9 +737,9 @@ func (compoundL) LoadReactionparticipants(ctx context.Context, e boil.ContextExe
 	return nil
 }
 
-// LoadReactiveparts allows an eager lookup of values, cached into the
+// LoadReactiveParts allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (compoundL) LoadReactiveparts(ctx context.Context, e boil.ContextExecutor, singular bool, maybeCompound interface{}, mods queries.Applicator) error {
+func (compoundL) LoadReactiveParts(ctx context.Context, e boil.ContextExecutor, singular bool, maybeCompound interface{}, mods queries.Applicator) error {
 	var slice []*Compound
 	var object *Compound
 
@@ -777,8 +777,8 @@ func (compoundL) LoadReactiveparts(ctx context.Context, e boil.ContextExecutor, 
 	}
 
 	query := NewQuery(
-		qm.From(`reactivepart`),
-		qm.WhereIn(`reactivepart.compound in ?`, args...),
+		qm.From(`reactive_part`),
+		qm.WhereIn(`reactive_part.compound in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -786,22 +786,22 @@ func (compoundL) LoadReactiveparts(ctx context.Context, e boil.ContextExecutor, 
 
 	results, err := query.QueryContext(ctx, e)
 	if err != nil {
-		return errors.Wrap(err, "failed to eager load reactivepart")
+		return errors.Wrap(err, "failed to eager load reactive_part")
 	}
 
-	var resultSlice []*Reactivepart
+	var resultSlice []*ReactivePart
 	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice reactivepart")
+		return errors.Wrap(err, "failed to bind eager loaded slice reactive_part")
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results in eager load on reactivepart")
+		return errors.Wrap(err, "failed to close results in eager load on reactive_part")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for reactivepart")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for reactive_part")
 	}
 
-	if len(reactivepartAfterSelectHooks) != 0 {
+	if len(reactivePartAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -809,12 +809,12 @@ func (compoundL) LoadReactiveparts(ctx context.Context, e boil.ContextExecutor, 
 		}
 	}
 	if singular {
-		object.R.Reactiveparts = resultSlice
+		object.R.ReactiveParts = resultSlice
 		for _, foreign := range resultSlice {
 			if foreign.R == nil {
-				foreign.R = &reactivepartR{}
+				foreign.R = &reactivePartR{}
 			}
-			foreign.R.ReactivepartCompound = object
+			foreign.R.ReactivePartCompound = object
 		}
 		return nil
 	}
@@ -822,11 +822,11 @@ func (compoundL) LoadReactiveparts(ctx context.Context, e boil.ContextExecutor, 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
 			if queries.Equal(local.Accession, foreign.Compound) {
-				local.R.Reactiveparts = append(local.R.Reactiveparts, foreign)
+				local.R.ReactiveParts = append(local.R.ReactiveParts, foreign)
 				if foreign.R == nil {
-					foreign.R = &reactivepartR{}
+					foreign.R = &reactivePartR{}
 				}
-				foreign.R.ReactivepartCompound = local
+				foreign.R.ReactivePartCompound = local
 				break
 			}
 		}
@@ -915,11 +915,11 @@ func (o *Compound) RemoveCompoundChebi(ctx context.Context, exec boil.ContextExe
 	return nil
 }
 
-// AddReactionparticipants adds the given related objects to the existing relationships
+// AddReactionParticipants adds the given related objects to the existing relationships
 // of the compound, optionally inserting them as new records.
-// Appends related to o.R.Reactionparticipants.
-// Sets related.R.ReactionparticipantCompound appropriately.
-func (o *Compound) AddReactionparticipants(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Reactionparticipant) error {
+// Appends related to o.R.ReactionParticipants.
+// Sets related.R.ReactionParticipantCompound appropriately.
+func (o *Compound) AddReactionParticipants(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ReactionParticipant) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -929,9 +929,9 @@ func (o *Compound) AddReactionparticipants(ctx context.Context, exec boil.Contex
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
-				"UPDATE \"reactionparticipant\" SET %s WHERE %s",
+				"UPDATE \"reaction_participant\" SET %s WHERE %s",
 				strmangle.SetParamNames("\"", "\"", 0, []string{"compound"}),
-				strmangle.WhereClause("\"", "\"", 0, reactionparticipantPrimaryKeyColumns),
+				strmangle.WhereClause("\"", "\"", 0, reactionParticipantPrimaryKeyColumns),
 			)
 			values := []interface{}{o.Accession, rel.Compound, rel.Reactionside}
 
@@ -950,32 +950,32 @@ func (o *Compound) AddReactionparticipants(ctx context.Context, exec boil.Contex
 
 	if o.R == nil {
 		o.R = &compoundR{
-			Reactionparticipants: related,
+			ReactionParticipants: related,
 		}
 	} else {
-		o.R.Reactionparticipants = append(o.R.Reactionparticipants, related...)
+		o.R.ReactionParticipants = append(o.R.ReactionParticipants, related...)
 	}
 
 	for _, rel := range related {
 		if rel.R == nil {
-			rel.R = &reactionparticipantR{
-				ReactionparticipantCompound: o,
+			rel.R = &reactionParticipantR{
+				ReactionParticipantCompound: o,
 			}
 		} else {
-			rel.R.ReactionparticipantCompound = o
+			rel.R.ReactionParticipantCompound = o
 		}
 	}
 	return nil
 }
 
-// SetReactionparticipants removes all previously related items of the
+// SetReactionParticipants removes all previously related items of the
 // compound replacing them completely with the passed
 // in related items, optionally inserting them as new records.
-// Sets o.R.ReactionparticipantCompound's Reactionparticipants accordingly.
-// Replaces o.R.Reactionparticipants with related.
-// Sets related.R.ReactionparticipantCompound's Reactionparticipants accordingly.
-func (o *Compound) SetReactionparticipants(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Reactionparticipant) error {
-	query := "update \"reactionparticipant\" set \"compound\" = null where \"compound\" = ?"
+// Sets o.R.ReactionParticipantCompound's ReactionParticipants accordingly.
+// Replaces o.R.ReactionParticipants with related.
+// Sets related.R.ReactionParticipantCompound's ReactionParticipants accordingly.
+func (o *Compound) SetReactionParticipants(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ReactionParticipant) error {
+	query := "update \"reaction_participant\" set \"compound\" = null where \"compound\" = ?"
 	values := []interface{}{o.Accession}
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -988,24 +988,24 @@ func (o *Compound) SetReactionparticipants(ctx context.Context, exec boil.Contex
 	}
 
 	if o.R != nil {
-		for _, rel := range o.R.Reactionparticipants {
+		for _, rel := range o.R.ReactionParticipants {
 			queries.SetScanner(&rel.Compound, nil)
 			if rel.R == nil {
 				continue
 			}
 
-			rel.R.ReactionparticipantCompound = nil
+			rel.R.ReactionParticipantCompound = nil
 		}
-		o.R.Reactionparticipants = nil
+		o.R.ReactionParticipants = nil
 	}
 
-	return o.AddReactionparticipants(ctx, exec, insert, related...)
+	return o.AddReactionParticipants(ctx, exec, insert, related...)
 }
 
-// RemoveReactionparticipants relationships from objects passed in.
-// Removes related items from R.Reactionparticipants (uses pointer comparison, removal does not keep order)
-// Sets related.R.ReactionparticipantCompound.
-func (o *Compound) RemoveReactionparticipants(ctx context.Context, exec boil.ContextExecutor, related ...*Reactionparticipant) error {
+// RemoveReactionParticipants relationships from objects passed in.
+// Removes related items from R.ReactionParticipants (uses pointer comparison, removal does not keep order)
+// Sets related.R.ReactionParticipantCompound.
+func (o *Compound) RemoveReactionParticipants(ctx context.Context, exec boil.ContextExecutor, related ...*ReactionParticipant) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1014,7 +1014,7 @@ func (o *Compound) RemoveReactionparticipants(ctx context.Context, exec boil.Con
 	for _, rel := range related {
 		queries.SetScanner(&rel.Compound, nil)
 		if rel.R != nil {
-			rel.R.ReactionparticipantCompound = nil
+			rel.R.ReactionParticipantCompound = nil
 		}
 		if _, err = rel.Update(ctx, exec, boil.Whitelist("compound")); err != nil {
 			return err
@@ -1025,16 +1025,16 @@ func (o *Compound) RemoveReactionparticipants(ctx context.Context, exec boil.Con
 	}
 
 	for _, rel := range related {
-		for i, ri := range o.R.Reactionparticipants {
+		for i, ri := range o.R.ReactionParticipants {
 			if rel != ri {
 				continue
 			}
 
-			ln := len(o.R.Reactionparticipants)
+			ln := len(o.R.ReactionParticipants)
 			if ln > 1 && i < ln-1 {
-				o.R.Reactionparticipants[i] = o.R.Reactionparticipants[ln-1]
+				o.R.ReactionParticipants[i] = o.R.ReactionParticipants[ln-1]
 			}
-			o.R.Reactionparticipants = o.R.Reactionparticipants[:ln-1]
+			o.R.ReactionParticipants = o.R.ReactionParticipants[:ln-1]
 			break
 		}
 	}
@@ -1042,11 +1042,11 @@ func (o *Compound) RemoveReactionparticipants(ctx context.Context, exec boil.Con
 	return nil
 }
 
-// AddReactiveparts adds the given related objects to the existing relationships
+// AddReactiveParts adds the given related objects to the existing relationships
 // of the compound, optionally inserting them as new records.
-// Appends related to o.R.Reactiveparts.
-// Sets related.R.ReactivepartCompound appropriately.
-func (o *Compound) AddReactiveparts(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Reactivepart) error {
+// Appends related to o.R.ReactiveParts.
+// Sets related.R.ReactivePartCompound appropriately.
+func (o *Compound) AddReactiveParts(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ReactivePart) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1056,9 +1056,9 @@ func (o *Compound) AddReactiveparts(ctx context.Context, exec boil.ContextExecut
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
-				"UPDATE \"reactivepart\" SET %s WHERE %s",
+				"UPDATE \"reactive_part\" SET %s WHERE %s",
 				strmangle.SetParamNames("\"", "\"", 0, []string{"compound"}),
-				strmangle.WhereClause("\"", "\"", 0, reactivepartPrimaryKeyColumns),
+				strmangle.WhereClause("\"", "\"", 0, reactivePartPrimaryKeyColumns),
 			)
 			values := []interface{}{o.Accession, rel.Accession}
 
@@ -1077,19 +1077,19 @@ func (o *Compound) AddReactiveparts(ctx context.Context, exec boil.ContextExecut
 
 	if o.R == nil {
 		o.R = &compoundR{
-			Reactiveparts: related,
+			ReactiveParts: related,
 		}
 	} else {
-		o.R.Reactiveparts = append(o.R.Reactiveparts, related...)
+		o.R.ReactiveParts = append(o.R.ReactiveParts, related...)
 	}
 
 	for _, rel := range related {
 		if rel.R == nil {
-			rel.R = &reactivepartR{
-				ReactivepartCompound: o,
+			rel.R = &reactivePartR{
+				ReactivePartCompound: o,
 			}
 		} else {
-			rel.R.ReactivepartCompound = o
+			rel.R.ReactivePartCompound = o
 		}
 	}
 	return nil

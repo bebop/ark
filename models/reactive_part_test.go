@@ -21,24 +21,24 @@ var (
 	_ = queries.Equal
 )
 
-func testReactiveparts(t *testing.T) {
+func testReactiveParts(t *testing.T) {
 	t.Parallel()
 
-	query := Reactiveparts()
+	query := ReactiveParts()
 
 	if query.Query == nil {
 		t.Error("expected a query, got nothing")
 	}
 }
 
-func testReactivepartsDelete(t *testing.T) {
+func testReactivePartsDelete(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -54,7 +54,7 @@ func testReactivepartsDelete(t *testing.T) {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Reactiveparts().Count(ctx, tx)
+	count, err := ReactiveParts().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -64,14 +64,14 @@ func testReactivepartsDelete(t *testing.T) {
 	}
 }
 
-func testReactivepartsQueryDeleteAll(t *testing.T) {
+func testReactivePartsQueryDeleteAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -81,13 +81,13 @@ func testReactivepartsQueryDeleteAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	if rowsAff, err := Reactiveparts().DeleteAll(ctx, tx); err != nil {
+	if rowsAff, err := ReactiveParts().DeleteAll(ctx, tx); err != nil {
 		t.Error(err)
 	} else if rowsAff != 1 {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Reactiveparts().Count(ctx, tx)
+	count, err := ReactiveParts().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -97,14 +97,14 @@ func testReactivepartsQueryDeleteAll(t *testing.T) {
 	}
 }
 
-func testReactivepartsSliceDeleteAll(t *testing.T) {
+func testReactivePartsSliceDeleteAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -114,7 +114,7 @@ func testReactivepartsSliceDeleteAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice := ReactivepartSlice{o}
+	slice := ReactivePartSlice{o}
 
 	if rowsAff, err := slice.DeleteAll(ctx, tx); err != nil {
 		t.Error(err)
@@ -122,7 +122,7 @@ func testReactivepartsSliceDeleteAll(t *testing.T) {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Reactiveparts().Count(ctx, tx)
+	count, err := ReactiveParts().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -132,14 +132,14 @@ func testReactivepartsSliceDeleteAll(t *testing.T) {
 	}
 }
 
-func testReactivepartsExists(t *testing.T) {
+func testReactivePartsExists(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -149,23 +149,23 @@ func testReactivepartsExists(t *testing.T) {
 		t.Error(err)
 	}
 
-	e, err := ReactivepartExists(ctx, tx, o.Accession)
+	e, err := ReactivePartExists(ctx, tx, o.Accession)
 	if err != nil {
-		t.Errorf("Unable to check if Reactivepart exists: %s", err)
+		t.Errorf("Unable to check if ReactivePart exists: %s", err)
 	}
 	if !e {
-		t.Errorf("Expected ReactivepartExists to return true, but got false.")
+		t.Errorf("Expected ReactivePartExists to return true, but got false.")
 	}
 }
 
-func testReactivepartsFind(t *testing.T) {
+func testReactivePartsFind(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -175,24 +175,24 @@ func testReactivepartsFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	reactivepartFound, err := FindReactivepart(ctx, tx, o.Accession)
+	reactivePartFound, err := FindReactivePart(ctx, tx, o.Accession)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if reactivepartFound == nil {
+	if reactivePartFound == nil {
 		t.Error("want a record, got nil")
 	}
 }
 
-func testReactivepartsBind(t *testing.T) {
+func testReactivePartsBind(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -202,19 +202,19 @@ func testReactivepartsBind(t *testing.T) {
 		t.Error(err)
 	}
 
-	if err = Reactiveparts().Bind(ctx, tx, o); err != nil {
+	if err = ReactiveParts().Bind(ctx, tx, o); err != nil {
 		t.Error(err)
 	}
 }
 
-func testReactivepartsOne(t *testing.T) {
+func testReactivePartsOne(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -224,38 +224,38 @@ func testReactivepartsOne(t *testing.T) {
 		t.Error(err)
 	}
 
-	if x, err := Reactiveparts().One(ctx, tx); err != nil {
+	if x, err := ReactiveParts().One(ctx, tx); err != nil {
 		t.Error(err)
 	} else if x == nil {
 		t.Error("expected to get a non nil record")
 	}
 }
 
-func testReactivepartsAll(t *testing.T) {
+func testReactivePartsAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	reactivepartOne := &Reactivepart{}
-	reactivepartTwo := &Reactivepart{}
-	if err = randomize.Struct(seed, reactivepartOne, reactivepartDBTypes, false, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	reactivePartOne := &ReactivePart{}
+	reactivePartTwo := &ReactivePart{}
+	if err = randomize.Struct(seed, reactivePartOne, reactivePartDBTypes, false, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
-	if err = randomize.Struct(seed, reactivepartTwo, reactivepartDBTypes, false, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	if err = randomize.Struct(seed, reactivePartTwo, reactivePartDBTypes, false, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = reactivepartOne.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = reactivePartOne.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
-	if err = reactivepartTwo.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = reactivePartTwo.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
 
-	slice, err := Reactiveparts().All(ctx, tx)
+	slice, err := ReactiveParts().All(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -265,31 +265,31 @@ func testReactivepartsAll(t *testing.T) {
 	}
 }
 
-func testReactivepartsCount(t *testing.T) {
+func testReactivePartsCount(t *testing.T) {
 	t.Parallel()
 
 	var err error
 	seed := randomize.NewSeed()
-	reactivepartOne := &Reactivepart{}
-	reactivepartTwo := &Reactivepart{}
-	if err = randomize.Struct(seed, reactivepartOne, reactivepartDBTypes, false, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	reactivePartOne := &ReactivePart{}
+	reactivePartTwo := &ReactivePart{}
+	if err = randomize.Struct(seed, reactivePartOne, reactivePartDBTypes, false, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
-	if err = randomize.Struct(seed, reactivepartTwo, reactivepartDBTypes, false, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	if err = randomize.Struct(seed, reactivePartTwo, reactivePartDBTypes, false, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = reactivepartOne.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = reactivePartOne.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
-	if err = reactivepartTwo.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = reactivePartTwo.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
 
-	count, err := Reactiveparts().Count(ctx, tx)
+	count, err := ReactiveParts().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -299,155 +299,155 @@ func testReactivepartsCount(t *testing.T) {
 	}
 }
 
-func reactivepartBeforeInsertHook(ctx context.Context, e boil.ContextExecutor, o *Reactivepart) error {
-	*o = Reactivepart{}
+func reactivePartBeforeInsertHook(ctx context.Context, e boil.ContextExecutor, o *ReactivePart) error {
+	*o = ReactivePart{}
 	return nil
 }
 
-func reactivepartAfterInsertHook(ctx context.Context, e boil.ContextExecutor, o *Reactivepart) error {
-	*o = Reactivepart{}
+func reactivePartAfterInsertHook(ctx context.Context, e boil.ContextExecutor, o *ReactivePart) error {
+	*o = ReactivePart{}
 	return nil
 }
 
-func reactivepartAfterSelectHook(ctx context.Context, e boil.ContextExecutor, o *Reactivepart) error {
-	*o = Reactivepart{}
+func reactivePartAfterSelectHook(ctx context.Context, e boil.ContextExecutor, o *ReactivePart) error {
+	*o = ReactivePart{}
 	return nil
 }
 
-func reactivepartBeforeUpdateHook(ctx context.Context, e boil.ContextExecutor, o *Reactivepart) error {
-	*o = Reactivepart{}
+func reactivePartBeforeUpdateHook(ctx context.Context, e boil.ContextExecutor, o *ReactivePart) error {
+	*o = ReactivePart{}
 	return nil
 }
 
-func reactivepartAfterUpdateHook(ctx context.Context, e boil.ContextExecutor, o *Reactivepart) error {
-	*o = Reactivepart{}
+func reactivePartAfterUpdateHook(ctx context.Context, e boil.ContextExecutor, o *ReactivePart) error {
+	*o = ReactivePart{}
 	return nil
 }
 
-func reactivepartBeforeDeleteHook(ctx context.Context, e boil.ContextExecutor, o *Reactivepart) error {
-	*o = Reactivepart{}
+func reactivePartBeforeDeleteHook(ctx context.Context, e boil.ContextExecutor, o *ReactivePart) error {
+	*o = ReactivePart{}
 	return nil
 }
 
-func reactivepartAfterDeleteHook(ctx context.Context, e boil.ContextExecutor, o *Reactivepart) error {
-	*o = Reactivepart{}
+func reactivePartAfterDeleteHook(ctx context.Context, e boil.ContextExecutor, o *ReactivePart) error {
+	*o = ReactivePart{}
 	return nil
 }
 
-func reactivepartBeforeUpsertHook(ctx context.Context, e boil.ContextExecutor, o *Reactivepart) error {
-	*o = Reactivepart{}
+func reactivePartBeforeUpsertHook(ctx context.Context, e boil.ContextExecutor, o *ReactivePart) error {
+	*o = ReactivePart{}
 	return nil
 }
 
-func reactivepartAfterUpsertHook(ctx context.Context, e boil.ContextExecutor, o *Reactivepart) error {
-	*o = Reactivepart{}
+func reactivePartAfterUpsertHook(ctx context.Context, e boil.ContextExecutor, o *ReactivePart) error {
+	*o = ReactivePart{}
 	return nil
 }
 
-func testReactivepartsHooks(t *testing.T) {
+func testReactivePartsHooks(t *testing.T) {
 	t.Parallel()
 
 	var err error
 
 	ctx := context.Background()
-	empty := &Reactivepart{}
-	o := &Reactivepart{}
+	empty := &ReactivePart{}
+	o := &ReactivePart{}
 
 	seed := randomize.NewSeed()
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, false); err != nil {
-		t.Errorf("Unable to randomize Reactivepart object: %s", err)
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, false); err != nil {
+		t.Errorf("Unable to randomize ReactivePart object: %s", err)
 	}
 
-	AddReactivepartHook(boil.BeforeInsertHook, reactivepartBeforeInsertHook)
+	AddReactivePartHook(boil.BeforeInsertHook, reactivePartBeforeInsertHook)
 	if err = o.doBeforeInsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeInsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeInsertHook function to empty object, but got: %#v", o)
 	}
-	reactivepartBeforeInsertHooks = []ReactivepartHook{}
+	reactivePartBeforeInsertHooks = []ReactivePartHook{}
 
-	AddReactivepartHook(boil.AfterInsertHook, reactivepartAfterInsertHook)
+	AddReactivePartHook(boil.AfterInsertHook, reactivePartAfterInsertHook)
 	if err = o.doAfterInsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterInsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterInsertHook function to empty object, but got: %#v", o)
 	}
-	reactivepartAfterInsertHooks = []ReactivepartHook{}
+	reactivePartAfterInsertHooks = []ReactivePartHook{}
 
-	AddReactivepartHook(boil.AfterSelectHook, reactivepartAfterSelectHook)
+	AddReactivePartHook(boil.AfterSelectHook, reactivePartAfterSelectHook)
 	if err = o.doAfterSelectHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterSelectHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterSelectHook function to empty object, but got: %#v", o)
 	}
-	reactivepartAfterSelectHooks = []ReactivepartHook{}
+	reactivePartAfterSelectHooks = []ReactivePartHook{}
 
-	AddReactivepartHook(boil.BeforeUpdateHook, reactivepartBeforeUpdateHook)
+	AddReactivePartHook(boil.BeforeUpdateHook, reactivePartBeforeUpdateHook)
 	if err = o.doBeforeUpdateHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeUpdateHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeUpdateHook function to empty object, but got: %#v", o)
 	}
-	reactivepartBeforeUpdateHooks = []ReactivepartHook{}
+	reactivePartBeforeUpdateHooks = []ReactivePartHook{}
 
-	AddReactivepartHook(boil.AfterUpdateHook, reactivepartAfterUpdateHook)
+	AddReactivePartHook(boil.AfterUpdateHook, reactivePartAfterUpdateHook)
 	if err = o.doAfterUpdateHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterUpdateHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterUpdateHook function to empty object, but got: %#v", o)
 	}
-	reactivepartAfterUpdateHooks = []ReactivepartHook{}
+	reactivePartAfterUpdateHooks = []ReactivePartHook{}
 
-	AddReactivepartHook(boil.BeforeDeleteHook, reactivepartBeforeDeleteHook)
+	AddReactivePartHook(boil.BeforeDeleteHook, reactivePartBeforeDeleteHook)
 	if err = o.doBeforeDeleteHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeDeleteHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeDeleteHook function to empty object, but got: %#v", o)
 	}
-	reactivepartBeforeDeleteHooks = []ReactivepartHook{}
+	reactivePartBeforeDeleteHooks = []ReactivePartHook{}
 
-	AddReactivepartHook(boil.AfterDeleteHook, reactivepartAfterDeleteHook)
+	AddReactivePartHook(boil.AfterDeleteHook, reactivePartAfterDeleteHook)
 	if err = o.doAfterDeleteHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterDeleteHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterDeleteHook function to empty object, but got: %#v", o)
 	}
-	reactivepartAfterDeleteHooks = []ReactivepartHook{}
+	reactivePartAfterDeleteHooks = []ReactivePartHook{}
 
-	AddReactivepartHook(boil.BeforeUpsertHook, reactivepartBeforeUpsertHook)
+	AddReactivePartHook(boil.BeforeUpsertHook, reactivePartBeforeUpsertHook)
 	if err = o.doBeforeUpsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeUpsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeUpsertHook function to empty object, but got: %#v", o)
 	}
-	reactivepartBeforeUpsertHooks = []ReactivepartHook{}
+	reactivePartBeforeUpsertHooks = []ReactivePartHook{}
 
-	AddReactivepartHook(boil.AfterUpsertHook, reactivepartAfterUpsertHook)
+	AddReactivePartHook(boil.AfterUpsertHook, reactivePartAfterUpsertHook)
 	if err = o.doAfterUpsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterUpsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterUpsertHook function to empty object, but got: %#v", o)
 	}
-	reactivepartAfterUpsertHooks = []ReactivepartHook{}
+	reactivePartAfterUpsertHooks = []ReactivePartHook{}
 }
 
-func testReactivepartsInsert(t *testing.T) {
+func testReactivePartsInsert(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -457,7 +457,7 @@ func testReactivepartsInsert(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Reactiveparts().Count(ctx, tx)
+	count, err := ReactiveParts().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -467,24 +467,24 @@ func testReactivepartsInsert(t *testing.T) {
 	}
 }
 
-func testReactivepartsInsertWhitelist(t *testing.T) {
+func testReactivePartsInsertWhitelist(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = o.Insert(ctx, tx, boil.Whitelist(reactivepartColumnsWithoutDefault...)); err != nil {
+	if err = o.Insert(ctx, tx, boil.Whitelist(reactivePartColumnsWithoutDefault...)); err != nil {
 		t.Error(err)
 	}
 
-	count, err := Reactiveparts().Count(ctx, tx)
+	count, err := ReactiveParts().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -494,17 +494,17 @@ func testReactivepartsInsertWhitelist(t *testing.T) {
 	}
 }
 
-func testReactivepartToOneCompoundUsingReactivepartCompound(t *testing.T) {
+func testReactivePartToOneCompoundUsingReactivePartCompound(t *testing.T) {
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
-	var local Reactivepart
+	var local ReactivePart
 	var foreign Compound
 
 	seed := randomize.NewSeed()
-	if err := randomize.Struct(seed, &local, reactivepartDBTypes, false, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	if err := randomize.Struct(seed, &local, reactivePartDBTypes, false, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 	if err := randomize.Struct(seed, &foreign, compoundDBTypes, true, compoundColumnsWithDefault...); err != nil {
 		t.Errorf("Unable to randomize Compound struct: %s", err)
@@ -519,7 +519,7 @@ func testReactivepartToOneCompoundUsingReactivepartCompound(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	check, err := local.ReactivepartCompound().One(ctx, tx)
+	check, err := local.ReactivePartCompound().One(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -528,35 +528,35 @@ func testReactivepartToOneCompoundUsingReactivepartCompound(t *testing.T) {
 		t.Errorf("want: %v, got %v", foreign.Accession, check.Accession)
 	}
 
-	slice := ReactivepartSlice{&local}
-	if err = local.L.LoadReactivepartCompound(ctx, tx, false, (*[]*Reactivepart)(&slice), nil); err != nil {
+	slice := ReactivePartSlice{&local}
+	if err = local.L.LoadReactivePartCompound(ctx, tx, false, (*[]*ReactivePart)(&slice), nil); err != nil {
 		t.Fatal(err)
 	}
-	if local.R.ReactivepartCompound == nil {
+	if local.R.ReactivePartCompound == nil {
 		t.Error("struct should have been eager loaded")
 	}
 
-	local.R.ReactivepartCompound = nil
-	if err = local.L.LoadReactivepartCompound(ctx, tx, true, &local, nil); err != nil {
+	local.R.ReactivePartCompound = nil
+	if err = local.L.LoadReactivePartCompound(ctx, tx, true, &local, nil); err != nil {
 		t.Fatal(err)
 	}
-	if local.R.ReactivepartCompound == nil {
+	if local.R.ReactivePartCompound == nil {
 		t.Error("struct should have been eager loaded")
 	}
 }
 
-func testReactivepartToOneSetOpCompoundUsingReactivepartCompound(t *testing.T) {
+func testReactivePartToOneSetOpCompoundUsingReactivePartCompound(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
-	var a Reactivepart
+	var a ReactivePart
 	var b, c Compound
 
 	seed := randomize.NewSeed()
-	if err = randomize.Struct(seed, &a, reactivepartDBTypes, false, strmangle.SetComplement(reactivepartPrimaryKeyColumns, reactivepartColumnsWithoutDefault)...); err != nil {
+	if err = randomize.Struct(seed, &a, reactivePartDBTypes, false, strmangle.SetComplement(reactivePartPrimaryKeyColumns, reactivePartColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
 	if err = randomize.Struct(seed, &b, compoundDBTypes, false, strmangle.SetComplement(compoundPrimaryKeyColumns, compoundColumnsWithoutDefault)...); err != nil {
@@ -574,16 +574,16 @@ func testReactivepartToOneSetOpCompoundUsingReactivepartCompound(t *testing.T) {
 	}
 
 	for i, x := range []*Compound{&b, &c} {
-		err = a.SetReactivepartCompound(ctx, tx, i != 0, x)
+		err = a.SetReactivePartCompound(ctx, tx, i != 0, x)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if a.R.ReactivepartCompound != x {
+		if a.R.ReactivePartCompound != x {
 			t.Error("relationship struct not set to correct value")
 		}
 
-		if x.R.Reactiveparts[0] != &a {
+		if x.R.ReactiveParts[0] != &a {
 			t.Error("failed to append to foreign relationship struct")
 		}
 		if !queries.Equal(a.Compound, x.Accession) {
@@ -603,14 +603,14 @@ func testReactivepartToOneSetOpCompoundUsingReactivepartCompound(t *testing.T) {
 	}
 }
 
-func testReactivepartsReload(t *testing.T) {
+func testReactivePartsReload(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -625,14 +625,14 @@ func testReactivepartsReload(t *testing.T) {
 	}
 }
 
-func testReactivepartsReloadAll(t *testing.T) {
+func testReactivePartsReloadAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -642,21 +642,21 @@ func testReactivepartsReloadAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice := ReactivepartSlice{o}
+	slice := ReactivePartSlice{o}
 
 	if err = slice.ReloadAll(ctx, tx); err != nil {
 		t.Error(err)
 	}
 }
 
-func testReactivepartsSelect(t *testing.T) {
+func testReactivePartsSelect(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -666,7 +666,7 @@ func testReactivepartsSelect(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice, err := Reactiveparts().All(ctx, tx)
+	slice, err := ReactiveParts().All(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -677,25 +677,25 @@ func testReactivepartsSelect(t *testing.T) {
 }
 
 var (
-	reactivepartDBTypes = map[string]string{`ID`: `INT`, `Accession`: `TEXT`, `Name`: `TEXT`, `Htmlname`: `TEXT`, `Compound`: `TEXT`}
+	reactivePartDBTypes = map[string]string{`ID`: `INT`, `Accession`: `TEXT`, `Name`: `TEXT`, `HTMLName`: `TEXT`, `Compound`: `TEXT`}
 	_                   = bytes.MinRead
 )
 
-func testReactivepartsUpdate(t *testing.T) {
+func testReactivePartsUpdate(t *testing.T) {
 	t.Parallel()
 
-	if 0 == len(reactivepartPrimaryKeyColumns) {
+	if 0 == len(reactivePartPrimaryKeyColumns) {
 		t.Skip("Skipping table with no primary key columns")
 	}
-	if len(reactivepartAllColumns) == len(reactivepartPrimaryKeyColumns) {
+	if len(reactivePartAllColumns) == len(reactivePartPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -705,7 +705,7 @@ func testReactivepartsUpdate(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Reactiveparts().Count(ctx, tx)
+	count, err := ReactiveParts().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -714,8 +714,8 @@ func testReactivepartsUpdate(t *testing.T) {
 		t.Error("want one record, got:", count)
 	}
 
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	if rowsAff, err := o.Update(ctx, tx, boil.Infer()); err != nil {
@@ -725,18 +725,18 @@ func testReactivepartsUpdate(t *testing.T) {
 	}
 }
 
-func testReactivepartsSliceUpdateAll(t *testing.T) {
+func testReactivePartsSliceUpdateAll(t *testing.T) {
 	t.Parallel()
 
-	if len(reactivepartAllColumns) == len(reactivepartPrimaryKeyColumns) {
+	if len(reactivePartAllColumns) == len(reactivePartPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactivepart{}
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := &ReactivePart{}
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -746,7 +746,7 @@ func testReactivepartsSliceUpdateAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Reactiveparts().Count(ctx, tx)
+	count, err := ReactiveParts().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -755,18 +755,18 @@ func testReactivepartsSliceUpdateAll(t *testing.T) {
 		t.Error("want one record, got:", count)
 	}
 
-	if err = randomize.Struct(seed, o, reactivepartDBTypes, true, reactivepartPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	if err = randomize.Struct(seed, o, reactivePartDBTypes, true, reactivePartPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	// Remove Primary keys and unique columns from what we plan to update
 	var fields []string
-	if strmangle.StringSliceMatch(reactivepartAllColumns, reactivepartPrimaryKeyColumns) {
-		fields = reactivepartAllColumns
+	if strmangle.StringSliceMatch(reactivePartAllColumns, reactivePartPrimaryKeyColumns) {
+		fields = reactivePartAllColumns
 	} else {
 		fields = strmangle.SetComplement(
-			reactivepartAllColumns,
-			reactivepartPrimaryKeyColumns,
+			reactivePartAllColumns,
+			reactivePartPrimaryKeyColumns,
 		)
 	}
 
@@ -784,7 +784,7 @@ func testReactivepartsSliceUpdateAll(t *testing.T) {
 		}
 	}
 
-	slice := ReactivepartSlice{o}
+	slice := ReactivePartSlice{o}
 	if rowsAff, err := slice.UpdateAll(ctx, tx, updateMap); err != nil {
 		t.Error(err)
 	} else if rowsAff != 1 {
@@ -792,28 +792,28 @@ func testReactivepartsSliceUpdateAll(t *testing.T) {
 	}
 }
 
-func testReactivepartsUpsert(t *testing.T) {
+func testReactivePartsUpsert(t *testing.T) {
 	t.Parallel()
-	if len(reactivepartAllColumns) == len(reactivepartPrimaryKeyColumns) {
+	if len(reactivePartAllColumns) == len(reactivePartPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
 	// Attempt the INSERT side of an UPSERT
-	o := Reactivepart{}
-	if err = randomize.Struct(seed, &o, reactivepartDBTypes, true); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	o := ReactivePart{}
+	if err = randomize.Struct(seed, &o, reactivePartDBTypes, true); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 	if err = o.Upsert(ctx, tx, false, nil, boil.Infer(), boil.Infer()); err != nil {
-		t.Errorf("Unable to upsert Reactivepart: %s", err)
+		t.Errorf("Unable to upsert ReactivePart: %s", err)
 	}
 
-	count, err := Reactiveparts().Count(ctx, tx)
+	count, err := ReactiveParts().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -822,15 +822,15 @@ func testReactivepartsUpsert(t *testing.T) {
 	}
 
 	// Attempt the UPDATE side of an UPSERT
-	if err = randomize.Struct(seed, &o, reactivepartDBTypes, false, reactivepartPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Reactivepart struct: %s", err)
+	if err = randomize.Struct(seed, &o, reactivePartDBTypes, false, reactivePartPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize ReactivePart struct: %s", err)
 	}
 
 	if err = o.Upsert(ctx, tx, true, nil, boil.Infer(), boil.Infer()); err != nil {
-		t.Errorf("Unable to upsert Reactivepart: %s", err)
+		t.Errorf("Unable to upsert ReactivePart: %s", err)
 	}
 
-	count, err = Reactiveparts().Count(ctx, tx)
+	count, err = ReactiveParts().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}

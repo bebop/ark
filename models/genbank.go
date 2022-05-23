@@ -399,8 +399,8 @@ func (o *Genbank) Seqhashes(mods ...qm.QueryMod) seqhashQuery {
 	}
 
 	queryMods = append(queryMods,
-		qm.InnerJoin("\"genbankfeatures\" on \"seqhash\".\"seqhash\" = \"genbankfeatures\".\"seqhash\""),
-		qm.Where("\"genbankfeatures\".\"genbank\"=?", o.Accession),
+		qm.InnerJoin("\"genbank_features\" on \"seqhash\".\"seqhash\" = \"genbank_features\".\"seqhash\""),
+		qm.Where("\"genbank_features\".\"parent\"=?", o.Accession),
 	)
 
 	return Seqhashes(queryMods...)
@@ -550,10 +550,10 @@ func (genbankL) LoadSeqhashes(ctx context.Context, e boil.ContextExecutor, singu
 	}
 
 	query := NewQuery(
-		qm.Select("\"seqhash\".\"seqhash\", \"seqhash\".\"sequence\", \"seqhash\".\"circular\", \"seqhash\".\"doublestranded\", \"seqhash\".\"seqhashtype\", \"seqhash\".\"translation\", \"a\".\"genbank\""),
+		qm.Select("\"seqhash\".\"seqhash\", \"seqhash\".\"sequence\", \"seqhash\".\"circular\", \"seqhash\".\"doublestranded\", \"seqhash\".\"seqhashtype\", \"seqhash\".\"translation\", \"a\".\"parent\""),
 		qm.From("\"seqhash\""),
-		qm.InnerJoin("\"genbankfeatures\" as \"a\" on \"seqhash\".\"seqhash\" = \"a\".\"seqhash\""),
-		qm.WhereIn("\"a\".\"genbank\" in ?", args...),
+		qm.InnerJoin("\"genbank_features\" as \"a\" on \"seqhash\".\"seqhash\" = \"a\".\"seqhash\""),
+		qm.WhereIn("\"a\".\"parent\" in ?", args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -603,7 +603,7 @@ func (genbankL) LoadSeqhashes(ctx context.Context, e boil.ContextExecutor, singu
 			if foreign.R == nil {
 				foreign.R = &seqhashR{}
 			}
-			foreign.R.Genbanks = append(foreign.R.Genbanks, object)
+			foreign.R.ParentGenbanks = append(foreign.R.ParentGenbanks, object)
 		}
 		return nil
 	}
@@ -616,7 +616,7 @@ func (genbankL) LoadSeqhashes(ctx context.Context, e boil.ContextExecutor, singu
 				if foreign.R == nil {
 					foreign.R = &seqhashR{}
 				}
-				foreign.R.Genbanks = append(foreign.R.Genbanks, local)
+				foreign.R.ParentGenbanks = append(foreign.R.ParentGenbanks, local)
 				break
 			}
 		}
@@ -675,7 +675,7 @@ func (o *Genbank) SetGenbankSeqhash(ctx context.Context, exec boil.ContextExecut
 // AddSeqhashes adds the given related objects to the existing relationships
 // of the genbank, optionally inserting them as new records.
 // Appends related to o.R.Seqhashes.
-// Sets related.R.Genbanks appropriately.
+// Sets related.R.ParentGenbanks appropriately.
 func (o *Genbank) AddSeqhashes(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Seqhash) error {
 	var err error
 	for _, rel := range related {
@@ -687,7 +687,7 @@ func (o *Genbank) AddSeqhashes(ctx context.Context, exec boil.ContextExecutor, i
 	}
 
 	for _, rel := range related {
-		query := "insert into \"genbankfeatures\" (\"genbank\", \"seqhash\") values (?, ?)"
+		query := "insert into \"genbank_features\" (\"parent\", \"seqhash\") values (?, ?)"
 		values := []interface{}{o.Accession, rel.Seqhash}
 
 		if boil.IsDebug(ctx) {
@@ -711,10 +711,10 @@ func (o *Genbank) AddSeqhashes(ctx context.Context, exec boil.ContextExecutor, i
 	for _, rel := range related {
 		if rel.R == nil {
 			rel.R = &seqhashR{
-				Genbanks: GenbankSlice{o},
+				ParentGenbanks: GenbankSlice{o},
 			}
 		} else {
-			rel.R.Genbanks = append(rel.R.Genbanks, o)
+			rel.R.ParentGenbanks = append(rel.R.ParentGenbanks, o)
 		}
 	}
 	return nil
@@ -723,11 +723,11 @@ func (o *Genbank) AddSeqhashes(ctx context.Context, exec boil.ContextExecutor, i
 // SetSeqhashes removes all previously related items of the
 // genbank replacing them completely with the passed
 // in related items, optionally inserting them as new records.
-// Sets o.R.Genbanks's Seqhashes accordingly.
+// Sets o.R.ParentGenbanks's Seqhashes accordingly.
 // Replaces o.R.Seqhashes with related.
-// Sets related.R.Genbanks's Seqhashes accordingly.
+// Sets related.R.ParentGenbanks's Seqhashes accordingly.
 func (o *Genbank) SetSeqhashes(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Seqhash) error {
-	query := "delete from \"genbankfeatures\" where \"genbank\" = ?"
+	query := "delete from \"genbank_features\" where \"parent\" = ?"
 	values := []interface{}{o.Accession}
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -739,7 +739,7 @@ func (o *Genbank) SetSeqhashes(ctx context.Context, exec boil.ContextExecutor, i
 		return errors.Wrap(err, "failed to remove relationships before set")
 	}
 
-	removeSeqhashesFromGenbanksSlice(o, related)
+	removeSeqhashesFromParentGenbanksSlice(o, related)
 	if o.R != nil {
 		o.R.Seqhashes = nil
 	}
@@ -749,7 +749,7 @@ func (o *Genbank) SetSeqhashes(ctx context.Context, exec boil.ContextExecutor, i
 
 // RemoveSeqhashes relationships from objects passed in.
 // Removes related items from R.Seqhashes (uses pointer comparison, removal does not keep order)
-// Sets related.R.Genbanks.
+// Sets related.R.ParentGenbanks.
 func (o *Genbank) RemoveSeqhashes(ctx context.Context, exec boil.ContextExecutor, related ...*Seqhash) error {
 	if len(related) == 0 {
 		return nil
@@ -757,7 +757,7 @@ func (o *Genbank) RemoveSeqhashes(ctx context.Context, exec boil.ContextExecutor
 
 	var err error
 	query := fmt.Sprintf(
-		"delete from \"genbankfeatures\" where \"genbank\" = ? and \"seqhash\" in (%s)",
+		"delete from \"genbank_features\" where \"parent\" = ? and \"seqhash\" in (%s)",
 		strmangle.Placeholders(dialect.UseIndexPlaceholders, len(related), 2, 1),
 	)
 	values := []interface{}{o.Accession}
@@ -774,7 +774,7 @@ func (o *Genbank) RemoveSeqhashes(ctx context.Context, exec boil.ContextExecutor
 	if err != nil {
 		return errors.Wrap(err, "failed to remove relationships before set")
 	}
-	removeSeqhashesFromGenbanksSlice(o, related)
+	removeSeqhashesFromParentGenbanksSlice(o, related)
 	if o.R == nil {
 		return nil
 	}
@@ -797,21 +797,21 @@ func (o *Genbank) RemoveSeqhashes(ctx context.Context, exec boil.ContextExecutor
 	return nil
 }
 
-func removeSeqhashesFromGenbanksSlice(o *Genbank, related []*Seqhash) {
+func removeSeqhashesFromParentGenbanksSlice(o *Genbank, related []*Seqhash) {
 	for _, rel := range related {
 		if rel.R == nil {
 			continue
 		}
-		for i, ri := range rel.R.Genbanks {
+		for i, ri := range rel.R.ParentGenbanks {
 			if !queries.Equal(o.Accession, ri.Accession) {
 				continue
 			}
 
-			ln := len(rel.R.Genbanks)
+			ln := len(rel.R.ParentGenbanks)
 			if ln > 1 && i < ln-1 {
-				rel.R.Genbanks[i] = rel.R.Genbanks[ln-1]
+				rel.R.ParentGenbanks[i] = rel.R.ParentGenbanks[ln-1]
 			}
-			rel.R.Genbanks = rel.R.Genbanks[:ln-1]
+			rel.R.ParentGenbanks = rel.R.ParentGenbanks[:ln-1]
 			break
 		}
 	}

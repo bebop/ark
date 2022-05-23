@@ -21,24 +21,24 @@ var (
 	_ = queries.Equal
 )
 
-func testReactionparticipants(t *testing.T) {
+func testReactionParticipants(t *testing.T) {
 	t.Parallel()
 
-	query := Reactionparticipants()
+	query := ReactionParticipants()
 
 	if query.Query == nil {
 		t.Error("expected a query, got nothing")
 	}
 }
 
-func testReactionparticipantsDelete(t *testing.T) {
+func testReactionParticipantsDelete(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -54,7 +54,7 @@ func testReactionparticipantsDelete(t *testing.T) {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Reactionparticipants().Count(ctx, tx)
+	count, err := ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -64,14 +64,14 @@ func testReactionparticipantsDelete(t *testing.T) {
 	}
 }
 
-func testReactionparticipantsQueryDeleteAll(t *testing.T) {
+func testReactionParticipantsQueryDeleteAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -81,13 +81,13 @@ func testReactionparticipantsQueryDeleteAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	if rowsAff, err := Reactionparticipants().DeleteAll(ctx, tx); err != nil {
+	if rowsAff, err := ReactionParticipants().DeleteAll(ctx, tx); err != nil {
 		t.Error(err)
 	} else if rowsAff != 1 {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Reactionparticipants().Count(ctx, tx)
+	count, err := ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -97,14 +97,14 @@ func testReactionparticipantsQueryDeleteAll(t *testing.T) {
 	}
 }
 
-func testReactionparticipantsSliceDeleteAll(t *testing.T) {
+func testReactionParticipantsSliceDeleteAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -114,7 +114,7 @@ func testReactionparticipantsSliceDeleteAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice := ReactionparticipantSlice{o}
+	slice := ReactionParticipantSlice{o}
 
 	if rowsAff, err := slice.DeleteAll(ctx, tx); err != nil {
 		t.Error(err)
@@ -122,7 +122,7 @@ func testReactionparticipantsSliceDeleteAll(t *testing.T) {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Reactionparticipants().Count(ctx, tx)
+	count, err := ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -132,14 +132,14 @@ func testReactionparticipantsSliceDeleteAll(t *testing.T) {
 	}
 }
 
-func testReactionparticipantsExists(t *testing.T) {
+func testReactionParticipantsExists(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -149,23 +149,23 @@ func testReactionparticipantsExists(t *testing.T) {
 		t.Error(err)
 	}
 
-	e, err := ReactionparticipantExists(ctx, tx, o.Compound, o.Reactionside)
+	e, err := ReactionParticipantExists(ctx, tx, o.Compound, o.Reactionside)
 	if err != nil {
-		t.Errorf("Unable to check if Reactionparticipant exists: %s", err)
+		t.Errorf("Unable to check if ReactionParticipant exists: %s", err)
 	}
 	if !e {
-		t.Errorf("Expected ReactionparticipantExists to return true, but got false.")
+		t.Errorf("Expected ReactionParticipantExists to return true, but got false.")
 	}
 }
 
-func testReactionparticipantsFind(t *testing.T) {
+func testReactionParticipantsFind(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -175,24 +175,24 @@ func testReactionparticipantsFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	reactionparticipantFound, err := FindReactionparticipant(ctx, tx, o.Compound, o.Reactionside)
+	reactionParticipantFound, err := FindReactionParticipant(ctx, tx, o.Compound, o.Reactionside)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if reactionparticipantFound == nil {
+	if reactionParticipantFound == nil {
 		t.Error("want a record, got nil")
 	}
 }
 
-func testReactionparticipantsBind(t *testing.T) {
+func testReactionParticipantsBind(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -202,19 +202,19 @@ func testReactionparticipantsBind(t *testing.T) {
 		t.Error(err)
 	}
 
-	if err = Reactionparticipants().Bind(ctx, tx, o); err != nil {
+	if err = ReactionParticipants().Bind(ctx, tx, o); err != nil {
 		t.Error(err)
 	}
 }
 
-func testReactionparticipantsOne(t *testing.T) {
+func testReactionParticipantsOne(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -224,38 +224,38 @@ func testReactionparticipantsOne(t *testing.T) {
 		t.Error(err)
 	}
 
-	if x, err := Reactionparticipants().One(ctx, tx); err != nil {
+	if x, err := ReactionParticipants().One(ctx, tx); err != nil {
 		t.Error(err)
 	} else if x == nil {
 		t.Error("expected to get a non nil record")
 	}
 }
 
-func testReactionparticipantsAll(t *testing.T) {
+func testReactionParticipantsAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	reactionparticipantOne := &Reactionparticipant{}
-	reactionparticipantTwo := &Reactionparticipant{}
-	if err = randomize.Struct(seed, reactionparticipantOne, reactionparticipantDBTypes, false, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	reactionParticipantOne := &ReactionParticipant{}
+	reactionParticipantTwo := &ReactionParticipant{}
+	if err = randomize.Struct(seed, reactionParticipantOne, reactionParticipantDBTypes, false, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
-	if err = randomize.Struct(seed, reactionparticipantTwo, reactionparticipantDBTypes, false, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	if err = randomize.Struct(seed, reactionParticipantTwo, reactionParticipantDBTypes, false, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = reactionparticipantOne.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = reactionParticipantOne.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
-	if err = reactionparticipantTwo.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = reactionParticipantTwo.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
 
-	slice, err := Reactionparticipants().All(ctx, tx)
+	slice, err := ReactionParticipants().All(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -265,31 +265,31 @@ func testReactionparticipantsAll(t *testing.T) {
 	}
 }
 
-func testReactionparticipantsCount(t *testing.T) {
+func testReactionParticipantsCount(t *testing.T) {
 	t.Parallel()
 
 	var err error
 	seed := randomize.NewSeed()
-	reactionparticipantOne := &Reactionparticipant{}
-	reactionparticipantTwo := &Reactionparticipant{}
-	if err = randomize.Struct(seed, reactionparticipantOne, reactionparticipantDBTypes, false, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	reactionParticipantOne := &ReactionParticipant{}
+	reactionParticipantTwo := &ReactionParticipant{}
+	if err = randomize.Struct(seed, reactionParticipantOne, reactionParticipantDBTypes, false, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
-	if err = randomize.Struct(seed, reactionparticipantTwo, reactionparticipantDBTypes, false, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	if err = randomize.Struct(seed, reactionParticipantTwo, reactionParticipantDBTypes, false, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = reactionparticipantOne.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = reactionParticipantOne.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
-	if err = reactionparticipantTwo.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = reactionParticipantTwo.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
 
-	count, err := Reactionparticipants().Count(ctx, tx)
+	count, err := ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -299,155 +299,155 @@ func testReactionparticipantsCount(t *testing.T) {
 	}
 }
 
-func reactionparticipantBeforeInsertHook(ctx context.Context, e boil.ContextExecutor, o *Reactionparticipant) error {
-	*o = Reactionparticipant{}
+func reactionParticipantBeforeInsertHook(ctx context.Context, e boil.ContextExecutor, o *ReactionParticipant) error {
+	*o = ReactionParticipant{}
 	return nil
 }
 
-func reactionparticipantAfterInsertHook(ctx context.Context, e boil.ContextExecutor, o *Reactionparticipant) error {
-	*o = Reactionparticipant{}
+func reactionParticipantAfterInsertHook(ctx context.Context, e boil.ContextExecutor, o *ReactionParticipant) error {
+	*o = ReactionParticipant{}
 	return nil
 }
 
-func reactionparticipantAfterSelectHook(ctx context.Context, e boil.ContextExecutor, o *Reactionparticipant) error {
-	*o = Reactionparticipant{}
+func reactionParticipantAfterSelectHook(ctx context.Context, e boil.ContextExecutor, o *ReactionParticipant) error {
+	*o = ReactionParticipant{}
 	return nil
 }
 
-func reactionparticipantBeforeUpdateHook(ctx context.Context, e boil.ContextExecutor, o *Reactionparticipant) error {
-	*o = Reactionparticipant{}
+func reactionParticipantBeforeUpdateHook(ctx context.Context, e boil.ContextExecutor, o *ReactionParticipant) error {
+	*o = ReactionParticipant{}
 	return nil
 }
 
-func reactionparticipantAfterUpdateHook(ctx context.Context, e boil.ContextExecutor, o *Reactionparticipant) error {
-	*o = Reactionparticipant{}
+func reactionParticipantAfterUpdateHook(ctx context.Context, e boil.ContextExecutor, o *ReactionParticipant) error {
+	*o = ReactionParticipant{}
 	return nil
 }
 
-func reactionparticipantBeforeDeleteHook(ctx context.Context, e boil.ContextExecutor, o *Reactionparticipant) error {
-	*o = Reactionparticipant{}
+func reactionParticipantBeforeDeleteHook(ctx context.Context, e boil.ContextExecutor, o *ReactionParticipant) error {
+	*o = ReactionParticipant{}
 	return nil
 }
 
-func reactionparticipantAfterDeleteHook(ctx context.Context, e boil.ContextExecutor, o *Reactionparticipant) error {
-	*o = Reactionparticipant{}
+func reactionParticipantAfterDeleteHook(ctx context.Context, e boil.ContextExecutor, o *ReactionParticipant) error {
+	*o = ReactionParticipant{}
 	return nil
 }
 
-func reactionparticipantBeforeUpsertHook(ctx context.Context, e boil.ContextExecutor, o *Reactionparticipant) error {
-	*o = Reactionparticipant{}
+func reactionParticipantBeforeUpsertHook(ctx context.Context, e boil.ContextExecutor, o *ReactionParticipant) error {
+	*o = ReactionParticipant{}
 	return nil
 }
 
-func reactionparticipantAfterUpsertHook(ctx context.Context, e boil.ContextExecutor, o *Reactionparticipant) error {
-	*o = Reactionparticipant{}
+func reactionParticipantAfterUpsertHook(ctx context.Context, e boil.ContextExecutor, o *ReactionParticipant) error {
+	*o = ReactionParticipant{}
 	return nil
 }
 
-func testReactionparticipantsHooks(t *testing.T) {
+func testReactionParticipantsHooks(t *testing.T) {
 	t.Parallel()
 
 	var err error
 
 	ctx := context.Background()
-	empty := &Reactionparticipant{}
-	o := &Reactionparticipant{}
+	empty := &ReactionParticipant{}
+	o := &ReactionParticipant{}
 
 	seed := randomize.NewSeed()
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, false); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant object: %s", err)
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, false); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant object: %s", err)
 	}
 
-	AddReactionparticipantHook(boil.BeforeInsertHook, reactionparticipantBeforeInsertHook)
+	AddReactionParticipantHook(boil.BeforeInsertHook, reactionParticipantBeforeInsertHook)
 	if err = o.doBeforeInsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeInsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeInsertHook function to empty object, but got: %#v", o)
 	}
-	reactionparticipantBeforeInsertHooks = []ReactionparticipantHook{}
+	reactionParticipantBeforeInsertHooks = []ReactionParticipantHook{}
 
-	AddReactionparticipantHook(boil.AfterInsertHook, reactionparticipantAfterInsertHook)
+	AddReactionParticipantHook(boil.AfterInsertHook, reactionParticipantAfterInsertHook)
 	if err = o.doAfterInsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterInsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterInsertHook function to empty object, but got: %#v", o)
 	}
-	reactionparticipantAfterInsertHooks = []ReactionparticipantHook{}
+	reactionParticipantAfterInsertHooks = []ReactionParticipantHook{}
 
-	AddReactionparticipantHook(boil.AfterSelectHook, reactionparticipantAfterSelectHook)
+	AddReactionParticipantHook(boil.AfterSelectHook, reactionParticipantAfterSelectHook)
 	if err = o.doAfterSelectHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterSelectHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterSelectHook function to empty object, but got: %#v", o)
 	}
-	reactionparticipantAfterSelectHooks = []ReactionparticipantHook{}
+	reactionParticipantAfterSelectHooks = []ReactionParticipantHook{}
 
-	AddReactionparticipantHook(boil.BeforeUpdateHook, reactionparticipantBeforeUpdateHook)
+	AddReactionParticipantHook(boil.BeforeUpdateHook, reactionParticipantBeforeUpdateHook)
 	if err = o.doBeforeUpdateHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeUpdateHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeUpdateHook function to empty object, but got: %#v", o)
 	}
-	reactionparticipantBeforeUpdateHooks = []ReactionparticipantHook{}
+	reactionParticipantBeforeUpdateHooks = []ReactionParticipantHook{}
 
-	AddReactionparticipantHook(boil.AfterUpdateHook, reactionparticipantAfterUpdateHook)
+	AddReactionParticipantHook(boil.AfterUpdateHook, reactionParticipantAfterUpdateHook)
 	if err = o.doAfterUpdateHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterUpdateHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterUpdateHook function to empty object, but got: %#v", o)
 	}
-	reactionparticipantAfterUpdateHooks = []ReactionparticipantHook{}
+	reactionParticipantAfterUpdateHooks = []ReactionParticipantHook{}
 
-	AddReactionparticipantHook(boil.BeforeDeleteHook, reactionparticipantBeforeDeleteHook)
+	AddReactionParticipantHook(boil.BeforeDeleteHook, reactionParticipantBeforeDeleteHook)
 	if err = o.doBeforeDeleteHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeDeleteHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeDeleteHook function to empty object, but got: %#v", o)
 	}
-	reactionparticipantBeforeDeleteHooks = []ReactionparticipantHook{}
+	reactionParticipantBeforeDeleteHooks = []ReactionParticipantHook{}
 
-	AddReactionparticipantHook(boil.AfterDeleteHook, reactionparticipantAfterDeleteHook)
+	AddReactionParticipantHook(boil.AfterDeleteHook, reactionParticipantAfterDeleteHook)
 	if err = o.doAfterDeleteHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterDeleteHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterDeleteHook function to empty object, but got: %#v", o)
 	}
-	reactionparticipantAfterDeleteHooks = []ReactionparticipantHook{}
+	reactionParticipantAfterDeleteHooks = []ReactionParticipantHook{}
 
-	AddReactionparticipantHook(boil.BeforeUpsertHook, reactionparticipantBeforeUpsertHook)
+	AddReactionParticipantHook(boil.BeforeUpsertHook, reactionParticipantBeforeUpsertHook)
 	if err = o.doBeforeUpsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeUpsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeUpsertHook function to empty object, but got: %#v", o)
 	}
-	reactionparticipantBeforeUpsertHooks = []ReactionparticipantHook{}
+	reactionParticipantBeforeUpsertHooks = []ReactionParticipantHook{}
 
-	AddReactionparticipantHook(boil.AfterUpsertHook, reactionparticipantAfterUpsertHook)
+	AddReactionParticipantHook(boil.AfterUpsertHook, reactionParticipantAfterUpsertHook)
 	if err = o.doAfterUpsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterUpsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterUpsertHook function to empty object, but got: %#v", o)
 	}
-	reactionparticipantAfterUpsertHooks = []ReactionparticipantHook{}
+	reactionParticipantAfterUpsertHooks = []ReactionParticipantHook{}
 }
 
-func testReactionparticipantsInsert(t *testing.T) {
+func testReactionParticipantsInsert(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -457,7 +457,7 @@ func testReactionparticipantsInsert(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Reactionparticipants().Count(ctx, tx)
+	count, err := ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -467,24 +467,24 @@ func testReactionparticipantsInsert(t *testing.T) {
 	}
 }
 
-func testReactionparticipantsInsertWhitelist(t *testing.T) {
+func testReactionParticipantsInsertWhitelist(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = o.Insert(ctx, tx, boil.Whitelist(reactionparticipantColumnsWithoutDefault...)); err != nil {
+	if err = o.Insert(ctx, tx, boil.Whitelist(reactionParticipantColumnsWithoutDefault...)); err != nil {
 		t.Error(err)
 	}
 
-	count, err := Reactionparticipants().Count(ctx, tx)
+	count, err := ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -494,17 +494,17 @@ func testReactionparticipantsInsertWhitelist(t *testing.T) {
 	}
 }
 
-func testReactionparticipantToOneReactionsideUsingReactionparticipantReactionside(t *testing.T) {
+func testReactionParticipantToOneReactionsideUsingReactionParticipantReactionside(t *testing.T) {
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
-	var local Reactionparticipant
+	var local ReactionParticipant
 	var foreign Reactionside
 
 	seed := randomize.NewSeed()
-	if err := randomize.Struct(seed, &local, reactionparticipantDBTypes, false, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	if err := randomize.Struct(seed, &local, reactionParticipantDBTypes, false, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 	if err := randomize.Struct(seed, &foreign, reactionsideDBTypes, true, reactionsideColumnsWithDefault...); err != nil {
 		t.Errorf("Unable to randomize Reactionside struct: %s", err)
@@ -519,7 +519,7 @@ func testReactionparticipantToOneReactionsideUsingReactionparticipantReactionsid
 		t.Fatal(err)
 	}
 
-	check, err := local.ReactionparticipantReactionside().One(ctx, tx)
+	check, err := local.ReactionParticipantReactionside().One(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -528,34 +528,34 @@ func testReactionparticipantToOneReactionsideUsingReactionparticipantReactionsid
 		t.Errorf("want: %v, got %v", foreign.Accession, check.Accession)
 	}
 
-	slice := ReactionparticipantSlice{&local}
-	if err = local.L.LoadReactionparticipantReactionside(ctx, tx, false, (*[]*Reactionparticipant)(&slice), nil); err != nil {
+	slice := ReactionParticipantSlice{&local}
+	if err = local.L.LoadReactionParticipantReactionside(ctx, tx, false, (*[]*ReactionParticipant)(&slice), nil); err != nil {
 		t.Fatal(err)
 	}
-	if local.R.ReactionparticipantReactionside == nil {
+	if local.R.ReactionParticipantReactionside == nil {
 		t.Error("struct should have been eager loaded")
 	}
 
-	local.R.ReactionparticipantReactionside = nil
-	if err = local.L.LoadReactionparticipantReactionside(ctx, tx, true, &local, nil); err != nil {
+	local.R.ReactionParticipantReactionside = nil
+	if err = local.L.LoadReactionParticipantReactionside(ctx, tx, true, &local, nil); err != nil {
 		t.Fatal(err)
 	}
-	if local.R.ReactionparticipantReactionside == nil {
+	if local.R.ReactionParticipantReactionside == nil {
 		t.Error("struct should have been eager loaded")
 	}
 }
 
-func testReactionparticipantToOneCompoundUsingReactionparticipantCompound(t *testing.T) {
+func testReactionParticipantToOneCompoundUsingReactionParticipantCompound(t *testing.T) {
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
-	var local Reactionparticipant
+	var local ReactionParticipant
 	var foreign Compound
 
 	seed := randomize.NewSeed()
-	if err := randomize.Struct(seed, &local, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	if err := randomize.Struct(seed, &local, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 	if err := randomize.Struct(seed, &foreign, compoundDBTypes, true, compoundColumnsWithDefault...); err != nil {
 		t.Errorf("Unable to randomize Compound struct: %s", err)
@@ -570,7 +570,7 @@ func testReactionparticipantToOneCompoundUsingReactionparticipantCompound(t *tes
 		t.Fatal(err)
 	}
 
-	check, err := local.ReactionparticipantCompound().One(ctx, tx)
+	check, err := local.ReactionParticipantCompound().One(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -579,35 +579,35 @@ func testReactionparticipantToOneCompoundUsingReactionparticipantCompound(t *tes
 		t.Errorf("want: %v, got %v", foreign.Accession, check.Accession)
 	}
 
-	slice := ReactionparticipantSlice{&local}
-	if err = local.L.LoadReactionparticipantCompound(ctx, tx, false, (*[]*Reactionparticipant)(&slice), nil); err != nil {
+	slice := ReactionParticipantSlice{&local}
+	if err = local.L.LoadReactionParticipantCompound(ctx, tx, false, (*[]*ReactionParticipant)(&slice), nil); err != nil {
 		t.Fatal(err)
 	}
-	if local.R.ReactionparticipantCompound == nil {
+	if local.R.ReactionParticipantCompound == nil {
 		t.Error("struct should have been eager loaded")
 	}
 
-	local.R.ReactionparticipantCompound = nil
-	if err = local.L.LoadReactionparticipantCompound(ctx, tx, true, &local, nil); err != nil {
+	local.R.ReactionParticipantCompound = nil
+	if err = local.L.LoadReactionParticipantCompound(ctx, tx, true, &local, nil); err != nil {
 		t.Fatal(err)
 	}
-	if local.R.ReactionparticipantCompound == nil {
+	if local.R.ReactionParticipantCompound == nil {
 		t.Error("struct should have been eager loaded")
 	}
 }
 
-func testReactionparticipantToOneSetOpReactionsideUsingReactionparticipantReactionside(t *testing.T) {
+func testReactionParticipantToOneSetOpReactionsideUsingReactionParticipantReactionside(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
-	var a Reactionparticipant
+	var a ReactionParticipant
 	var b, c Reactionside
 
 	seed := randomize.NewSeed()
-	if err = randomize.Struct(seed, &a, reactionparticipantDBTypes, false, strmangle.SetComplement(reactionparticipantPrimaryKeyColumns, reactionparticipantColumnsWithoutDefault)...); err != nil {
+	if err = randomize.Struct(seed, &a, reactionParticipantDBTypes, false, strmangle.SetComplement(reactionParticipantPrimaryKeyColumns, reactionParticipantColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
 	if err = randomize.Struct(seed, &b, reactionsideDBTypes, false, strmangle.SetComplement(reactionsidePrimaryKeyColumns, reactionsideColumnsWithoutDefault)...); err != nil {
@@ -625,23 +625,23 @@ func testReactionparticipantToOneSetOpReactionsideUsingReactionparticipantReacti
 	}
 
 	for i, x := range []*Reactionside{&b, &c} {
-		err = a.SetReactionparticipantReactionside(ctx, tx, i != 0, x)
+		err = a.SetReactionParticipantReactionside(ctx, tx, i != 0, x)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if a.R.ReactionparticipantReactionside != x {
+		if a.R.ReactionParticipantReactionside != x {
 			t.Error("relationship struct not set to correct value")
 		}
 
-		if x.R.Reactionparticipants[0] != &a {
+		if x.R.ReactionParticipants[0] != &a {
 			t.Error("failed to append to foreign relationship struct")
 		}
 		if !queries.Equal(a.Reactionside, x.Accession) {
 			t.Error("foreign key was wrong value", a.Reactionside)
 		}
 
-		if exists, err := ReactionparticipantExists(ctx, tx, a.Compound, a.Reactionside); err != nil {
+		if exists, err := ReactionParticipantExists(ctx, tx, a.Compound, a.Reactionside); err != nil {
 			t.Fatal(err)
 		} else if !exists {
 			t.Error("want 'a' to exist")
@@ -649,18 +649,18 @@ func testReactionparticipantToOneSetOpReactionsideUsingReactionparticipantReacti
 
 	}
 }
-func testReactionparticipantToOneSetOpCompoundUsingReactionparticipantCompound(t *testing.T) {
+func testReactionParticipantToOneSetOpCompoundUsingReactionParticipantCompound(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
-	var a Reactionparticipant
+	var a ReactionParticipant
 	var b, c Compound
 
 	seed := randomize.NewSeed()
-	if err = randomize.Struct(seed, &a, reactionparticipantDBTypes, false, strmangle.SetComplement(reactionparticipantPrimaryKeyColumns, reactionparticipantColumnsWithoutDefault)...); err != nil {
+	if err = randomize.Struct(seed, &a, reactionParticipantDBTypes, false, strmangle.SetComplement(reactionParticipantPrimaryKeyColumns, reactionParticipantColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
 	if err = randomize.Struct(seed, &b, compoundDBTypes, false, strmangle.SetComplement(compoundPrimaryKeyColumns, compoundColumnsWithoutDefault)...); err != nil {
@@ -678,23 +678,23 @@ func testReactionparticipantToOneSetOpCompoundUsingReactionparticipantCompound(t
 	}
 
 	for i, x := range []*Compound{&b, &c} {
-		err = a.SetReactionparticipantCompound(ctx, tx, i != 0, x)
+		err = a.SetReactionParticipantCompound(ctx, tx, i != 0, x)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if a.R.ReactionparticipantCompound != x {
+		if a.R.ReactionParticipantCompound != x {
 			t.Error("relationship struct not set to correct value")
 		}
 
-		if x.R.Reactionparticipants[0] != &a {
+		if x.R.ReactionParticipants[0] != &a {
 			t.Error("failed to append to foreign relationship struct")
 		}
 		if !queries.Equal(a.Compound, x.Accession) {
 			t.Error("foreign key was wrong value", a.Compound)
 		}
 
-		if exists, err := ReactionparticipantExists(ctx, tx, a.Compound, a.Reactionside); err != nil {
+		if exists, err := ReactionParticipantExists(ctx, tx, a.Compound, a.Reactionside); err != nil {
 			t.Fatal(err)
 		} else if !exists {
 			t.Error("want 'a' to exist")
@@ -703,18 +703,18 @@ func testReactionparticipantToOneSetOpCompoundUsingReactionparticipantCompound(t
 	}
 }
 
-func testReactionparticipantToOneRemoveOpCompoundUsingReactionparticipantCompound(t *testing.T) {
+func testReactionParticipantToOneRemoveOpCompoundUsingReactionParticipantCompound(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
-	var a Reactionparticipant
+	var a ReactionParticipant
 	var b Compound
 
 	seed := randomize.NewSeed()
-	if err = randomize.Struct(seed, &a, reactionparticipantDBTypes, false, strmangle.SetComplement(reactionparticipantPrimaryKeyColumns, reactionparticipantColumnsWithoutDefault)...); err != nil {
+	if err = randomize.Struct(seed, &a, reactionParticipantDBTypes, false, strmangle.SetComplement(reactionParticipantPrimaryKeyColumns, reactionParticipantColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
 	if err = randomize.Struct(seed, &b, compoundDBTypes, false, strmangle.SetComplement(compoundPrimaryKeyColumns, compoundColumnsWithoutDefault)...); err != nil {
@@ -725,15 +725,15 @@ func testReactionparticipantToOneRemoveOpCompoundUsingReactionparticipantCompoun
 		t.Fatal(err)
 	}
 
-	if err = a.SetReactionparticipantCompound(ctx, tx, true, &b); err != nil {
+	if err = a.SetReactionParticipantCompound(ctx, tx, true, &b); err != nil {
 		t.Fatal(err)
 	}
 
-	if err = a.RemoveReactionparticipantCompound(ctx, tx, &b); err != nil {
+	if err = a.RemoveReactionParticipantCompound(ctx, tx, &b); err != nil {
 		t.Error("failed to remove relationship")
 	}
 
-	count, err := a.ReactionparticipantCompound().Count(ctx, tx)
+	count, err := a.ReactionParticipantCompound().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -741,7 +741,7 @@ func testReactionparticipantToOneRemoveOpCompoundUsingReactionparticipantCompoun
 		t.Error("want no relationships remaining")
 	}
 
-	if a.R.ReactionparticipantCompound != nil {
+	if a.R.ReactionParticipantCompound != nil {
 		t.Error("R struct entry should be nil")
 	}
 
@@ -749,19 +749,19 @@ func testReactionparticipantToOneRemoveOpCompoundUsingReactionparticipantCompoun
 		t.Error("foreign key value should be nil")
 	}
 
-	if len(b.R.Reactionparticipants) != 0 {
+	if len(b.R.ReactionParticipants) != 0 {
 		t.Error("failed to remove a from b's relationships")
 	}
 }
 
-func testReactionparticipantsReload(t *testing.T) {
+func testReactionParticipantsReload(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -776,14 +776,14 @@ func testReactionparticipantsReload(t *testing.T) {
 	}
 }
 
-func testReactionparticipantsReloadAll(t *testing.T) {
+func testReactionParticipantsReloadAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -793,21 +793,21 @@ func testReactionparticipantsReloadAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice := ReactionparticipantSlice{o}
+	slice := ReactionParticipantSlice{o}
 
 	if err = slice.ReloadAll(ctx, tx); err != nil {
 		t.Error(err)
 	}
 }
 
-func testReactionparticipantsSelect(t *testing.T) {
+func testReactionParticipantsSelect(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -817,7 +817,7 @@ func testReactionparticipantsSelect(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice, err := Reactionparticipants().All(ctx, tx)
+	slice, err := ReactionParticipants().All(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -828,25 +828,25 @@ func testReactionparticipantsSelect(t *testing.T) {
 }
 
 var (
-	reactionparticipantDBTypes = map[string]string{`Compound`: `TEXT`, `Reactionside`: `TEXT`, `Contains`: `INT`, `Containsn`: `BOOL`, `Minus`: `BOOL`, `Plus`: `BOOL`}
+	reactionParticipantDBTypes = map[string]string{`Compound`: `TEXT`, `Reactionside`: `TEXT`, `Contains`: `INT`, `ContainsN`: `BOOL`, `Minus`: `BOOL`, `Plus`: `BOOL`}
 	_                          = bytes.MinRead
 )
 
-func testReactionparticipantsUpdate(t *testing.T) {
+func testReactionParticipantsUpdate(t *testing.T) {
 	t.Parallel()
 
-	if 0 == len(reactionparticipantPrimaryKeyColumns) {
+	if 0 == len(reactionParticipantPrimaryKeyColumns) {
 		t.Skip("Skipping table with no primary key columns")
 	}
-	if len(reactionparticipantAllColumns) == len(reactionparticipantPrimaryKeyColumns) {
+	if len(reactionParticipantAllColumns) == len(reactionParticipantPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -856,7 +856,7 @@ func testReactionparticipantsUpdate(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Reactionparticipants().Count(ctx, tx)
+	count, err := ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -865,8 +865,8 @@ func testReactionparticipantsUpdate(t *testing.T) {
 		t.Error("want one record, got:", count)
 	}
 
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	if rowsAff, err := o.Update(ctx, tx, boil.Infer()); err != nil {
@@ -876,18 +876,18 @@ func testReactionparticipantsUpdate(t *testing.T) {
 	}
 }
 
-func testReactionparticipantsSliceUpdateAll(t *testing.T) {
+func testReactionParticipantsSliceUpdateAll(t *testing.T) {
 	t.Parallel()
 
-	if len(reactionparticipantAllColumns) == len(reactionparticipantPrimaryKeyColumns) {
+	if len(reactionParticipantAllColumns) == len(reactionParticipantPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Reactionparticipant{}
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := &ReactionParticipant{}
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -897,7 +897,7 @@ func testReactionparticipantsSliceUpdateAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Reactionparticipants().Count(ctx, tx)
+	count, err := ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -906,18 +906,18 @@ func testReactionparticipantsSliceUpdateAll(t *testing.T) {
 		t.Error("want one record, got:", count)
 	}
 
-	if err = randomize.Struct(seed, o, reactionparticipantDBTypes, true, reactionparticipantPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	if err = randomize.Struct(seed, o, reactionParticipantDBTypes, true, reactionParticipantPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	// Remove Primary keys and unique columns from what we plan to update
 	var fields []string
-	if strmangle.StringSliceMatch(reactionparticipantAllColumns, reactionparticipantPrimaryKeyColumns) {
-		fields = reactionparticipantAllColumns
+	if strmangle.StringSliceMatch(reactionParticipantAllColumns, reactionParticipantPrimaryKeyColumns) {
+		fields = reactionParticipantAllColumns
 	} else {
 		fields = strmangle.SetComplement(
-			reactionparticipantAllColumns,
-			reactionparticipantPrimaryKeyColumns,
+			reactionParticipantAllColumns,
+			reactionParticipantPrimaryKeyColumns,
 		)
 	}
 
@@ -935,7 +935,7 @@ func testReactionparticipantsSliceUpdateAll(t *testing.T) {
 		}
 	}
 
-	slice := ReactionparticipantSlice{o}
+	slice := ReactionParticipantSlice{o}
 	if rowsAff, err := slice.UpdateAll(ctx, tx, updateMap); err != nil {
 		t.Error(err)
 	} else if rowsAff != 1 {
@@ -943,28 +943,28 @@ func testReactionparticipantsSliceUpdateAll(t *testing.T) {
 	}
 }
 
-func testReactionparticipantsUpsert(t *testing.T) {
+func testReactionParticipantsUpsert(t *testing.T) {
 	t.Parallel()
-	if len(reactionparticipantAllColumns) == len(reactionparticipantPrimaryKeyColumns) {
+	if len(reactionParticipantAllColumns) == len(reactionParticipantPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
 	// Attempt the INSERT side of an UPSERT
-	o := Reactionparticipant{}
-	if err = randomize.Struct(seed, &o, reactionparticipantDBTypes, true); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	o := ReactionParticipant{}
+	if err = randomize.Struct(seed, &o, reactionParticipantDBTypes, true); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 	if err = o.Upsert(ctx, tx, false, nil, boil.Infer(), boil.Infer()); err != nil {
-		t.Errorf("Unable to upsert Reactionparticipant: %s", err)
+		t.Errorf("Unable to upsert ReactionParticipant: %s", err)
 	}
 
-	count, err := Reactionparticipants().Count(ctx, tx)
+	count, err := ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -973,15 +973,15 @@ func testReactionparticipantsUpsert(t *testing.T) {
 	}
 
 	// Attempt the UPDATE side of an UPSERT
-	if err = randomize.Struct(seed, &o, reactionparticipantDBTypes, false, reactionparticipantPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Reactionparticipant struct: %s", err)
+	if err = randomize.Struct(seed, &o, reactionParticipantDBTypes, false, reactionParticipantPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize ReactionParticipant struct: %s", err)
 	}
 
 	if err = o.Upsert(ctx, tx, true, nil, boil.Infer(), boil.Infer()); err != nil {
-		t.Errorf("Unable to upsert Reactionparticipant: %s", err)
+		t.Errorf("Unable to upsert ReactionParticipant: %s", err)
 	}
 
-	count, err = Reactionparticipants().Count(ctx, tx)
+	count, err = ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}

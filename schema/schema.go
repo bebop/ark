@@ -63,7 +63,7 @@ func CreateSchema() string {
 		NAME                           = "name"
 		COMPOUND                       = "compound"
 		CHEBI                          = "chebi"
-		HTMLNAME                       = "htmlname"
+		HTMLNAME                       = "html_name"
 		REACTION                       = "reaction"
 		REACTIONSIDE                   = "reactionside"
 		UNIPROT                        = "uniprot"
@@ -94,13 +94,13 @@ func CreateSchema() string {
 	tableStringSlice = append(tableStringSlice, genbankTableString)
 
 	// create genbank features table
-	genbankfeatures := sqlbuilder.NewCreateTableBuilder()
-	genbankfeatures.CreateTable("genbankfeatures").IfNotExists()
-	genbankfeatures.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
-	genbankfeatures.Define(GENBANK, TEXT, NOTNULL, "REFERENCES genbank(accession)")
-	genbankfeatures.Define("PRIMARY KEY(", SEQHASH, ", ", GENBANK, ")")
-	genbankfeaturesTableString, _ := genbankfeatures.Build()
-	tableStringSlice = append(tableStringSlice, genbankfeaturesTableString)
+	genbankFeatures := sqlbuilder.NewCreateTableBuilder()
+	genbankFeatures.CreateTable("genbank_features").IfNotExists()
+	genbankFeatures.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
+	genbankFeatures.Define("parent", TEXT, NOTNULL, "REFERENCES genbank(accession)")
+	genbankFeatures.Define("PRIMARY KEY(", SEQHASH, ", ", "parent", ")")
+	genbankFeaturesTableString, _ := genbankFeatures.Build()
+	tableStringSlice = append(tableStringSlice, genbankFeaturesTableString)
 
 	// create uniprot table
 	uniprot := sqlbuilder.NewCreateTableBuilder()
@@ -117,7 +117,7 @@ func CreateSchema() string {
 	chebi := sqlbuilder.NewCreateTableBuilder()
 	chebi.CreateTable(CHEBI).IfNotExists()
 	chebi.Define(ACCESSION, TEXT, PRIMARYKEY)
-	chebi.Define("subclassof", TEXT, REFERENCECHEBIACCESSION)
+	chebi.Define("subclass_of", TEXT, REFERENCECHEBIACCESSION)
 	chebiTableString, _ := chebi.Build()
 	tableStringSlice = append(tableStringSlice, chebiTableString)
 
@@ -132,21 +132,21 @@ func CreateSchema() string {
 	compound.Define("formula", TEXT)
 	compound.Define("charge", TEXT)
 	compound.Define(CHEBI, TEXT, REFERENCECHEBIACCESSION)
-	compound.Define("polymerizationindex", TEXT)
-	compound.Define("compoundtype", TEXT, NOTNULL, "CHECK(compoundtype IN ('SmallMolecule', 'Polymer', 'GenericPolypeptide', 'GenericPolynucleotide', 'GenericHeteropolysaccharide'))")
+	compound.Define("polymerization_index", TEXT)
+	compound.Define("compound_type", TEXT, NOTNULL, "CHECK(compound_type IN ('small_molecule', 'polymer', 'generic_polypeptide', 'generic_polynucleotide', 'generic_heteropolysaccharide'))")
 	compoundTableString, _ := compound.Build()
 	tableStringSlice = append(tableStringSlice, compoundTableString)
 
-	// create reactivepart table
-	reactivepart := sqlbuilder.NewCreateTableBuilder()
-	reactivepart.CreateTable("reactivepart").IfNotExists()
-	reactivepart.Define(ID, INTEGER)
-	reactivepart.Define(ACCESSION, TEXT, PRIMARYKEY)
-	reactivepart.Define(NAME, TEXT)
-	reactivepart.Define(HTMLNAME, TEXT)
-	reactivepart.Define(COMPOUND, TEXT, NOTNULL, REFERENCECOMPOUNDACCESSION)
-	reactivepartTableString, _ := reactivepart.Build()
-	tableStringSlice = append(tableStringSlice, reactivepartTableString)
+	// create reactivePart table
+	reactivePart := sqlbuilder.NewCreateTableBuilder()
+	reactivePart.CreateTable("reactive_part").IfNotExists()
+	reactivePart.Define(ID, INTEGER)
+	reactivePart.Define(ACCESSION, TEXT, PRIMARYKEY)
+	reactivePart.Define(NAME, TEXT)
+	reactivePart.Define(HTMLNAME, TEXT)
+	reactivePart.Define(COMPOUND, TEXT, NOTNULL, REFERENCECOMPOUNDACCESSION)
+	reactivePartTableString, _ := reactivePart.Build()
+	tableStringSlice = append(tableStringSlice, reactivePartTableString)
 
 	// create reaction table
 	reaction := sqlbuilder.NewCreateTableBuilder()
@@ -157,9 +157,9 @@ func CreateSchema() string {
 	reaction.Define("status", TEXT)
 	reaction.Define("comment", TEXT)
 	reaction.Define("equation", TEXT)
-	reaction.Define("htmlequation", TEXT)
-	reaction.Define("ischemicallybalanced", BOOL, NOTNULL, DEFAULTTRUE)
-	reaction.Define("istransport", BOOL, NOTNULL, DEFAULTFALSE)
+	reaction.Define("html_equation", TEXT)
+	reaction.Define("is_chemically_balanced", BOOL, NOTNULL, DEFAULTTRUE)
+	reaction.Define("is_transport", BOOL, NOTNULL, DEFAULTFALSE)
 	reaction.Define("ec", TEXT)
 	reaction.Define("location", TEXT)
 	reactionTableString, _ := reaction.Build()
@@ -172,27 +172,27 @@ func CreateSchema() string {
 	reactionsideTableString, _ := reactionside.Build()
 	tableStringSlice = append(tableStringSlice, reactionsideTableString)
 
-	// create reactionsidereaction table
-	reactionsidereaction := sqlbuilder.NewCreateTableBuilder()
-	reactionsidereaction.CreateTable("reactionsidereaction").IfNotExists()
-	reactionsidereaction.Define(REACTION, TEXT, NOTNULL, REFERENCEREACTIONACCESSION)
-	reactionsidereaction.Define(REACTIONSIDE, TEXT, NOTNULL, REFERENCEREACTIONSIDEACCESSION)
-	reactionsidereaction.Define("reactionsidereactiontype", TEXT, NOTNULL, "CHECK(reactionsidereactiontype IN ('substrateorproduct', 'substrate', 'product'))")
-	reactionsidereaction.Define("PRIMARY KEY(", REACTION, ", ", REACTIONSIDE, ")")
-	reactionsidereactionTableString, _ := reactionsidereaction.Build()
-	tableStringSlice = append(tableStringSlice, reactionsidereactionTableString)
+	// create reactionside_reaction table
+	reactionsideReaction := sqlbuilder.NewCreateTableBuilder()
+	reactionsideReaction.CreateTable("reactionside_reaction").IfNotExists()
+	reactionsideReaction.Define(REACTION, TEXT, NOTNULL, REFERENCEREACTIONACCESSION)
+	reactionsideReaction.Define(REACTIONSIDE, TEXT, NOTNULL, REFERENCEREACTIONSIDEACCESSION)
+	reactionsideReaction.Define("reactionside_reaction_type", TEXT, NOTNULL, "CHECK(reactionside_reaction_type IN ('substrate_or_product', 'substrate', 'product'))")
+	reactionsideReaction.Define("PRIMARY KEY(", REACTION, ", ", REACTIONSIDE, ")")
+	reactionsideReactionTableString, _ := reactionsideReaction.Build()
+	tableStringSlice = append(tableStringSlice, reactionsideReactionTableString)
 
-	// create reactionparticipant table
-	reactionparticipant := sqlbuilder.NewCreateTableBuilder()
-	reactionparticipant.CreateTable("reactionparticipant").IfNotExists()
-	reactionparticipant.Define(COMPOUND, TEXT, REFERENCECOMPOUNDACCESSION)
-	reactionparticipant.Define(REACTIONSIDE, TEXT, NOTNULL, REFERENCEREACTIONSIDEACCESSION)
-	reactionparticipant.Define("contains", INTEGER)
-	reactionparticipant.Define("containsn", BOOL, NOTNULL, DEFAULTFALSE)
-	reactionparticipant.Define("minus", BOOL, NOTNULL, DEFAULTFALSE)
-	reactionparticipant.Define("plus", BOOL, NOTNULL, DEFAULTFALSE)
-	reactionparticipant.Define("PRIMARY KEY(", COMPOUND, ", ", REACTIONSIDE, ")")
-	reactionparticipantTableString, _ := reactionparticipant.Build()
+	// create reactionParticipant table
+	reactionParticipant := sqlbuilder.NewCreateTableBuilder()
+	reactionParticipant.CreateTable("reaction_participant").IfNotExists()
+	reactionParticipant.Define(COMPOUND, TEXT, REFERENCECOMPOUNDACCESSION)
+	reactionParticipant.Define(REACTIONSIDE, TEXT, NOTNULL, REFERENCEREACTIONSIDEACCESSION)
+	reactionParticipant.Define("contains", INTEGER)
+	reactionParticipant.Define("contains_n", BOOL, NOTNULL, DEFAULTFALSE)
+	reactionParticipant.Define("minus", BOOL, NOTNULL, DEFAULTFALSE)
+	reactionParticipant.Define("plus", BOOL, NOTNULL, DEFAULTFALSE)
+	reactionParticipant.Define("PRIMARY KEY(", COMPOUND, ", ", REACTIONSIDE, ")")
+	reactionparticipantTableString, _ := reactionParticipant.Build()
 	tableStringSlice = append(tableStringSlice, reactionparticipantTableString)
 
 	// create uniprot_to_reaction table

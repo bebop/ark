@@ -494,14 +494,14 @@ func testReactionsInsertWhitelist(t *testing.T) {
 	}
 }
 
-func testReactionToManyReactionsidereactions(t *testing.T) {
+func testReactionToManyReactionsideReactions(t *testing.T) {
 	var err error
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
 	var a Reaction
-	var b, c Reactionsidereaction
+	var b, c ReactionsideReaction
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, reactionDBTypes, true, reactionColumnsWithDefault...); err != nil {
@@ -512,10 +512,10 @@ func testReactionToManyReactionsidereactions(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err = randomize.Struct(seed, &b, reactionsidereactionDBTypes, false, reactionsidereactionColumnsWithDefault...); err != nil {
+	if err = randomize.Struct(seed, &b, reactionsideReactionDBTypes, false, reactionsideReactionColumnsWithDefault...); err != nil {
 		t.Fatal(err)
 	}
-	if err = randomize.Struct(seed, &c, reactionsidereactionDBTypes, false, reactionsidereactionColumnsWithDefault...); err != nil {
+	if err = randomize.Struct(seed, &c, reactionsideReactionDBTypes, false, reactionsideReactionColumnsWithDefault...); err != nil {
 		t.Fatal(err)
 	}
 
@@ -528,7 +528,7 @@ func testReactionToManyReactionsidereactions(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	check, err := a.Reactionsidereactions().All(ctx, tx)
+	check, err := a.ReactionsideReactions().All(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -551,18 +551,18 @@ func testReactionToManyReactionsidereactions(t *testing.T) {
 	}
 
 	slice := ReactionSlice{&a}
-	if err = a.L.LoadReactionsidereactions(ctx, tx, false, (*[]*Reaction)(&slice), nil); err != nil {
+	if err = a.L.LoadReactionsideReactions(ctx, tx, false, (*[]*Reaction)(&slice), nil); err != nil {
 		t.Fatal(err)
 	}
-	if got := len(a.R.Reactionsidereactions); got != 2 {
+	if got := len(a.R.ReactionsideReactions); got != 2 {
 		t.Error("number of eager loaded records wrong, got:", got)
 	}
 
-	a.R.Reactionsidereactions = nil
-	if err = a.L.LoadReactionsidereactions(ctx, tx, true, &a, nil); err != nil {
+	a.R.ReactionsideReactions = nil
+	if err = a.L.LoadReactionsideReactions(ctx, tx, true, &a, nil); err != nil {
 		t.Fatal(err)
 	}
-	if got := len(a.R.Reactionsidereactions); got != 2 {
+	if got := len(a.R.ReactionsideReactions); got != 2 {
 		t.Error("number of eager loaded records wrong, got:", got)
 	}
 
@@ -655,7 +655,7 @@ func testReactionToManyUniprots(t *testing.T) {
 	}
 }
 
-func testReactionToManyAddOpReactionsidereactions(t *testing.T) {
+func testReactionToManyAddOpReactionsideReactions(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -663,15 +663,15 @@ func testReactionToManyAddOpReactionsidereactions(t *testing.T) {
 	defer func() { _ = tx.Rollback() }()
 
 	var a Reaction
-	var b, c, d, e Reactionsidereaction
+	var b, c, d, e ReactionsideReaction
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, reactionDBTypes, false, strmangle.SetComplement(reactionPrimaryKeyColumns, reactionColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
-	foreigners := []*Reactionsidereaction{&b, &c, &d, &e}
+	foreigners := []*ReactionsideReaction{&b, &c, &d, &e}
 	for _, x := range foreigners {
-		if err = randomize.Struct(seed, x, reactionsidereactionDBTypes, false, strmangle.SetComplement(reactionsidereactionPrimaryKeyColumns, reactionsidereactionColumnsWithoutDefault)...); err != nil {
+		if err = randomize.Struct(seed, x, reactionsideReactionDBTypes, false, strmangle.SetComplement(reactionsideReactionPrimaryKeyColumns, reactionsideReactionColumnsWithoutDefault)...); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -686,13 +686,13 @@ func testReactionToManyAddOpReactionsidereactions(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	foreignersSplitByInsertion := [][]*Reactionsidereaction{
+	foreignersSplitByInsertion := [][]*ReactionsideReaction{
 		{&b, &c},
 		{&d, &e},
 	}
 
 	for i, x := range foreignersSplitByInsertion {
-		err = a.AddReactionsidereactions(ctx, tx, i != 0, x...)
+		err = a.AddReactionsideReactions(ctx, tx, i != 0, x...)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -707,21 +707,21 @@ func testReactionToManyAddOpReactionsidereactions(t *testing.T) {
 			t.Error("foreign key was wrong value", a.Accession, second.Reaction)
 		}
 
-		if first.R.ReactionsidereactionReaction != &a {
+		if first.R.ReactionsideReactionReaction != &a {
 			t.Error("relationship was not added properly to the foreign slice")
 		}
-		if second.R.ReactionsidereactionReaction != &a {
+		if second.R.ReactionsideReactionReaction != &a {
 			t.Error("relationship was not added properly to the foreign slice")
 		}
 
-		if a.R.Reactionsidereactions[i*2] != first {
+		if a.R.ReactionsideReactions[i*2] != first {
 			t.Error("relationship struct slice not set to correct value")
 		}
-		if a.R.Reactionsidereactions[i*2+1] != second {
+		if a.R.ReactionsideReactions[i*2+1] != second {
 			t.Error("relationship struct slice not set to correct value")
 		}
 
-		count, err := a.Reactionsidereactions().Count(ctx, tx)
+		count, err := a.ReactionsideReactions().Count(ctx, tx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1032,7 +1032,7 @@ func testReactionsSelect(t *testing.T) {
 }
 
 var (
-	reactionDBTypes = map[string]string{`ID`: `INT`, `Directional`: `BOOL`, `Accession`: `TEXT`, `Status`: `TEXT`, `Comment`: `TEXT`, `Equation`: `TEXT`, `Htmlequation`: `TEXT`, `Ischemicallybalanced`: `BOOL`, `Istransport`: `BOOL`, `Ec`: `TEXT`, `Location`: `TEXT`}
+	reactionDBTypes = map[string]string{`ID`: `INT`, `Directional`: `BOOL`, `Accession`: `TEXT`, `Status`: `TEXT`, `Comment`: `TEXT`, `Equation`: `TEXT`, `HTMLEquation`: `TEXT`, `IsChemicallyBalanced`: `BOOL`, `IsTransport`: `BOOL`, `Ec`: `TEXT`, `Location`: `TEXT`}
 	_               = bytes.MinRead
 )
 

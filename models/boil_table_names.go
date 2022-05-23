@@ -7,12 +7,12 @@ var TableNames = struct {
 	Chebi                string
 	Compound             string
 	Genbank              string
-	Genbankfeatures      string
+	GenbankFeatures      string
 	Reaction             string
-	Reactionparticipant  string
+	ReactionParticipant  string
 	Reactionside         string
-	Reactionsidereaction string
-	Reactivepart         string
+	ReactionsideReaction string
+	ReactivePart         string
 	Seqhash              string
 	Uniprot              string
 	UniprotToReaction    string
@@ -20,12 +20,12 @@ var TableNames = struct {
 	Chebi:                "chebi",
 	Compound:             "compound",
 	Genbank:              "genbank",
-	Genbankfeatures:      "genbankfeatures",
+	GenbankFeatures:      "genbank_features",
 	Reaction:             "reaction",
-	Reactionparticipant:  "reactionparticipant",
+	ReactionParticipant:  "reaction_participant",
 	Reactionside:         "reactionside",
-	Reactionsidereaction: "reactionsidereaction",
-	Reactivepart:         "reactivepart",
+	ReactionsideReaction: "reactionside_reaction",
+	ReactivePart:         "reactive_part",
 	Seqhash:              "seqhash",
 	Uniprot:              "uniprot",
 	UniprotToReaction:    "uniprot_to_reaction",

@@ -25,7 +25,7 @@ import (
 // Chebi is an object representing the database table.
 type Chebi struct {
 	Accession  null.String `boil:"accession" json:"accession,omitempty" toml:"accession" yaml:"accession,omitempty"`
-	Subclassof null.String `boil:"subclassof" json:"subclassof,omitempty" toml:"subclassof" yaml:"subclassof,omitempty"`
+	SubclassOf null.String `boil:"subclass_of" json:"subclass_of,omitempty" toml:"subclass_of" yaml:"subclass_of,omitempty"`
 
 	R *chebiR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L chebiL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -33,18 +33,18 @@ type Chebi struct {
 
 var ChebiColumns = struct {
 	Accession  string
-	Subclassof string
+	SubclassOf string
 }{
 	Accession:  "accession",
-	Subclassof: "subclassof",
+	SubclassOf: "subclass_of",
 }
 
 var ChebiTableColumns = struct {
 	Accession  string
-	Subclassof string
+	SubclassOf string
 }{
 	Accession:  "chebi.accession",
-	Subclassof: "chebi.subclassof",
+	SubclassOf: "chebi.subclass_of",
 }
 
 // Generated where
@@ -75,27 +75,27 @@ func (w whereHelpernull_String) IsNotNull() qm.QueryMod { return qmhelper.WhereI
 
 var ChebiWhere = struct {
 	Accession  whereHelpernull_String
-	Subclassof whereHelpernull_String
+	SubclassOf whereHelpernull_String
 }{
 	Accession:  whereHelpernull_String{field: "\"chebi\".\"accession\""},
-	Subclassof: whereHelpernull_String{field: "\"chebi\".\"subclassof\""},
+	SubclassOf: whereHelpernull_String{field: "\"chebi\".\"subclass_of\""},
 }
 
 // ChebiRels is where relationship names are stored.
 var ChebiRels = struct {
-	SubclassofChebi  string
-	SubclassofChebis string
+	SubclassOfChebi  string
+	SubclassOfChebis string
 	Compounds        string
 }{
-	SubclassofChebi:  "SubclassofChebi",
-	SubclassofChebis: "SubclassofChebis",
+	SubclassOfChebi:  "SubclassOfChebi",
+	SubclassOfChebis: "SubclassOfChebis",
 	Compounds:        "Compounds",
 }
 
 // chebiR is where relationships are stored.
 type chebiR struct {
-	SubclassofChebi  *Chebi        `boil:"SubclassofChebi" json:"SubclassofChebi" toml:"SubclassofChebi" yaml:"SubclassofChebi"`
-	SubclassofChebis ChebiSlice    `boil:"SubclassofChebis" json:"SubclassofChebis" toml:"SubclassofChebis" yaml:"SubclassofChebis"`
+	SubclassOfChebi  *Chebi        `boil:"SubclassOfChebi" json:"SubclassOfChebi" toml:"SubclassOfChebi" yaml:"SubclassOfChebi"`
+	SubclassOfChebis ChebiSlice    `boil:"SubclassOfChebis" json:"SubclassOfChebis" toml:"SubclassOfChebis" yaml:"SubclassOfChebis"`
 	Compounds        CompoundSlice `boil:"Compounds" json:"Compounds" toml:"Compounds" yaml:"Compounds"`
 }
 
@@ -104,18 +104,18 @@ func (*chebiR) NewStruct() *chebiR {
 	return &chebiR{}
 }
 
-func (r *chebiR) GetSubclassofChebi() *Chebi {
+func (r *chebiR) GetSubclassOfChebi() *Chebi {
 	if r == nil {
 		return nil
 	}
-	return r.SubclassofChebi
+	return r.SubclassOfChebi
 }
 
-func (r *chebiR) GetSubclassofChebis() ChebiSlice {
+func (r *chebiR) GetSubclassOfChebis() ChebiSlice {
 	if r == nil {
 		return nil
 	}
-	return r.SubclassofChebis
+	return r.SubclassOfChebis
 }
 
 func (r *chebiR) GetCompounds() CompoundSlice {
@@ -129,9 +129,9 @@ func (r *chebiR) GetCompounds() CompoundSlice {
 type chebiL struct{}
 
 var (
-	chebiAllColumns            = []string{"accession", "subclassof"}
+	chebiAllColumns            = []string{"accession", "subclass_of"}
 	chebiColumnsWithoutDefault = []string{}
-	chebiColumnsWithDefault    = []string{"accession", "subclassof"}
+	chebiColumnsWithDefault    = []string{"accession", "subclass_of"}
 	chebiPrimaryKeyColumns     = []string{"accession"}
 	chebiGeneratedColumns      = []string{}
 )
@@ -414,10 +414,10 @@ func (q chebiQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool
 	return count > 0, nil
 }
 
-// SubclassofChebi pointed to by the foreign key.
-func (o *Chebi) SubclassofChebi(mods ...qm.QueryMod) chebiQuery {
+// SubclassOfChebi pointed to by the foreign key.
+func (o *Chebi) SubclassOfChebi(mods ...qm.QueryMod) chebiQuery {
 	queryMods := []qm.QueryMod{
-		qm.Where("\"accession\" = ?", o.Subclassof),
+		qm.Where("\"accession\" = ?", o.SubclassOf),
 	}
 
 	queryMods = append(queryMods, mods...)
@@ -425,15 +425,15 @@ func (o *Chebi) SubclassofChebi(mods ...qm.QueryMod) chebiQuery {
 	return Chebis(queryMods...)
 }
 
-// SubclassofChebis retrieves all the chebi's Chebis with an executor via subclassof column.
-func (o *Chebi) SubclassofChebis(mods ...qm.QueryMod) chebiQuery {
+// SubclassOfChebis retrieves all the chebi's Chebis with an executor via subclass_of column.
+func (o *Chebi) SubclassOfChebis(mods ...qm.QueryMod) chebiQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("\"chebi\".\"subclassof\"=?", o.Accession),
+		qm.Where("\"chebi\".\"subclass_of\"=?", o.Accession),
 	)
 
 	return Chebis(queryMods...)
@@ -453,9 +453,9 @@ func (o *Chebi) Compounds(mods ...qm.QueryMod) compoundQuery {
 	return Compounds(queryMods...)
 }
 
-// LoadSubclassofChebi allows an eager lookup of values, cached into the
+// LoadSubclassOfChebi allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for an N-1 relationship.
-func (chebiL) LoadSubclassofChebi(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChebi interface{}, mods queries.Applicator) error {
+func (chebiL) LoadSubclassOfChebi(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChebi interface{}, mods queries.Applicator) error {
 	var slice []*Chebi
 	var object *Chebi
 
@@ -470,8 +470,8 @@ func (chebiL) LoadSubclassofChebi(ctx context.Context, e boil.ContextExecutor, s
 		if object.R == nil {
 			object.R = &chebiR{}
 		}
-		if !queries.IsNil(object.Subclassof) {
-			args = append(args, object.Subclassof)
+		if !queries.IsNil(object.SubclassOf) {
+			args = append(args, object.SubclassOf)
 		}
 
 	} else {
@@ -482,13 +482,13 @@ func (chebiL) LoadSubclassofChebi(ctx context.Context, e boil.ContextExecutor, s
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.Subclassof) {
+				if queries.Equal(a, obj.SubclassOf) {
 					continue Outer
 				}
 			}
 
-			if !queries.IsNil(obj.Subclassof) {
-				args = append(args, obj.Subclassof)
+			if !queries.IsNil(obj.SubclassOf) {
+				args = append(args, obj.SubclassOf)
 			}
 
 		}
@@ -537,22 +537,22 @@ func (chebiL) LoadSubclassofChebi(ctx context.Context, e boil.ContextExecutor, s
 
 	if singular {
 		foreign := resultSlice[0]
-		object.R.SubclassofChebi = foreign
+		object.R.SubclassOfChebi = foreign
 		if foreign.R == nil {
 			foreign.R = &chebiR{}
 		}
-		foreign.R.SubclassofChebis = append(foreign.R.SubclassofChebis, object)
+		foreign.R.SubclassOfChebis = append(foreign.R.SubclassOfChebis, object)
 		return nil
 	}
 
 	for _, local := range slice {
 		for _, foreign := range resultSlice {
-			if queries.Equal(local.Subclassof, foreign.Accession) {
-				local.R.SubclassofChebi = foreign
+			if queries.Equal(local.SubclassOf, foreign.Accession) {
+				local.R.SubclassOfChebi = foreign
 				if foreign.R == nil {
 					foreign.R = &chebiR{}
 				}
-				foreign.R.SubclassofChebis = append(foreign.R.SubclassofChebis, local)
+				foreign.R.SubclassOfChebis = append(foreign.R.SubclassOfChebis, local)
 				break
 			}
 		}
@@ -561,9 +561,9 @@ func (chebiL) LoadSubclassofChebi(ctx context.Context, e boil.ContextExecutor, s
 	return nil
 }
 
-// LoadSubclassofChebis allows an eager lookup of values, cached into the
+// LoadSubclassOfChebis allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (chebiL) LoadSubclassofChebis(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChebi interface{}, mods queries.Applicator) error {
+func (chebiL) LoadSubclassOfChebis(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChebi interface{}, mods queries.Applicator) error {
 	var slice []*Chebi
 	var object *Chebi
 
@@ -602,7 +602,7 @@ func (chebiL) LoadSubclassofChebis(ctx context.Context, e boil.ContextExecutor, 
 
 	query := NewQuery(
 		qm.From(`chebi`),
-		qm.WhereIn(`chebi.subclassof in ?`, args...),
+		qm.WhereIn(`chebi.subclass_of in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -633,24 +633,24 @@ func (chebiL) LoadSubclassofChebis(ctx context.Context, e boil.ContextExecutor, 
 		}
 	}
 	if singular {
-		object.R.SubclassofChebis = resultSlice
+		object.R.SubclassOfChebis = resultSlice
 		for _, foreign := range resultSlice {
 			if foreign.R == nil {
 				foreign.R = &chebiR{}
 			}
-			foreign.R.SubclassofChebi = object
+			foreign.R.SubclassOfChebi = object
 		}
 		return nil
 	}
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if queries.Equal(local.Accession, foreign.Subclassof) {
-				local.R.SubclassofChebis = append(local.R.SubclassofChebis, foreign)
+			if queries.Equal(local.Accession, foreign.SubclassOf) {
+				local.R.SubclassOfChebis = append(local.R.SubclassOfChebis, foreign)
 				if foreign.R == nil {
 					foreign.R = &chebiR{}
 				}
-				foreign.R.SubclassofChebi = local
+				foreign.R.SubclassOfChebi = local
 				break
 			}
 		}
@@ -757,10 +757,10 @@ func (chebiL) LoadCompounds(ctx context.Context, e boil.ContextExecutor, singula
 	return nil
 }
 
-// SetSubclassofChebi of the chebi to the related item.
-// Sets o.R.SubclassofChebi to related.
-// Adds o to related.R.SubclassofChebis.
-func (o *Chebi) SetSubclassofChebi(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Chebi) error {
+// SetSubclassOfChebi of the chebi to the related item.
+// Sets o.R.SubclassOfChebi to related.
+// Adds o to related.R.SubclassOfChebis.
+func (o *Chebi) SetSubclassOfChebi(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Chebi) error {
 	var err error
 	if insert {
 		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
@@ -770,7 +770,7 @@ func (o *Chebi) SetSubclassofChebi(ctx context.Context, exec boil.ContextExecuto
 
 	updateQuery := fmt.Sprintf(
 		"UPDATE \"chebi\" SET %s WHERE %s",
-		strmangle.SetParamNames("\"", "\"", 0, []string{"subclassof"}),
+		strmangle.SetParamNames("\"", "\"", 0, []string{"subclass_of"}),
 		strmangle.WhereClause("\"", "\"", 0, chebiPrimaryKeyColumns),
 	)
 	values := []interface{}{related.Accession, o.Accession}
@@ -784,75 +784,75 @@ func (o *Chebi) SetSubclassofChebi(ctx context.Context, exec boil.ContextExecuto
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	queries.Assign(&o.Subclassof, related.Accession)
+	queries.Assign(&o.SubclassOf, related.Accession)
 	if o.R == nil {
 		o.R = &chebiR{
-			SubclassofChebi: related,
+			SubclassOfChebi: related,
 		}
 	} else {
-		o.R.SubclassofChebi = related
+		o.R.SubclassOfChebi = related
 	}
 
 	if related.R == nil {
 		related.R = &chebiR{
-			SubclassofChebis: ChebiSlice{o},
+			SubclassOfChebis: ChebiSlice{o},
 		}
 	} else {
-		related.R.SubclassofChebis = append(related.R.SubclassofChebis, o)
+		related.R.SubclassOfChebis = append(related.R.SubclassOfChebis, o)
 	}
 
 	return nil
 }
 
-// RemoveSubclassofChebi relationship.
-// Sets o.R.SubclassofChebi to nil.
+// RemoveSubclassOfChebi relationship.
+// Sets o.R.SubclassOfChebi to nil.
 // Removes o from all passed in related items' relationships struct.
-func (o *Chebi) RemoveSubclassofChebi(ctx context.Context, exec boil.ContextExecutor, related *Chebi) error {
+func (o *Chebi) RemoveSubclassOfChebi(ctx context.Context, exec boil.ContextExecutor, related *Chebi) error {
 	var err error
 
-	queries.SetScanner(&o.Subclassof, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("subclassof")); err != nil {
+	queries.SetScanner(&o.SubclassOf, nil)
+	if _, err = o.Update(ctx, exec, boil.Whitelist("subclass_of")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
 	if o.R != nil {
-		o.R.SubclassofChebi = nil
+		o.R.SubclassOfChebi = nil
 	}
 	if related == nil || related.R == nil {
 		return nil
 	}
 
-	for i, ri := range related.R.SubclassofChebis {
-		if queries.Equal(o.Subclassof, ri.Subclassof) {
+	for i, ri := range related.R.SubclassOfChebis {
+		if queries.Equal(o.SubclassOf, ri.SubclassOf) {
 			continue
 		}
 
-		ln := len(related.R.SubclassofChebis)
+		ln := len(related.R.SubclassOfChebis)
 		if ln > 1 && i < ln-1 {
-			related.R.SubclassofChebis[i] = related.R.SubclassofChebis[ln-1]
+			related.R.SubclassOfChebis[i] = related.R.SubclassOfChebis[ln-1]
 		}
-		related.R.SubclassofChebis = related.R.SubclassofChebis[:ln-1]
+		related.R.SubclassOfChebis = related.R.SubclassOfChebis[:ln-1]
 		break
 	}
 	return nil
 }
 
-// AddSubclassofChebis adds the given related objects to the existing relationships
+// AddSubclassOfChebis adds the given related objects to the existing relationships
 // of the chebi, optionally inserting them as new records.
-// Appends related to o.R.SubclassofChebis.
-// Sets related.R.SubclassofChebi appropriately.
-func (o *Chebi) AddSubclassofChebis(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Chebi) error {
+// Appends related to o.R.SubclassOfChebis.
+// Sets related.R.SubclassOfChebi appropriately.
+func (o *Chebi) AddSubclassOfChebis(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Chebi) error {
 	var err error
 	for _, rel := range related {
 		if insert {
-			queries.Assign(&rel.Subclassof, o.Accession)
+			queries.Assign(&rel.SubclassOf, o.Accession)
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
 				"UPDATE \"chebi\" SET %s WHERE %s",
-				strmangle.SetParamNames("\"", "\"", 0, []string{"subclassof"}),
+				strmangle.SetParamNames("\"", "\"", 0, []string{"subclass_of"}),
 				strmangle.WhereClause("\"", "\"", 0, chebiPrimaryKeyColumns),
 			)
 			values := []interface{}{o.Accession, rel.Accession}
@@ -866,38 +866,38 @@ func (o *Chebi) AddSubclassofChebis(ctx context.Context, exec boil.ContextExecut
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			queries.Assign(&rel.Subclassof, o.Accession)
+			queries.Assign(&rel.SubclassOf, o.Accession)
 		}
 	}
 
 	if o.R == nil {
 		o.R = &chebiR{
-			SubclassofChebis: related,
+			SubclassOfChebis: related,
 		}
 	} else {
-		o.R.SubclassofChebis = append(o.R.SubclassofChebis, related...)
+		o.R.SubclassOfChebis = append(o.R.SubclassOfChebis, related...)
 	}
 
 	for _, rel := range related {
 		if rel.R == nil {
 			rel.R = &chebiR{
-				SubclassofChebi: o,
+				SubclassOfChebi: o,
 			}
 		} else {
-			rel.R.SubclassofChebi = o
+			rel.R.SubclassOfChebi = o
 		}
 	}
 	return nil
 }
 
-// SetSubclassofChebis removes all previously related items of the
+// SetSubclassOfChebis removes all previously related items of the
 // chebi replacing them completely with the passed
 // in related items, optionally inserting them as new records.
-// Sets o.R.SubclassofChebi's SubclassofChebis accordingly.
-// Replaces o.R.SubclassofChebis with related.
-// Sets related.R.SubclassofChebi's SubclassofChebis accordingly.
-func (o *Chebi) SetSubclassofChebis(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Chebi) error {
-	query := "update \"chebi\" set \"subclassof\" = null where \"subclassof\" = ?"
+// Sets o.R.SubclassOfChebi's SubclassOfChebis accordingly.
+// Replaces o.R.SubclassOfChebis with related.
+// Sets related.R.SubclassOfChebi's SubclassOfChebis accordingly.
+func (o *Chebi) SetSubclassOfChebis(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Chebi) error {
+	query := "update \"chebi\" set \"subclass_of\" = null where \"subclass_of\" = ?"
 	values := []interface{}{o.Accession}
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -910,35 +910,35 @@ func (o *Chebi) SetSubclassofChebis(ctx context.Context, exec boil.ContextExecut
 	}
 
 	if o.R != nil {
-		for _, rel := range o.R.SubclassofChebis {
-			queries.SetScanner(&rel.Subclassof, nil)
+		for _, rel := range o.R.SubclassOfChebis {
+			queries.SetScanner(&rel.SubclassOf, nil)
 			if rel.R == nil {
 				continue
 			}
 
-			rel.R.SubclassofChebi = nil
+			rel.R.SubclassOfChebi = nil
 		}
-		o.R.SubclassofChebis = nil
+		o.R.SubclassOfChebis = nil
 	}
 
-	return o.AddSubclassofChebis(ctx, exec, insert, related...)
+	return o.AddSubclassOfChebis(ctx, exec, insert, related...)
 }
 
-// RemoveSubclassofChebis relationships from objects passed in.
-// Removes related items from R.SubclassofChebis (uses pointer comparison, removal does not keep order)
-// Sets related.R.SubclassofChebi.
-func (o *Chebi) RemoveSubclassofChebis(ctx context.Context, exec boil.ContextExecutor, related ...*Chebi) error {
+// RemoveSubclassOfChebis relationships from objects passed in.
+// Removes related items from R.SubclassOfChebis (uses pointer comparison, removal does not keep order)
+// Sets related.R.SubclassOfChebi.
+func (o *Chebi) RemoveSubclassOfChebis(ctx context.Context, exec boil.ContextExecutor, related ...*Chebi) error {
 	if len(related) == 0 {
 		return nil
 	}
 
 	var err error
 	for _, rel := range related {
-		queries.SetScanner(&rel.Subclassof, nil)
+		queries.SetScanner(&rel.SubclassOf, nil)
 		if rel.R != nil {
-			rel.R.SubclassofChebi = nil
+			rel.R.SubclassOfChebi = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("subclassof")); err != nil {
+		if _, err = rel.Update(ctx, exec, boil.Whitelist("subclass_of")); err != nil {
 			return err
 		}
 	}
@@ -947,16 +947,16 @@ func (o *Chebi) RemoveSubclassofChebis(ctx context.Context, exec boil.ContextExe
 	}
 
 	for _, rel := range related {
-		for i, ri := range o.R.SubclassofChebis {
+		for i, ri := range o.R.SubclassOfChebis {
 			if rel != ri {
 				continue
 			}
 
-			ln := len(o.R.SubclassofChebis)
+			ln := len(o.R.SubclassOfChebis)
 			if ln > 1 && i < ln-1 {
-				o.R.SubclassofChebis[i] = o.R.SubclassofChebis[ln-1]
+				o.R.SubclassOfChebis[i] = o.R.SubclassOfChebis[ln-1]
 			}
-			o.R.SubclassofChebis = o.R.SubclassofChebis[:ln-1]
+			o.R.SubclassOfChebis = o.R.SubclassOfChebis[:ln-1]
 			break
 		}
 	}

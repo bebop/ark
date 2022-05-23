@@ -494,14 +494,14 @@ func testCompoundsInsertWhitelist(t *testing.T) {
 	}
 }
 
-func testCompoundToManyReactionparticipants(t *testing.T) {
+func testCompoundToManyReactionParticipants(t *testing.T) {
 	var err error
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
 	var a Compound
-	var b, c Reactionparticipant
+	var b, c ReactionParticipant
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, compoundDBTypes, true, compoundColumnsWithDefault...); err != nil {
@@ -512,10 +512,10 @@ func testCompoundToManyReactionparticipants(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err = randomize.Struct(seed, &b, reactionparticipantDBTypes, false, reactionparticipantColumnsWithDefault...); err != nil {
+	if err = randomize.Struct(seed, &b, reactionParticipantDBTypes, false, reactionParticipantColumnsWithDefault...); err != nil {
 		t.Fatal(err)
 	}
-	if err = randomize.Struct(seed, &c, reactionparticipantDBTypes, false, reactionparticipantColumnsWithDefault...); err != nil {
+	if err = randomize.Struct(seed, &c, reactionParticipantDBTypes, false, reactionParticipantColumnsWithDefault...); err != nil {
 		t.Fatal(err)
 	}
 
@@ -528,7 +528,7 @@ func testCompoundToManyReactionparticipants(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	check, err := a.Reactionparticipants().All(ctx, tx)
+	check, err := a.ReactionParticipants().All(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -551,18 +551,18 @@ func testCompoundToManyReactionparticipants(t *testing.T) {
 	}
 
 	slice := CompoundSlice{&a}
-	if err = a.L.LoadReactionparticipants(ctx, tx, false, (*[]*Compound)(&slice), nil); err != nil {
+	if err = a.L.LoadReactionParticipants(ctx, tx, false, (*[]*Compound)(&slice), nil); err != nil {
 		t.Fatal(err)
 	}
-	if got := len(a.R.Reactionparticipants); got != 2 {
+	if got := len(a.R.ReactionParticipants); got != 2 {
 		t.Error("number of eager loaded records wrong, got:", got)
 	}
 
-	a.R.Reactionparticipants = nil
-	if err = a.L.LoadReactionparticipants(ctx, tx, true, &a, nil); err != nil {
+	a.R.ReactionParticipants = nil
+	if err = a.L.LoadReactionParticipants(ctx, tx, true, &a, nil); err != nil {
 		t.Fatal(err)
 	}
-	if got := len(a.R.Reactionparticipants); got != 2 {
+	if got := len(a.R.ReactionParticipants); got != 2 {
 		t.Error("number of eager loaded records wrong, got:", got)
 	}
 
@@ -571,14 +571,14 @@ func testCompoundToManyReactionparticipants(t *testing.T) {
 	}
 }
 
-func testCompoundToManyReactiveparts(t *testing.T) {
+func testCompoundToManyReactiveParts(t *testing.T) {
 	var err error
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 
 	var a Compound
-	var b, c Reactivepart
+	var b, c ReactivePart
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, compoundDBTypes, true, compoundColumnsWithDefault...); err != nil {
@@ -589,10 +589,10 @@ func testCompoundToManyReactiveparts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err = randomize.Struct(seed, &b, reactivepartDBTypes, false, reactivepartColumnsWithDefault...); err != nil {
+	if err = randomize.Struct(seed, &b, reactivePartDBTypes, false, reactivePartColumnsWithDefault...); err != nil {
 		t.Fatal(err)
 	}
-	if err = randomize.Struct(seed, &c, reactivepartDBTypes, false, reactivepartColumnsWithDefault...); err != nil {
+	if err = randomize.Struct(seed, &c, reactivePartDBTypes, false, reactivePartColumnsWithDefault...); err != nil {
 		t.Fatal(err)
 	}
 
@@ -605,7 +605,7 @@ func testCompoundToManyReactiveparts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	check, err := a.Reactiveparts().All(ctx, tx)
+	check, err := a.ReactiveParts().All(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -628,18 +628,18 @@ func testCompoundToManyReactiveparts(t *testing.T) {
 	}
 
 	slice := CompoundSlice{&a}
-	if err = a.L.LoadReactiveparts(ctx, tx, false, (*[]*Compound)(&slice), nil); err != nil {
+	if err = a.L.LoadReactiveParts(ctx, tx, false, (*[]*Compound)(&slice), nil); err != nil {
 		t.Fatal(err)
 	}
-	if got := len(a.R.Reactiveparts); got != 2 {
+	if got := len(a.R.ReactiveParts); got != 2 {
 		t.Error("number of eager loaded records wrong, got:", got)
 	}
 
-	a.R.Reactiveparts = nil
-	if err = a.L.LoadReactiveparts(ctx, tx, true, &a, nil); err != nil {
+	a.R.ReactiveParts = nil
+	if err = a.L.LoadReactiveParts(ctx, tx, true, &a, nil); err != nil {
 		t.Fatal(err)
 	}
-	if got := len(a.R.Reactiveparts); got != 2 {
+	if got := len(a.R.ReactiveParts); got != 2 {
 		t.Error("number of eager loaded records wrong, got:", got)
 	}
 
@@ -648,7 +648,7 @@ func testCompoundToManyReactiveparts(t *testing.T) {
 	}
 }
 
-func testCompoundToManyAddOpReactionparticipants(t *testing.T) {
+func testCompoundToManyAddOpReactionParticipants(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -656,15 +656,15 @@ func testCompoundToManyAddOpReactionparticipants(t *testing.T) {
 	defer func() { _ = tx.Rollback() }()
 
 	var a Compound
-	var b, c, d, e Reactionparticipant
+	var b, c, d, e ReactionParticipant
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, compoundDBTypes, false, strmangle.SetComplement(compoundPrimaryKeyColumns, compoundColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
-	foreigners := []*Reactionparticipant{&b, &c, &d, &e}
+	foreigners := []*ReactionParticipant{&b, &c, &d, &e}
 	for _, x := range foreigners {
-		if err = randomize.Struct(seed, x, reactionparticipantDBTypes, false, strmangle.SetComplement(reactionparticipantPrimaryKeyColumns, reactionparticipantColumnsWithoutDefault)...); err != nil {
+		if err = randomize.Struct(seed, x, reactionParticipantDBTypes, false, strmangle.SetComplement(reactionParticipantPrimaryKeyColumns, reactionParticipantColumnsWithoutDefault)...); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -679,13 +679,13 @@ func testCompoundToManyAddOpReactionparticipants(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	foreignersSplitByInsertion := [][]*Reactionparticipant{
+	foreignersSplitByInsertion := [][]*ReactionParticipant{
 		{&b, &c},
 		{&d, &e},
 	}
 
 	for i, x := range foreignersSplitByInsertion {
-		err = a.AddReactionparticipants(ctx, tx, i != 0, x...)
+		err = a.AddReactionParticipants(ctx, tx, i != 0, x...)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -700,21 +700,21 @@ func testCompoundToManyAddOpReactionparticipants(t *testing.T) {
 			t.Error("foreign key was wrong value", a.Accession, second.Compound)
 		}
 
-		if first.R.ReactionparticipantCompound != &a {
+		if first.R.ReactionParticipantCompound != &a {
 			t.Error("relationship was not added properly to the foreign slice")
 		}
-		if second.R.ReactionparticipantCompound != &a {
+		if second.R.ReactionParticipantCompound != &a {
 			t.Error("relationship was not added properly to the foreign slice")
 		}
 
-		if a.R.Reactionparticipants[i*2] != first {
+		if a.R.ReactionParticipants[i*2] != first {
 			t.Error("relationship struct slice not set to correct value")
 		}
-		if a.R.Reactionparticipants[i*2+1] != second {
+		if a.R.ReactionParticipants[i*2+1] != second {
 			t.Error("relationship struct slice not set to correct value")
 		}
 
-		count, err := a.Reactionparticipants().Count(ctx, tx)
+		count, err := a.ReactionParticipants().Count(ctx, tx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -724,7 +724,7 @@ func testCompoundToManyAddOpReactionparticipants(t *testing.T) {
 	}
 }
 
-func testCompoundToManySetOpReactionparticipants(t *testing.T) {
+func testCompoundToManySetOpReactionParticipants(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -732,15 +732,15 @@ func testCompoundToManySetOpReactionparticipants(t *testing.T) {
 	defer func() { _ = tx.Rollback() }()
 
 	var a Compound
-	var b, c, d, e Reactionparticipant
+	var b, c, d, e ReactionParticipant
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, compoundDBTypes, false, strmangle.SetComplement(compoundPrimaryKeyColumns, compoundColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
-	foreigners := []*Reactionparticipant{&b, &c, &d, &e}
+	foreigners := []*ReactionParticipant{&b, &c, &d, &e}
 	for _, x := range foreigners {
-		if err = randomize.Struct(seed, x, reactionparticipantDBTypes, false, strmangle.SetComplement(reactionparticipantPrimaryKeyColumns, reactionparticipantColumnsWithoutDefault)...); err != nil {
+		if err = randomize.Struct(seed, x, reactionParticipantDBTypes, false, strmangle.SetComplement(reactionParticipantPrimaryKeyColumns, reactionParticipantColumnsWithoutDefault)...); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -755,12 +755,12 @@ func testCompoundToManySetOpReactionparticipants(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = a.SetReactionparticipants(ctx, tx, false, &b, &c)
+	err = a.SetReactionParticipants(ctx, tx, false, &b, &c)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, err := a.Reactionparticipants().Count(ctx, tx)
+	count, err := a.ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -768,12 +768,12 @@ func testCompoundToManySetOpReactionparticipants(t *testing.T) {
 		t.Error("count was wrong:", count)
 	}
 
-	err = a.SetReactionparticipants(ctx, tx, true, &d, &e)
+	err = a.SetReactionParticipants(ctx, tx, true, &d, &e)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, err = a.Reactionparticipants().Count(ctx, tx)
+	count, err = a.ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -794,28 +794,28 @@ func testCompoundToManySetOpReactionparticipants(t *testing.T) {
 		t.Error("foreign key was wrong value", a.Accession, e.Compound)
 	}
 
-	if b.R.ReactionparticipantCompound != nil {
+	if b.R.ReactionParticipantCompound != nil {
 		t.Error("relationship was not removed properly from the foreign struct")
 	}
-	if c.R.ReactionparticipantCompound != nil {
+	if c.R.ReactionParticipantCompound != nil {
 		t.Error("relationship was not removed properly from the foreign struct")
 	}
-	if d.R.ReactionparticipantCompound != &a {
+	if d.R.ReactionParticipantCompound != &a {
 		t.Error("relationship was not added properly to the foreign struct")
 	}
-	if e.R.ReactionparticipantCompound != &a {
+	if e.R.ReactionParticipantCompound != &a {
 		t.Error("relationship was not added properly to the foreign struct")
 	}
 
-	if a.R.Reactionparticipants[0] != &d {
+	if a.R.ReactionParticipants[0] != &d {
 		t.Error("relationship struct slice not set to correct value")
 	}
-	if a.R.Reactionparticipants[1] != &e {
+	if a.R.ReactionParticipants[1] != &e {
 		t.Error("relationship struct slice not set to correct value")
 	}
 }
 
-func testCompoundToManyRemoveOpReactionparticipants(t *testing.T) {
+func testCompoundToManyRemoveOpReactionParticipants(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -823,15 +823,15 @@ func testCompoundToManyRemoveOpReactionparticipants(t *testing.T) {
 	defer func() { _ = tx.Rollback() }()
 
 	var a Compound
-	var b, c, d, e Reactionparticipant
+	var b, c, d, e ReactionParticipant
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, compoundDBTypes, false, strmangle.SetComplement(compoundPrimaryKeyColumns, compoundColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
-	foreigners := []*Reactionparticipant{&b, &c, &d, &e}
+	foreigners := []*ReactionParticipant{&b, &c, &d, &e}
 	for _, x := range foreigners {
-		if err = randomize.Struct(seed, x, reactionparticipantDBTypes, false, strmangle.SetComplement(reactionparticipantPrimaryKeyColumns, reactionparticipantColumnsWithoutDefault)...); err != nil {
+		if err = randomize.Struct(seed, x, reactionParticipantDBTypes, false, strmangle.SetComplement(reactionParticipantPrimaryKeyColumns, reactionParticipantColumnsWithoutDefault)...); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -840,12 +840,12 @@ func testCompoundToManyRemoveOpReactionparticipants(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = a.AddReactionparticipants(ctx, tx, true, foreigners...)
+	err = a.AddReactionParticipants(ctx, tx, true, foreigners...)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, err := a.Reactionparticipants().Count(ctx, tx)
+	count, err := a.ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -853,12 +853,12 @@ func testCompoundToManyRemoveOpReactionparticipants(t *testing.T) {
 		t.Error("count was wrong:", count)
 	}
 
-	err = a.RemoveReactionparticipants(ctx, tx, foreigners[:2]...)
+	err = a.RemoveReactionParticipants(ctx, tx, foreigners[:2]...)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, err = a.Reactionparticipants().Count(ctx, tx)
+	count, err = a.ReactionParticipants().Count(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -873,33 +873,33 @@ func testCompoundToManyRemoveOpReactionparticipants(t *testing.T) {
 		t.Error("want c's foreign key value to be nil")
 	}
 
-	if b.R.ReactionparticipantCompound != nil {
+	if b.R.ReactionParticipantCompound != nil {
 		t.Error("relationship was not removed properly from the foreign struct")
 	}
-	if c.R.ReactionparticipantCompound != nil {
+	if c.R.ReactionParticipantCompound != nil {
 		t.Error("relationship was not removed properly from the foreign struct")
 	}
-	if d.R.ReactionparticipantCompound != &a {
+	if d.R.ReactionParticipantCompound != &a {
 		t.Error("relationship to a should have been preserved")
 	}
-	if e.R.ReactionparticipantCompound != &a {
+	if e.R.ReactionParticipantCompound != &a {
 		t.Error("relationship to a should have been preserved")
 	}
 
-	if len(a.R.Reactionparticipants) != 2 {
+	if len(a.R.ReactionParticipants) != 2 {
 		t.Error("should have preserved two relationships")
 	}
 
 	// Removal doesn't do a stable deletion for performance so we have to flip the order
-	if a.R.Reactionparticipants[1] != &d {
+	if a.R.ReactionParticipants[1] != &d {
 		t.Error("relationship to d should have been preserved")
 	}
-	if a.R.Reactionparticipants[0] != &e {
+	if a.R.ReactionParticipants[0] != &e {
 		t.Error("relationship to e should have been preserved")
 	}
 }
 
-func testCompoundToManyAddOpReactiveparts(t *testing.T) {
+func testCompoundToManyAddOpReactiveParts(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -907,15 +907,15 @@ func testCompoundToManyAddOpReactiveparts(t *testing.T) {
 	defer func() { _ = tx.Rollback() }()
 
 	var a Compound
-	var b, c, d, e Reactivepart
+	var b, c, d, e ReactivePart
 
 	seed := randomize.NewSeed()
 	if err = randomize.Struct(seed, &a, compoundDBTypes, false, strmangle.SetComplement(compoundPrimaryKeyColumns, compoundColumnsWithoutDefault)...); err != nil {
 		t.Fatal(err)
 	}
-	foreigners := []*Reactivepart{&b, &c, &d, &e}
+	foreigners := []*ReactivePart{&b, &c, &d, &e}
 	for _, x := range foreigners {
-		if err = randomize.Struct(seed, x, reactivepartDBTypes, false, strmangle.SetComplement(reactivepartPrimaryKeyColumns, reactivepartColumnsWithoutDefault)...); err != nil {
+		if err = randomize.Struct(seed, x, reactivePartDBTypes, false, strmangle.SetComplement(reactivePartPrimaryKeyColumns, reactivePartColumnsWithoutDefault)...); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -930,13 +930,13 @@ func testCompoundToManyAddOpReactiveparts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	foreignersSplitByInsertion := [][]*Reactivepart{
+	foreignersSplitByInsertion := [][]*ReactivePart{
 		{&b, &c},
 		{&d, &e},
 	}
 
 	for i, x := range foreignersSplitByInsertion {
-		err = a.AddReactiveparts(ctx, tx, i != 0, x...)
+		err = a.AddReactiveParts(ctx, tx, i != 0, x...)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -951,21 +951,21 @@ func testCompoundToManyAddOpReactiveparts(t *testing.T) {
 			t.Error("foreign key was wrong value", a.Accession, second.Compound)
 		}
 
-		if first.R.ReactivepartCompound != &a {
+		if first.R.ReactivePartCompound != &a {
 			t.Error("relationship was not added properly to the foreign slice")
 		}
-		if second.R.ReactivepartCompound != &a {
+		if second.R.ReactivePartCompound != &a {
 			t.Error("relationship was not added properly to the foreign slice")
 		}
 
-		if a.R.Reactiveparts[i*2] != first {
+		if a.R.ReactiveParts[i*2] != first {
 			t.Error("relationship struct slice not set to correct value")
 		}
-		if a.R.Reactiveparts[i*2+1] != second {
+		if a.R.ReactiveParts[i*2+1] != second {
 			t.Error("relationship struct slice not set to correct value")
 		}
 
-		count, err := a.Reactiveparts().Count(ctx, tx)
+		count, err := a.ReactiveParts().Count(ctx, tx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1208,7 +1208,7 @@ func testCompoundsSelect(t *testing.T) {
 }
 
 var (
-	compoundDBTypes = map[string]string{`ID`: `INT`, `Accession`: `TEXT`, `Position`: `TEXT`, `Name`: `TEXT`, `Htmlname`: `TEXT`, `Formula`: `TEXT`, `Charge`: `TEXT`, `Chebi`: `TEXT`, `Polymerizationindex`: `TEXT`, `Compoundtype`: `TEXT`}
+	compoundDBTypes = map[string]string{`ID`: `INT`, `Accession`: `TEXT`, `Position`: `TEXT`, `Name`: `TEXT`, `HTMLName`: `TEXT`, `Formula`: `TEXT`, `Charge`: `TEXT`, `Chebi`: `TEXT`, `PolymerizationIndex`: `TEXT`, `CompoundType`: `TEXT`}
 	_               = bytes.MinRead
 )
 

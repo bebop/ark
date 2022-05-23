@@ -89,13 +89,13 @@ var SeqhashWhere = struct {
 var SeqhashRels = struct {
 	TranslationSeqhash   string
 	Genbanks             string
-	Genbanks             string
+	ParentGenbanks       string
 	TranslationSeqhashes string
 	Uniprots             string
 }{
 	TranslationSeqhash:   "TranslationSeqhash",
 	Genbanks:             "Genbanks",
-	Genbanks:             "Genbanks",
+	ParentGenbanks:       "ParentGenbanks",
 	TranslationSeqhashes: "TranslationSeqhashes",
 	Uniprots:             "Uniprots",
 }
@@ -104,7 +104,7 @@ var SeqhashRels = struct {
 type seqhashR struct {
 	TranslationSeqhash   *Seqhash     `boil:"TranslationSeqhash" json:"TranslationSeqhash" toml:"TranslationSeqhash" yaml:"TranslationSeqhash"`
 	Genbanks             GenbankSlice `boil:"Genbanks" json:"Genbanks" toml:"Genbanks" yaml:"Genbanks"`
-	Genbanks             GenbankSlice `boil:"Genbanks" json:"Genbanks" toml:"Genbanks" yaml:"Genbanks"`
+	ParentGenbanks       GenbankSlice `boil:"ParentGenbanks" json:"ParentGenbanks" toml:"ParentGenbanks" yaml:"ParentGenbanks"`
 	TranslationSeqhashes SeqhashSlice `boil:"TranslationSeqhashes" json:"TranslationSeqhashes" toml:"TranslationSeqhashes" yaml:"TranslationSeqhashes"`
 	Uniprots             UniprotSlice `boil:"Uniprots" json:"Uniprots" toml:"Uniprots" yaml:"Uniprots"`
 }
@@ -128,11 +128,11 @@ func (r *seqhashR) GetGenbanks() GenbankSlice {
 	return r.Genbanks
 }
 
-func (r *seqhashR) GetGenbanks() GenbankSlice {
+func (r *seqhashR) GetParentGenbanks() GenbankSlice {
 	if r == nil {
 		return nil
 	}
-	return r.Genbanks
+	return r.ParentGenbanks
 }
 
 func (r *seqhashR) GetTranslationSeqhashes() SeqhashSlice {
@@ -463,16 +463,16 @@ func (o *Seqhash) Genbanks(mods ...qm.QueryMod) genbankQuery {
 	return Genbanks(queryMods...)
 }
 
-// Genbanks retrieves all the genbank's Genbanks with an executor.
-func (o *Seqhash) Genbanks(mods ...qm.QueryMod) genbankQuery {
+// ParentGenbanks retrieves all the genbank's Genbanks with an executor via accession column.
+func (o *Seqhash) ParentGenbanks(mods ...qm.QueryMod) genbankQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.InnerJoin("\"genbankfeatures\" on \"genbank\".\"accession\" = \"genbankfeatures\".\"genbank\""),
-		qm.Where("\"genbankfeatures\".\"seqhash\"=?", o.Seqhash),
+		qm.InnerJoin("\"genbank_features\" on \"genbank\".\"accession\" = \"genbank_features\".\"parent\""),
+		qm.Where("\"genbank_features\".\"seqhash\"=?", o.Seqhash),
 	)
 
 	return Genbanks(queryMods...)
@@ -712,9 +712,9 @@ func (seqhashL) LoadGenbanks(ctx context.Context, e boil.ContextExecutor, singul
 	return nil
 }
 
-// LoadGenbanks allows an eager lookup of values, cached into the
+// LoadParentGenbanks allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (seqhashL) LoadGenbanks(ctx context.Context, e boil.ContextExecutor, singular bool, maybeSeqhash interface{}, mods queries.Applicator) error {
+func (seqhashL) LoadParentGenbanks(ctx context.Context, e boil.ContextExecutor, singular bool, maybeSeqhash interface{}, mods queries.Applicator) error {
 	var slice []*Seqhash
 	var object *Seqhash
 
@@ -754,7 +754,7 @@ func (seqhashL) LoadGenbanks(ctx context.Context, e boil.ContextExecutor, singul
 	query := NewQuery(
 		qm.Select("\"genbank\".\"accession\", \"genbank\".\"seqhash\", \"a\".\"seqhash\""),
 		qm.From("\"genbank\""),
-		qm.InnerJoin("\"genbankfeatures\" as \"a\" on \"genbank\".\"accession\" = \"a\".\"genbank\""),
+		qm.InnerJoin("\"genbank_features\" as \"a\" on \"genbank\".\"accession\" = \"a\".\"parent\""),
 		qm.WhereIn("\"a\".\"seqhash\" in ?", args...),
 	)
 	if mods != nil {
@@ -800,7 +800,7 @@ func (seqhashL) LoadGenbanks(ctx context.Context, e boil.ContextExecutor, singul
 		}
 	}
 	if singular {
-		object.R.Genbanks = resultSlice
+		object.R.ParentGenbanks = resultSlice
 		for _, foreign := range resultSlice {
 			if foreign.R == nil {
 				foreign.R = &genbankR{}
@@ -814,7 +814,7 @@ func (seqhashL) LoadGenbanks(ctx context.Context, e boil.ContextExecutor, singul
 		localJoinCol := localJoinCols[i]
 		for _, local := range slice {
 			if queries.Equal(local.Seqhash, localJoinCol) {
-				local.R.Genbanks = append(local.R.Genbanks, foreign)
+				local.R.ParentGenbanks = append(local.R.ParentGenbanks, foreign)
 				if foreign.R == nil {
 					foreign.R = &genbankR{}
 				}
@@ -1156,11 +1156,11 @@ func (o *Seqhash) AddGenbanks(ctx context.Context, exec boil.ContextExecutor, in
 	return nil
 }
 
-// AddGenbanks adds the given related objects to the existing relationships
+// AddParentGenbanks adds the given related objects to the existing relationships
 // of the seqhash, optionally inserting them as new records.
-// Appends related to o.R.Genbanks.
+// Appends related to o.R.ParentGenbanks.
 // Sets related.R.Seqhashes appropriately.
-func (o *Seqhash) AddGenbanks(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Genbank) error {
+func (o *Seqhash) AddParentGenbanks(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Genbank) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1171,7 +1171,7 @@ func (o *Seqhash) AddGenbanks(ctx context.Context, exec boil.ContextExecutor, in
 	}
 
 	for _, rel := range related {
-		query := "insert into \"genbankfeatures\" (\"seqhash\", \"genbank\") values (?, ?)"
+		query := "insert into \"genbank_features\" (\"seqhash\", \"parent\") values (?, ?)"
 		values := []interface{}{o.Seqhash, rel.Accession}
 
 		if boil.IsDebug(ctx) {
@@ -1186,10 +1186,10 @@ func (o *Seqhash) AddGenbanks(ctx context.Context, exec boil.ContextExecutor, in
 	}
 	if o.R == nil {
 		o.R = &seqhashR{
-			Genbanks: related,
+			ParentGenbanks: related,
 		}
 	} else {
-		o.R.Genbanks = append(o.R.Genbanks, related...)
+		o.R.ParentGenbanks = append(o.R.ParentGenbanks, related...)
 	}
 
 	for _, rel := range related {
@@ -1204,14 +1204,14 @@ func (o *Seqhash) AddGenbanks(ctx context.Context, exec boil.ContextExecutor, in
 	return nil
 }
 
-// SetGenbanks removes all previously related items of the
+// SetParentGenbanks removes all previously related items of the
 // seqhash replacing them completely with the passed
 // in related items, optionally inserting them as new records.
-// Sets o.R.Seqhashes's Genbanks accordingly.
-// Replaces o.R.Genbanks with related.
-// Sets related.R.Seqhashes's Genbanks accordingly.
-func (o *Seqhash) SetGenbanks(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Genbank) error {
-	query := "delete from \"genbankfeatures\" where \"seqhash\" = ?"
+// Sets o.R.Seqhashes's ParentGenbanks accordingly.
+// Replaces o.R.ParentGenbanks with related.
+// Sets related.R.Seqhashes's ParentGenbanks accordingly.
+func (o *Seqhash) SetParentGenbanks(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Genbank) error {
+	query := "delete from \"genbank_features\" where \"seqhash\" = ?"
 	values := []interface{}{o.Seqhash}
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1223,25 +1223,25 @@ func (o *Seqhash) SetGenbanks(ctx context.Context, exec boil.ContextExecutor, in
 		return errors.Wrap(err, "failed to remove relationships before set")
 	}
 
-	removeGenbanksFromSeqhashesSlice(o, related)
+	removeParentGenbanksFromSeqhashesSlice(o, related)
 	if o.R != nil {
-		o.R.Genbanks = nil
+		o.R.ParentGenbanks = nil
 	}
 
-	return o.AddGenbanks(ctx, exec, insert, related...)
+	return o.AddParentGenbanks(ctx, exec, insert, related...)
 }
 
-// RemoveGenbanks relationships from objects passed in.
-// Removes related items from R.Genbanks (uses pointer comparison, removal does not keep order)
+// RemoveParentGenbanks relationships from objects passed in.
+// Removes related items from R.ParentGenbanks (uses pointer comparison, removal does not keep order)
 // Sets related.R.Seqhashes.
-func (o *Seqhash) RemoveGenbanks(ctx context.Context, exec boil.ContextExecutor, related ...*Genbank) error {
+func (o *Seqhash) RemoveParentGenbanks(ctx context.Context, exec boil.ContextExecutor, related ...*Genbank) error {
 	if len(related) == 0 {
 		return nil
 	}
 
 	var err error
 	query := fmt.Sprintf(
-		"delete from \"genbankfeatures\" where \"seqhash\" = ? and \"genbank\" in (%s)",
+		"delete from \"genbank_features\" where \"seqhash\" = ? and \"parent\" in (%s)",
 		strmangle.Placeholders(dialect.UseIndexPlaceholders, len(related), 2, 1),
 	)
 	values := []interface{}{o.Seqhash}
@@ -1258,22 +1258,22 @@ func (o *Seqhash) RemoveGenbanks(ctx context.Context, exec boil.ContextExecutor,
 	if err != nil {
 		return errors.Wrap(err, "failed to remove relationships before set")
 	}
-	removeGenbanksFromSeqhashesSlice(o, related)
+	removeParentGenbanksFromSeqhashesSlice(o, related)
 	if o.R == nil {
 		return nil
 	}
 
 	for _, rel := range related {
-		for i, ri := range o.R.Genbanks {
+		for i, ri := range o.R.ParentGenbanks {
 			if rel != ri {
 				continue
 			}
 
-			ln := len(o.R.Genbanks)
+			ln := len(o.R.ParentGenbanks)
 			if ln > 1 && i < ln-1 {
-				o.R.Genbanks[i] = o.R.Genbanks[ln-1]
+				o.R.ParentGenbanks[i] = o.R.ParentGenbanks[ln-1]
 			}
-			o.R.Genbanks = o.R.Genbanks[:ln-1]
+			o.R.ParentGenbanks = o.R.ParentGenbanks[:ln-1]
 			break
 		}
 	}
@@ -1281,7 +1281,7 @@ func (o *Seqhash) RemoveGenbanks(ctx context.Context, exec boil.ContextExecutor,
 	return nil
 }
 
-func removeGenbanksFromSeqhashesSlice(o *Seqhash, related []*Genbank) {
+func removeParentGenbanksFromSeqhashesSlice(o *Seqhash, related []*Genbank) {
 	for _, rel := range related {
 		if rel.R == nil {
 			continue

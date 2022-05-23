@@ -494,7 +494,7 @@ func testChebisInsertWhitelist(t *testing.T) {
 	}
 }
 
-func testChebiToManySubclassofChebis(t *testing.T) {
+func testChebiToManySubclassOfChebis(t *testing.T) {
 	var err error
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
@@ -519,8 +519,8 @@ func testChebiToManySubclassofChebis(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	queries.Assign(&b.Subclassof, a.Accession)
-	queries.Assign(&c.Subclassof, a.Accession)
+	queries.Assign(&b.SubclassOf, a.Accession)
+	queries.Assign(&c.SubclassOf, a.Accession)
 	if err = b.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Fatal(err)
 	}
@@ -528,17 +528,17 @@ func testChebiToManySubclassofChebis(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	check, err := a.SubclassofChebis().All(ctx, tx)
+	check, err := a.SubclassOfChebis().All(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	bFound, cFound := false, false
 	for _, v := range check {
-		if queries.Equal(v.Subclassof, b.Subclassof) {
+		if queries.Equal(v.SubclassOf, b.SubclassOf) {
 			bFound = true
 		}
-		if queries.Equal(v.Subclassof, c.Subclassof) {
+		if queries.Equal(v.SubclassOf, c.SubclassOf) {
 			cFound = true
 		}
 	}
@@ -551,18 +551,18 @@ func testChebiToManySubclassofChebis(t *testing.T) {
 	}
 
 	slice := ChebiSlice{&a}
-	if err = a.L.LoadSubclassofChebis(ctx, tx, false, (*[]*Chebi)(&slice), nil); err != nil {
+	if err = a.L.LoadSubclassOfChebis(ctx, tx, false, (*[]*Chebi)(&slice), nil); err != nil {
 		t.Fatal(err)
 	}
-	if got := len(a.R.SubclassofChebis); got != 2 {
+	if got := len(a.R.SubclassOfChebis); got != 2 {
 		t.Error("number of eager loaded records wrong, got:", got)
 	}
 
-	a.R.SubclassofChebis = nil
-	if err = a.L.LoadSubclassofChebis(ctx, tx, true, &a, nil); err != nil {
+	a.R.SubclassOfChebis = nil
+	if err = a.L.LoadSubclassOfChebis(ctx, tx, true, &a, nil); err != nil {
 		t.Fatal(err)
 	}
-	if got := len(a.R.SubclassofChebis); got != 2 {
+	if got := len(a.R.SubclassOfChebis); got != 2 {
 		t.Error("number of eager loaded records wrong, got:", got)
 	}
 
@@ -648,7 +648,7 @@ func testChebiToManyCompounds(t *testing.T) {
 	}
 }
 
-func testChebiToManyAddOpSubclassofChebis(t *testing.T) {
+func testChebiToManyAddOpSubclassOfChebis(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -685,7 +685,7 @@ func testChebiToManyAddOpSubclassofChebis(t *testing.T) {
 	}
 
 	for i, x := range foreignersSplitByInsertion {
-		err = a.AddSubclassofChebis(ctx, tx, i != 0, x...)
+		err = a.AddSubclassOfChebis(ctx, tx, i != 0, x...)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -693,28 +693,28 @@ func testChebiToManyAddOpSubclassofChebis(t *testing.T) {
 		first := x[0]
 		second := x[1]
 
-		if !queries.Equal(a.Accession, first.Subclassof) {
-			t.Error("foreign key was wrong value", a.Accession, first.Subclassof)
+		if !queries.Equal(a.Accession, first.SubclassOf) {
+			t.Error("foreign key was wrong value", a.Accession, first.SubclassOf)
 		}
-		if !queries.Equal(a.Accession, second.Subclassof) {
-			t.Error("foreign key was wrong value", a.Accession, second.Subclassof)
+		if !queries.Equal(a.Accession, second.SubclassOf) {
+			t.Error("foreign key was wrong value", a.Accession, second.SubclassOf)
 		}
 
-		if first.R.SubclassofChebi != &a {
+		if first.R.SubclassOfChebi != &a {
 			t.Error("relationship was not added properly to the foreign slice")
 		}
-		if second.R.SubclassofChebi != &a {
+		if second.R.SubclassOfChebi != &a {
 			t.Error("relationship was not added properly to the foreign slice")
 		}
 
-		if a.R.SubclassofChebis[i*2] != first {
+		if a.R.SubclassOfChebis[i*2] != first {
 			t.Error("relationship struct slice not set to correct value")
 		}
-		if a.R.SubclassofChebis[i*2+1] != second {
+		if a.R.SubclassOfChebis[i*2+1] != second {
 			t.Error("relationship struct slice not set to correct value")
 		}
 
-		count, err := a.SubclassofChebis().Count(ctx, tx)
+		count, err := a.SubclassOfChebis().Count(ctx, tx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -724,7 +724,7 @@ func testChebiToManyAddOpSubclassofChebis(t *testing.T) {
 	}
 }
 
-func testChebiToManySetOpSubclassofChebis(t *testing.T) {
+func testChebiToManySetOpSubclassOfChebis(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -755,25 +755,12 @@ func testChebiToManySetOpSubclassofChebis(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = a.SetSubclassofChebis(ctx, tx, false, &b, &c)
+	err = a.SetSubclassOfChebis(ctx, tx, false, &b, &c)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, err := a.SubclassofChebis().Count(ctx, tx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if count != 2 {
-		t.Error("count was wrong:", count)
-	}
-
-	err = a.SetSubclassofChebis(ctx, tx, true, &d, &e)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	count, err = a.SubclassofChebis().Count(ctx, tx)
+	count, err := a.SubclassOfChebis().Count(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -781,41 +768,54 @@ func testChebiToManySetOpSubclassofChebis(t *testing.T) {
 		t.Error("count was wrong:", count)
 	}
 
-	if !queries.IsValuerNil(b.Subclassof) {
+	err = a.SetSubclassOfChebis(ctx, tx, true, &d, &e)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	count, err = a.SubclassOfChebis().Count(ctx, tx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if count != 2 {
+		t.Error("count was wrong:", count)
+	}
+
+	if !queries.IsValuerNil(b.SubclassOf) {
 		t.Error("want b's foreign key value to be nil")
 	}
-	if !queries.IsValuerNil(c.Subclassof) {
+	if !queries.IsValuerNil(c.SubclassOf) {
 		t.Error("want c's foreign key value to be nil")
 	}
-	if !queries.Equal(a.Accession, d.Subclassof) {
-		t.Error("foreign key was wrong value", a.Accession, d.Subclassof)
+	if !queries.Equal(a.Accession, d.SubclassOf) {
+		t.Error("foreign key was wrong value", a.Accession, d.SubclassOf)
 	}
-	if !queries.Equal(a.Accession, e.Subclassof) {
-		t.Error("foreign key was wrong value", a.Accession, e.Subclassof)
-	}
-
-	if b.R.SubclassofChebi != nil {
-		t.Error("relationship was not removed properly from the foreign struct")
-	}
-	if c.R.SubclassofChebi != nil {
-		t.Error("relationship was not removed properly from the foreign struct")
-	}
-	if d.R.SubclassofChebi != &a {
-		t.Error("relationship was not added properly to the foreign struct")
-	}
-	if e.R.SubclassofChebi != &a {
-		t.Error("relationship was not added properly to the foreign struct")
+	if !queries.Equal(a.Accession, e.SubclassOf) {
+		t.Error("foreign key was wrong value", a.Accession, e.SubclassOf)
 	}
 
-	if a.R.SubclassofChebis[0] != &d {
+	if b.R.SubclassOfChebi != nil {
+		t.Error("relationship was not removed properly from the foreign struct")
+	}
+	if c.R.SubclassOfChebi != nil {
+		t.Error("relationship was not removed properly from the foreign struct")
+	}
+	if d.R.SubclassOfChebi != &a {
+		t.Error("relationship was not added properly to the foreign struct")
+	}
+	if e.R.SubclassOfChebi != &a {
+		t.Error("relationship was not added properly to the foreign struct")
+	}
+
+	if a.R.SubclassOfChebis[0] != &d {
 		t.Error("relationship struct slice not set to correct value")
 	}
-	if a.R.SubclassofChebis[1] != &e {
+	if a.R.SubclassOfChebis[1] != &e {
 		t.Error("relationship struct slice not set to correct value")
 	}
 }
 
-func testChebiToManyRemoveOpSubclassofChebis(t *testing.T) {
+func testChebiToManyRemoveOpSubclassOfChebis(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -840,12 +840,12 @@ func testChebiToManyRemoveOpSubclassofChebis(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = a.AddSubclassofChebis(ctx, tx, true, foreigners...)
+	err = a.AddSubclassOfChebis(ctx, tx, true, foreigners...)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, err := a.SubclassofChebis().Count(ctx, tx)
+	count, err := a.SubclassOfChebis().Count(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -853,12 +853,12 @@ func testChebiToManyRemoveOpSubclassofChebis(t *testing.T) {
 		t.Error("count was wrong:", count)
 	}
 
-	err = a.RemoveSubclassofChebis(ctx, tx, foreigners[:2]...)
+	err = a.RemoveSubclassOfChebis(ctx, tx, foreigners[:2]...)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, err = a.SubclassofChebis().Count(ctx, tx)
+	count, err = a.SubclassOfChebis().Count(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -866,35 +866,35 @@ func testChebiToManyRemoveOpSubclassofChebis(t *testing.T) {
 		t.Error("count was wrong:", count)
 	}
 
-	if !queries.IsValuerNil(b.Subclassof) {
+	if !queries.IsValuerNil(b.SubclassOf) {
 		t.Error("want b's foreign key value to be nil")
 	}
-	if !queries.IsValuerNil(c.Subclassof) {
+	if !queries.IsValuerNil(c.SubclassOf) {
 		t.Error("want c's foreign key value to be nil")
 	}
 
-	if b.R.SubclassofChebi != nil {
+	if b.R.SubclassOfChebi != nil {
 		t.Error("relationship was not removed properly from the foreign struct")
 	}
-	if c.R.SubclassofChebi != nil {
+	if c.R.SubclassOfChebi != nil {
 		t.Error("relationship was not removed properly from the foreign struct")
 	}
-	if d.R.SubclassofChebi != &a {
+	if d.R.SubclassOfChebi != &a {
 		t.Error("relationship to a should have been preserved")
 	}
-	if e.R.SubclassofChebi != &a {
+	if e.R.SubclassOfChebi != &a {
 		t.Error("relationship to a should have been preserved")
 	}
 
-	if len(a.R.SubclassofChebis) != 2 {
+	if len(a.R.SubclassOfChebis) != 2 {
 		t.Error("should have preserved two relationships")
 	}
 
 	// Removal doesn't do a stable deletion for performance so we have to flip the order
-	if a.R.SubclassofChebis[1] != &d {
+	if a.R.SubclassOfChebis[1] != &d {
 		t.Error("relationship to d should have been preserved")
 	}
-	if a.R.SubclassofChebis[0] != &e {
+	if a.R.SubclassOfChebis[0] != &e {
 		t.Error("relationship to e should have been preserved")
 	}
 }
@@ -1150,7 +1150,7 @@ func testChebiToManyRemoveOpCompounds(t *testing.T) {
 	}
 }
 
-func testChebiToOneChebiUsingSubclassofChebi(t *testing.T) {
+func testChebiToOneChebiUsingSubclassOfChebi(t *testing.T) {
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
@@ -1170,12 +1170,12 @@ func testChebiToOneChebiUsingSubclassofChebi(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	queries.Assign(&local.Subclassof, foreign.Accession)
+	queries.Assign(&local.SubclassOf, foreign.Accession)
 	if err := local.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Fatal(err)
 	}
 
-	check, err := local.SubclassofChebi().One(ctx, tx)
+	check, err := local.SubclassOfChebi().One(ctx, tx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1185,23 +1185,23 @@ func testChebiToOneChebiUsingSubclassofChebi(t *testing.T) {
 	}
 
 	slice := ChebiSlice{&local}
-	if err = local.L.LoadSubclassofChebi(ctx, tx, false, (*[]*Chebi)(&slice), nil); err != nil {
+	if err = local.L.LoadSubclassOfChebi(ctx, tx, false, (*[]*Chebi)(&slice), nil); err != nil {
 		t.Fatal(err)
 	}
-	if local.R.SubclassofChebi == nil {
+	if local.R.SubclassOfChebi == nil {
 		t.Error("struct should have been eager loaded")
 	}
 
-	local.R.SubclassofChebi = nil
-	if err = local.L.LoadSubclassofChebi(ctx, tx, true, &local, nil); err != nil {
+	local.R.SubclassOfChebi = nil
+	if err = local.L.LoadSubclassOfChebi(ctx, tx, true, &local, nil); err != nil {
 		t.Fatal(err)
 	}
-	if local.R.SubclassofChebi == nil {
+	if local.R.SubclassOfChebi == nil {
 		t.Error("struct should have been eager loaded")
 	}
 }
 
-func testChebiToOneSetOpChebiUsingSubclassofChebi(t *testing.T) {
+func testChebiToOneSetOpChebiUsingSubclassOfChebi(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -1230,36 +1230,36 @@ func testChebiToOneSetOpChebiUsingSubclassofChebi(t *testing.T) {
 	}
 
 	for i, x := range []*Chebi{&b, &c} {
-		err = a.SetSubclassofChebi(ctx, tx, i != 0, x)
+		err = a.SetSubclassOfChebi(ctx, tx, i != 0, x)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if a.R.SubclassofChebi != x {
+		if a.R.SubclassOfChebi != x {
 			t.Error("relationship struct not set to correct value")
 		}
 
-		if x.R.SubclassofChebis[0] != &a {
+		if x.R.SubclassOfChebis[0] != &a {
 			t.Error("failed to append to foreign relationship struct")
 		}
-		if !queries.Equal(a.Subclassof, x.Accession) {
-			t.Error("foreign key was wrong value", a.Subclassof)
+		if !queries.Equal(a.SubclassOf, x.Accession) {
+			t.Error("foreign key was wrong value", a.SubclassOf)
 		}
 
-		zero := reflect.Zero(reflect.TypeOf(a.Subclassof))
-		reflect.Indirect(reflect.ValueOf(&a.Subclassof)).Set(zero)
+		zero := reflect.Zero(reflect.TypeOf(a.SubclassOf))
+		reflect.Indirect(reflect.ValueOf(&a.SubclassOf)).Set(zero)
 
 		if err = a.Reload(ctx, tx); err != nil {
 			t.Fatal("failed to reload", err)
 		}
 
-		if !queries.Equal(a.Subclassof, x.Accession) {
-			t.Error("foreign key was wrong value", a.Subclassof, x.Accession)
+		if !queries.Equal(a.SubclassOf, x.Accession) {
+			t.Error("foreign key was wrong value", a.SubclassOf, x.Accession)
 		}
 	}
 }
 
-func testChebiToOneRemoveOpChebiUsingSubclassofChebi(t *testing.T) {
+func testChebiToOneRemoveOpChebiUsingSubclassOfChebi(t *testing.T) {
 	var err error
 
 	ctx := context.Background()
@@ -1281,15 +1281,15 @@ func testChebiToOneRemoveOpChebiUsingSubclassofChebi(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err = a.SetSubclassofChebi(ctx, tx, true, &b); err != nil {
+	if err = a.SetSubclassOfChebi(ctx, tx, true, &b); err != nil {
 		t.Fatal(err)
 	}
 
-	if err = a.RemoveSubclassofChebi(ctx, tx, &b); err != nil {
+	if err = a.RemoveSubclassOfChebi(ctx, tx, &b); err != nil {
 		t.Error("failed to remove relationship")
 	}
 
-	count, err := a.SubclassofChebi().Count(ctx, tx)
+	count, err := a.SubclassOfChebi().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -1297,15 +1297,15 @@ func testChebiToOneRemoveOpChebiUsingSubclassofChebi(t *testing.T) {
 		t.Error("want no relationships remaining")
 	}
 
-	if a.R.SubclassofChebi != nil {
+	if a.R.SubclassOfChebi != nil {
 		t.Error("R struct entry should be nil")
 	}
 
-	if !queries.IsValuerNil(a.Subclassof) {
+	if !queries.IsValuerNil(a.SubclassOf) {
 		t.Error("foreign key value should be nil")
 	}
 
-	if len(b.R.SubclassofChebis) != 0 {
+	if len(b.R.SubclassOfChebis) != 0 {
 		t.Error("failed to remove a from b's relationships")
 	}
 }
@@ -1384,7 +1384,7 @@ func testChebisSelect(t *testing.T) {
 }
 
 var (
-	chebiDBTypes = map[string]string{`Accession`: `TEXT`, `Subclassof`: `TEXT`}
+	chebiDBTypes = map[string]string{`Accession`: `TEXT`, `SubclassOf`: `TEXT`}
 	_            = bytes.MinRead
 )
 

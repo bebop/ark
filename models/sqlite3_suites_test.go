@@ -14,13 +14,13 @@ func TestUpsert(t *testing.T) {
 
 	t.Run("Reactions", testReactionsUpsert)
 
-	t.Run("Reactionparticipants", testReactionparticipantsUpsert)
+	t.Run("ReactionParticipants", testReactionParticipantsUpsert)
 
 	t.Run("Reactionsides", testReactionsidesUpsert)
 
-	t.Run("Reactionsidereactions", testReactionsidereactionsUpsert)
+	t.Run("ReactionsideReactions", testReactionsideReactionsUpsert)
 
-	t.Run("Reactiveparts", testReactivepartsUpsert)
+	t.Run("ReactiveParts", testReactivePartsUpsert)
 
 	t.Run("Seqhashes", testSeqhashesUpsert)
 

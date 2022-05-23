@@ -52,17 +52,17 @@ var ReactionsideWhere = struct {
 
 // ReactionsideRels is where relationship names are stored.
 var ReactionsideRels = struct {
-	Reactionparticipants  string
-	Reactionsidereactions string
+	ReactionParticipants  string
+	ReactionsideReactions string
 }{
-	Reactionparticipants:  "Reactionparticipants",
-	Reactionsidereactions: "Reactionsidereactions",
+	ReactionParticipants:  "ReactionParticipants",
+	ReactionsideReactions: "ReactionsideReactions",
 }
 
 // reactionsideR is where relationships are stored.
 type reactionsideR struct {
-	Reactionparticipants  ReactionparticipantSlice  `boil:"Reactionparticipants" json:"Reactionparticipants" toml:"Reactionparticipants" yaml:"Reactionparticipants"`
-	Reactionsidereactions ReactionsidereactionSlice `boil:"Reactionsidereactions" json:"Reactionsidereactions" toml:"Reactionsidereactions" yaml:"Reactionsidereactions"`
+	ReactionParticipants  ReactionParticipantSlice  `boil:"ReactionParticipants" json:"ReactionParticipants" toml:"ReactionParticipants" yaml:"ReactionParticipants"`
+	ReactionsideReactions ReactionsideReactionSlice `boil:"ReactionsideReactions" json:"ReactionsideReactions" toml:"ReactionsideReactions" yaml:"ReactionsideReactions"`
 }
 
 // NewStruct creates a new relationship struct
@@ -70,18 +70,18 @@ func (*reactionsideR) NewStruct() *reactionsideR {
 	return &reactionsideR{}
 }
 
-func (r *reactionsideR) GetReactionparticipants() ReactionparticipantSlice {
+func (r *reactionsideR) GetReactionParticipants() ReactionParticipantSlice {
 	if r == nil {
 		return nil
 	}
-	return r.Reactionparticipants
+	return r.ReactionParticipants
 }
 
-func (r *reactionsideR) GetReactionsidereactions() ReactionsidereactionSlice {
+func (r *reactionsideR) GetReactionsideReactions() ReactionsideReactionSlice {
 	if r == nil {
 		return nil
 	}
-	return r.Reactionsidereactions
+	return r.ReactionsideReactions
 }
 
 // reactionsideL is where Load methods for each relationship are stored.
@@ -373,37 +373,37 @@ func (q reactionsideQuery) Exists(ctx context.Context, exec boil.ContextExecutor
 	return count > 0, nil
 }
 
-// Reactionparticipants retrieves all the reactionparticipant's Reactionparticipants with an executor.
-func (o *Reactionside) Reactionparticipants(mods ...qm.QueryMod) reactionparticipantQuery {
+// ReactionParticipants retrieves all the reaction_participant's ReactionParticipants with an executor.
+func (o *Reactionside) ReactionParticipants(mods ...qm.QueryMod) reactionParticipantQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("\"reactionparticipant\".\"reactionside\"=?", o.Accession),
+		qm.Where("\"reaction_participant\".\"reactionside\"=?", o.Accession),
 	)
 
-	return Reactionparticipants(queryMods...)
+	return ReactionParticipants(queryMods...)
 }
 
-// Reactionsidereactions retrieves all the reactionsidereaction's Reactionsidereactions with an executor.
-func (o *Reactionside) Reactionsidereactions(mods ...qm.QueryMod) reactionsidereactionQuery {
+// ReactionsideReactions retrieves all the reactionside_reaction's ReactionsideReactions with an executor.
+func (o *Reactionside) ReactionsideReactions(mods ...qm.QueryMod) reactionsideReactionQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("\"reactionsidereaction\".\"reactionside\"=?", o.Accession),
+		qm.Where("\"reactionside_reaction\".\"reactionside\"=?", o.Accession),
 	)
 
-	return Reactionsidereactions(queryMods...)
+	return ReactionsideReactions(queryMods...)
 }
 
-// LoadReactionparticipants allows an eager lookup of values, cached into the
+// LoadReactionParticipants allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (reactionsideL) LoadReactionparticipants(ctx context.Context, e boil.ContextExecutor, singular bool, maybeReactionside interface{}, mods queries.Applicator) error {
+func (reactionsideL) LoadReactionParticipants(ctx context.Context, e boil.ContextExecutor, singular bool, maybeReactionside interface{}, mods queries.Applicator) error {
 	var slice []*Reactionside
 	var object *Reactionside
 
@@ -441,8 +441,8 @@ func (reactionsideL) LoadReactionparticipants(ctx context.Context, e boil.Contex
 	}
 
 	query := NewQuery(
-		qm.From(`reactionparticipant`),
-		qm.WhereIn(`reactionparticipant.reactionside in ?`, args...),
+		qm.From(`reaction_participant`),
+		qm.WhereIn(`reaction_participant.reactionside in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -450,22 +450,22 @@ func (reactionsideL) LoadReactionparticipants(ctx context.Context, e boil.Contex
 
 	results, err := query.QueryContext(ctx, e)
 	if err != nil {
-		return errors.Wrap(err, "failed to eager load reactionparticipant")
+		return errors.Wrap(err, "failed to eager load reaction_participant")
 	}
 
-	var resultSlice []*Reactionparticipant
+	var resultSlice []*ReactionParticipant
 	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice reactionparticipant")
+		return errors.Wrap(err, "failed to bind eager loaded slice reaction_participant")
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results in eager load on reactionparticipant")
+		return errors.Wrap(err, "failed to close results in eager load on reaction_participant")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for reactionparticipant")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for reaction_participant")
 	}
 
-	if len(reactionparticipantAfterSelectHooks) != 0 {
+	if len(reactionParticipantAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -473,12 +473,12 @@ func (reactionsideL) LoadReactionparticipants(ctx context.Context, e boil.Contex
 		}
 	}
 	if singular {
-		object.R.Reactionparticipants = resultSlice
+		object.R.ReactionParticipants = resultSlice
 		for _, foreign := range resultSlice {
 			if foreign.R == nil {
-				foreign.R = &reactionparticipantR{}
+				foreign.R = &reactionParticipantR{}
 			}
-			foreign.R.ReactionparticipantReactionside = object
+			foreign.R.ReactionParticipantReactionside = object
 		}
 		return nil
 	}
@@ -486,11 +486,11 @@ func (reactionsideL) LoadReactionparticipants(ctx context.Context, e boil.Contex
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
 			if queries.Equal(local.Accession, foreign.Reactionside) {
-				local.R.Reactionparticipants = append(local.R.Reactionparticipants, foreign)
+				local.R.ReactionParticipants = append(local.R.ReactionParticipants, foreign)
 				if foreign.R == nil {
-					foreign.R = &reactionparticipantR{}
+					foreign.R = &reactionParticipantR{}
 				}
-				foreign.R.ReactionparticipantReactionside = local
+				foreign.R.ReactionParticipantReactionside = local
 				break
 			}
 		}
@@ -499,9 +499,9 @@ func (reactionsideL) LoadReactionparticipants(ctx context.Context, e boil.Contex
 	return nil
 }
 
-// LoadReactionsidereactions allows an eager lookup of values, cached into the
+// LoadReactionsideReactions allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (reactionsideL) LoadReactionsidereactions(ctx context.Context, e boil.ContextExecutor, singular bool, maybeReactionside interface{}, mods queries.Applicator) error {
+func (reactionsideL) LoadReactionsideReactions(ctx context.Context, e boil.ContextExecutor, singular bool, maybeReactionside interface{}, mods queries.Applicator) error {
 	var slice []*Reactionside
 	var object *Reactionside
 
@@ -539,8 +539,8 @@ func (reactionsideL) LoadReactionsidereactions(ctx context.Context, e boil.Conte
 	}
 
 	query := NewQuery(
-		qm.From(`reactionsidereaction`),
-		qm.WhereIn(`reactionsidereaction.reactionside in ?`, args...),
+		qm.From(`reactionside_reaction`),
+		qm.WhereIn(`reactionside_reaction.reactionside in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -548,22 +548,22 @@ func (reactionsideL) LoadReactionsidereactions(ctx context.Context, e boil.Conte
 
 	results, err := query.QueryContext(ctx, e)
 	if err != nil {
-		return errors.Wrap(err, "failed to eager load reactionsidereaction")
+		return errors.Wrap(err, "failed to eager load reactionside_reaction")
 	}
 
-	var resultSlice []*Reactionsidereaction
+	var resultSlice []*ReactionsideReaction
 	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice reactionsidereaction")
+		return errors.Wrap(err, "failed to bind eager loaded slice reactionside_reaction")
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results in eager load on reactionsidereaction")
+		return errors.Wrap(err, "failed to close results in eager load on reactionside_reaction")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for reactionsidereaction")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for reactionside_reaction")
 	}
 
-	if len(reactionsidereactionAfterSelectHooks) != 0 {
+	if len(reactionsideReactionAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -571,12 +571,12 @@ func (reactionsideL) LoadReactionsidereactions(ctx context.Context, e boil.Conte
 		}
 	}
 	if singular {
-		object.R.Reactionsidereactions = resultSlice
+		object.R.ReactionsideReactions = resultSlice
 		for _, foreign := range resultSlice {
 			if foreign.R == nil {
-				foreign.R = &reactionsidereactionR{}
+				foreign.R = &reactionsideReactionR{}
 			}
-			foreign.R.ReactionsidereactionReactionside = object
+			foreign.R.ReactionsideReactionReactionside = object
 		}
 		return nil
 	}
@@ -584,11 +584,11 @@ func (reactionsideL) LoadReactionsidereactions(ctx context.Context, e boil.Conte
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
 			if queries.Equal(local.Accession, foreign.Reactionside) {
-				local.R.Reactionsidereactions = append(local.R.Reactionsidereactions, foreign)
+				local.R.ReactionsideReactions = append(local.R.ReactionsideReactions, foreign)
 				if foreign.R == nil {
-					foreign.R = &reactionsidereactionR{}
+					foreign.R = &reactionsideReactionR{}
 				}
-				foreign.R.ReactionsidereactionReactionside = local
+				foreign.R.ReactionsideReactionReactionside = local
 				break
 			}
 		}
@@ -597,11 +597,11 @@ func (reactionsideL) LoadReactionsidereactions(ctx context.Context, e boil.Conte
 	return nil
 }
 
-// AddReactionparticipants adds the given related objects to the existing relationships
+// AddReactionParticipants adds the given related objects to the existing relationships
 // of the reactionside, optionally inserting them as new records.
-// Appends related to o.R.Reactionparticipants.
-// Sets related.R.ReactionparticipantReactionside appropriately.
-func (o *Reactionside) AddReactionparticipants(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Reactionparticipant) error {
+// Appends related to o.R.ReactionParticipants.
+// Sets related.R.ReactionParticipantReactionside appropriately.
+func (o *Reactionside) AddReactionParticipants(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ReactionParticipant) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -611,9 +611,9 @@ func (o *Reactionside) AddReactionparticipants(ctx context.Context, exec boil.Co
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
-				"UPDATE \"reactionparticipant\" SET %s WHERE %s",
+				"UPDATE \"reaction_participant\" SET %s WHERE %s",
 				strmangle.SetParamNames("\"", "\"", 0, []string{"reactionside"}),
-				strmangle.WhereClause("\"", "\"", 0, reactionparticipantPrimaryKeyColumns),
+				strmangle.WhereClause("\"", "\"", 0, reactionParticipantPrimaryKeyColumns),
 			)
 			values := []interface{}{o.Accession, rel.Compound, rel.Reactionside}
 
@@ -632,29 +632,29 @@ func (o *Reactionside) AddReactionparticipants(ctx context.Context, exec boil.Co
 
 	if o.R == nil {
 		o.R = &reactionsideR{
-			Reactionparticipants: related,
+			ReactionParticipants: related,
 		}
 	} else {
-		o.R.Reactionparticipants = append(o.R.Reactionparticipants, related...)
+		o.R.ReactionParticipants = append(o.R.ReactionParticipants, related...)
 	}
 
 	for _, rel := range related {
 		if rel.R == nil {
-			rel.R = &reactionparticipantR{
-				ReactionparticipantReactionside: o,
+			rel.R = &reactionParticipantR{
+				ReactionParticipantReactionside: o,
 			}
 		} else {
-			rel.R.ReactionparticipantReactionside = o
+			rel.R.ReactionParticipantReactionside = o
 		}
 	}
 	return nil
 }
 
-// AddReactionsidereactions adds the given related objects to the existing relationships
+// AddReactionsideReactions adds the given related objects to the existing relationships
 // of the reactionside, optionally inserting them as new records.
-// Appends related to o.R.Reactionsidereactions.
-// Sets related.R.ReactionsidereactionReactionside appropriately.
-func (o *Reactionside) AddReactionsidereactions(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Reactionsidereaction) error {
+// Appends related to o.R.ReactionsideReactions.
+// Sets related.R.ReactionsideReactionReactionside appropriately.
+func (o *Reactionside) AddReactionsideReactions(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ReactionsideReaction) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -664,9 +664,9 @@ func (o *Reactionside) AddReactionsidereactions(ctx context.Context, exec boil.C
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
-				"UPDATE \"reactionsidereaction\" SET %s WHERE %s",
+				"UPDATE \"reactionside_reaction\" SET %s WHERE %s",
 				strmangle.SetParamNames("\"", "\"", 0, []string{"reactionside"}),
-				strmangle.WhereClause("\"", "\"", 0, reactionsidereactionPrimaryKeyColumns),
+				strmangle.WhereClause("\"", "\"", 0, reactionsideReactionPrimaryKeyColumns),
 			)
 			values := []interface{}{o.Accession, rel.Reaction, rel.Reactionside}
 
@@ -685,19 +685,19 @@ func (o *Reactionside) AddReactionsidereactions(ctx context.Context, exec boil.C
 
 	if o.R == nil {
 		o.R = &reactionsideR{
-			Reactionsidereactions: related,
+			ReactionsideReactions: related,
 		}
 	} else {
-		o.R.Reactionsidereactions = append(o.R.Reactionsidereactions, related...)
+		o.R.ReactionsideReactions = append(o.R.ReactionsideReactions, related...)
 	}
 
 	for _, rel := range related {
 		if rel.R == nil {
-			rel.R = &reactionsidereactionR{
-				ReactionsidereactionReactionside: o,
+			rel.R = &reactionsideReactionR{
+				ReactionsideReactionReactionside: o,
 			}
 		} else {
-			rel.R.ReactionsidereactionReactionside = o
+			rel.R.ReactionsideReactionReactionside = o
 		}
 	}
 	return nil

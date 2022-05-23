@@ -526,11 +526,11 @@ func testGenbankToManySeqhashes(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = tx.Exec("insert into \"genbankfeatures\" (\"genbank\", \"seqhash\") values (?, ?)", a.Accession, b.Seqhash)
+	_, err = tx.Exec("insert into \"genbank_features\" (\"parent\", \"seqhash\") values (?, ?)", a.Accession, b.Seqhash)
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = tx.Exec("insert into \"genbankfeatures\" (\"genbank\", \"seqhash\") values (?, ?)", a.Accession, c.Seqhash)
+	_, err = tx.Exec("insert into \"genbank_features\" (\"parent\", \"seqhash\") values (?, ?)", a.Accession, c.Seqhash)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -623,10 +623,10 @@ func testGenbankToManyAddOpSeqhashes(t *testing.T) {
 		first := x[0]
 		second := x[1]
 
-		if first.R.Genbanks[0] != &a {
+		if first.R.ParentGenbanks[0] != &a {
 			t.Error("relationship was not added properly to the slice")
 		}
-		if second.R.Genbanks[0] != &a {
+		if second.R.ParentGenbanks[0] != &a {
 			t.Error("relationship was not added properly to the slice")
 		}
 
@@ -708,16 +708,16 @@ func testGenbankToManySetOpSeqhashes(t *testing.T) {
 	// to these when we call Set(). Leaving them here as wishful thinking
 	// and to let people know there's dragons.
 	//
-	// if len(b.R.Genbanks) != 0 {
+	// if len(b.R.ParentGenbanks) != 0 {
 	// 	t.Error("relationship was not removed properly from the slice")
 	// }
-	// if len(c.R.Genbanks) != 0 {
+	// if len(c.R.ParentGenbanks) != 0 {
 	// 	t.Error("relationship was not removed properly from the slice")
 	// }
-	if d.R.Genbanks[0] != &a {
+	if d.R.ParentGenbanks[0] != &a {
 		t.Error("relationship was not added properly to the slice")
 	}
-	if e.R.Genbanks[0] != &a {
+	if e.R.ParentGenbanks[0] != &a {
 		t.Error("relationship was not added properly to the slice")
 	}
 
@@ -780,16 +780,16 @@ func testGenbankToManyRemoveOpSeqhashes(t *testing.T) {
 		t.Error("count was wrong:", count)
 	}
 
-	if len(b.R.Genbanks) != 0 {
+	if len(b.R.ParentGenbanks) != 0 {
 		t.Error("relationship was not removed properly from the slice")
 	}
-	if len(c.R.Genbanks) != 0 {
+	if len(c.R.ParentGenbanks) != 0 {
 		t.Error("relationship was not removed properly from the slice")
 	}
-	if d.R.Genbanks[0] != &a {
+	if d.R.ParentGenbanks[0] != &a {
 		t.Error("relationship was not added properly to the foreign struct")
 	}
-	if e.R.Genbanks[0] != &a {
+	if e.R.ParentGenbanks[0] != &a {
 		t.Error("relationship was not added properly to the foreign struct")
 	}
 

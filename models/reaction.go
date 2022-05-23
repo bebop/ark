@@ -30,9 +30,9 @@ type Reaction struct {
 	Status               null.String `boil:"status" json:"status,omitempty" toml:"status" yaml:"status,omitempty"`
 	Comment              null.String `boil:"comment" json:"comment,omitempty" toml:"comment" yaml:"comment,omitempty"`
 	Equation             null.String `boil:"equation" json:"equation,omitempty" toml:"equation" yaml:"equation,omitempty"`
-	Htmlequation         null.String `boil:"htmlequation" json:"htmlequation,omitempty" toml:"htmlequation" yaml:"htmlequation,omitempty"`
-	Ischemicallybalanced string      `boil:"ischemicallybalanced" json:"ischemicallybalanced" toml:"ischemicallybalanced" yaml:"ischemicallybalanced"`
-	Istransport          string      `boil:"istransport" json:"istransport" toml:"istransport" yaml:"istransport"`
+	HTMLEquation         null.String `boil:"html_equation" json:"html_equation,omitempty" toml:"html_equation" yaml:"html_equation,omitempty"`
+	IsChemicallyBalanced string      `boil:"is_chemically_balanced" json:"is_chemically_balanced" toml:"is_chemically_balanced" yaml:"is_chemically_balanced"`
+	IsTransport          string      `boil:"is_transport" json:"is_transport" toml:"is_transport" yaml:"is_transport"`
 	Ec                   null.String `boil:"ec" json:"ec,omitempty" toml:"ec" yaml:"ec,omitempty"`
 	Location             null.String `boil:"location" json:"location,omitempty" toml:"location" yaml:"location,omitempty"`
 
@@ -47,9 +47,9 @@ var ReactionColumns = struct {
 	Status               string
 	Comment              string
 	Equation             string
-	Htmlequation         string
-	Ischemicallybalanced string
-	Istransport          string
+	HTMLEquation         string
+	IsChemicallyBalanced string
+	IsTransport          string
 	Ec                   string
 	Location             string
 }{
@@ -59,9 +59,9 @@ var ReactionColumns = struct {
 	Status:               "status",
 	Comment:              "comment",
 	Equation:             "equation",
-	Htmlequation:         "htmlequation",
-	Ischemicallybalanced: "ischemicallybalanced",
-	Istransport:          "istransport",
+	HTMLEquation:         "html_equation",
+	IsChemicallyBalanced: "is_chemically_balanced",
+	IsTransport:          "is_transport",
 	Ec:                   "ec",
 	Location:             "location",
 }
@@ -73,9 +73,9 @@ var ReactionTableColumns = struct {
 	Status               string
 	Comment              string
 	Equation             string
-	Htmlequation         string
-	Ischemicallybalanced string
-	Istransport          string
+	HTMLEquation         string
+	IsChemicallyBalanced string
+	IsTransport          string
 	Ec                   string
 	Location             string
 }{
@@ -85,9 +85,9 @@ var ReactionTableColumns = struct {
 	Status:               "reaction.status",
 	Comment:              "reaction.comment",
 	Equation:             "reaction.equation",
-	Htmlequation:         "reaction.htmlequation",
-	Ischemicallybalanced: "reaction.ischemicallybalanced",
-	Istransport:          "reaction.istransport",
+	HTMLEquation:         "reaction.html_equation",
+	IsChemicallyBalanced: "reaction.is_chemically_balanced",
+	IsTransport:          "reaction.is_transport",
 	Ec:                   "reaction.ec",
 	Location:             "reaction.location",
 }
@@ -125,9 +125,9 @@ var ReactionWhere = struct {
 	Status               whereHelpernull_String
 	Comment              whereHelpernull_String
 	Equation             whereHelpernull_String
-	Htmlequation         whereHelpernull_String
-	Ischemicallybalanced whereHelperstring
-	Istransport          whereHelperstring
+	HTMLEquation         whereHelpernull_String
+	IsChemicallyBalanced whereHelperstring
+	IsTransport          whereHelperstring
 	Ec                   whereHelpernull_String
 	Location             whereHelpernull_String
 }{
@@ -137,25 +137,25 @@ var ReactionWhere = struct {
 	Status:               whereHelpernull_String{field: "\"reaction\".\"status\""},
 	Comment:              whereHelpernull_String{field: "\"reaction\".\"comment\""},
 	Equation:             whereHelpernull_String{field: "\"reaction\".\"equation\""},
-	Htmlequation:         whereHelpernull_String{field: "\"reaction\".\"htmlequation\""},
-	Ischemicallybalanced: whereHelperstring{field: "\"reaction\".\"ischemicallybalanced\""},
-	Istransport:          whereHelperstring{field: "\"reaction\".\"istransport\""},
+	HTMLEquation:         whereHelpernull_String{field: "\"reaction\".\"html_equation\""},
+	IsChemicallyBalanced: whereHelperstring{field: "\"reaction\".\"is_chemically_balanced\""},
+	IsTransport:          whereHelperstring{field: "\"reaction\".\"is_transport\""},
 	Ec:                   whereHelpernull_String{field: "\"reaction\".\"ec\""},
 	Location:             whereHelpernull_String{field: "\"reaction\".\"location\""},
 }
 
 // ReactionRels is where relationship names are stored.
 var ReactionRels = struct {
-	Reactionsidereactions string
+	ReactionsideReactions string
 	Uniprots              string
 }{
-	Reactionsidereactions: "Reactionsidereactions",
+	ReactionsideReactions: "ReactionsideReactions",
 	Uniprots:              "Uniprots",
 }
 
 // reactionR is where relationships are stored.
 type reactionR struct {
-	Reactionsidereactions ReactionsidereactionSlice `boil:"Reactionsidereactions" json:"Reactionsidereactions" toml:"Reactionsidereactions" yaml:"Reactionsidereactions"`
+	ReactionsideReactions ReactionsideReactionSlice `boil:"ReactionsideReactions" json:"ReactionsideReactions" toml:"ReactionsideReactions" yaml:"ReactionsideReactions"`
 	Uniprots              UniprotSlice              `boil:"Uniprots" json:"Uniprots" toml:"Uniprots" yaml:"Uniprots"`
 }
 
@@ -164,11 +164,11 @@ func (*reactionR) NewStruct() *reactionR {
 	return &reactionR{}
 }
 
-func (r *reactionR) GetReactionsidereactions() ReactionsidereactionSlice {
+func (r *reactionR) GetReactionsideReactions() ReactionsideReactionSlice {
 	if r == nil {
 		return nil
 	}
-	return r.Reactionsidereactions
+	return r.ReactionsideReactions
 }
 
 func (r *reactionR) GetUniprots() UniprotSlice {
@@ -182,9 +182,9 @@ func (r *reactionR) GetUniprots() UniprotSlice {
 type reactionL struct{}
 
 var (
-	reactionAllColumns            = []string{"id", "directional", "accession", "status", "comment", "equation", "htmlequation", "ischemicallybalanced", "istransport", "ec", "location"}
+	reactionAllColumns            = []string{"id", "directional", "accession", "status", "comment", "equation", "html_equation", "is_chemically_balanced", "is_transport", "ec", "location"}
 	reactionColumnsWithoutDefault = []string{}
-	reactionColumnsWithDefault    = []string{"id", "directional", "accession", "status", "comment", "equation", "htmlequation", "ischemicallybalanced", "istransport", "ec", "location"}
+	reactionColumnsWithDefault    = []string{"id", "directional", "accession", "status", "comment", "equation", "html_equation", "is_chemically_balanced", "is_transport", "ec", "location"}
 	reactionPrimaryKeyColumns     = []string{"accession"}
 	reactionGeneratedColumns      = []string{}
 )
@@ -467,18 +467,18 @@ func (q reactionQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (b
 	return count > 0, nil
 }
 
-// Reactionsidereactions retrieves all the reactionsidereaction's Reactionsidereactions with an executor.
-func (o *Reaction) Reactionsidereactions(mods ...qm.QueryMod) reactionsidereactionQuery {
+// ReactionsideReactions retrieves all the reactionside_reaction's ReactionsideReactions with an executor.
+func (o *Reaction) ReactionsideReactions(mods ...qm.QueryMod) reactionsideReactionQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
 	}
 
 	queryMods = append(queryMods,
-		qm.Where("\"reactionsidereaction\".\"reaction\"=?", o.Accession),
+		qm.Where("\"reactionside_reaction\".\"reaction\"=?", o.Accession),
 	)
 
-	return Reactionsidereactions(queryMods...)
+	return ReactionsideReactions(queryMods...)
 }
 
 // Uniprots retrieves all the uniprot's Uniprots with an executor.
@@ -496,9 +496,9 @@ func (o *Reaction) Uniprots(mods ...qm.QueryMod) uniprotQuery {
 	return Uniprots(queryMods...)
 }
 
-// LoadReactionsidereactions allows an eager lookup of values, cached into the
+// LoadReactionsideReactions allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
-func (reactionL) LoadReactionsidereactions(ctx context.Context, e boil.ContextExecutor, singular bool, maybeReaction interface{}, mods queries.Applicator) error {
+func (reactionL) LoadReactionsideReactions(ctx context.Context, e boil.ContextExecutor, singular bool, maybeReaction interface{}, mods queries.Applicator) error {
 	var slice []*Reaction
 	var object *Reaction
 
@@ -536,8 +536,8 @@ func (reactionL) LoadReactionsidereactions(ctx context.Context, e boil.ContextEx
 	}
 
 	query := NewQuery(
-		qm.From(`reactionsidereaction`),
-		qm.WhereIn(`reactionsidereaction.reaction in ?`, args...),
+		qm.From(`reactionside_reaction`),
+		qm.WhereIn(`reactionside_reaction.reaction in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -545,22 +545,22 @@ func (reactionL) LoadReactionsidereactions(ctx context.Context, e boil.ContextEx
 
 	results, err := query.QueryContext(ctx, e)
 	if err != nil {
-		return errors.Wrap(err, "failed to eager load reactionsidereaction")
+		return errors.Wrap(err, "failed to eager load reactionside_reaction")
 	}
 
-	var resultSlice []*Reactionsidereaction
+	var resultSlice []*ReactionsideReaction
 	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice reactionsidereaction")
+		return errors.Wrap(err, "failed to bind eager loaded slice reactionside_reaction")
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results in eager load on reactionsidereaction")
+		return errors.Wrap(err, "failed to close results in eager load on reactionside_reaction")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for reactionsidereaction")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for reactionside_reaction")
 	}
 
-	if len(reactionsidereactionAfterSelectHooks) != 0 {
+	if len(reactionsideReactionAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -568,12 +568,12 @@ func (reactionL) LoadReactionsidereactions(ctx context.Context, e boil.ContextEx
 		}
 	}
 	if singular {
-		object.R.Reactionsidereactions = resultSlice
+		object.R.ReactionsideReactions = resultSlice
 		for _, foreign := range resultSlice {
 			if foreign.R == nil {
-				foreign.R = &reactionsidereactionR{}
+				foreign.R = &reactionsideReactionR{}
 			}
-			foreign.R.ReactionsidereactionReaction = object
+			foreign.R.ReactionsideReactionReaction = object
 		}
 		return nil
 	}
@@ -581,11 +581,11 @@ func (reactionL) LoadReactionsidereactions(ctx context.Context, e boil.ContextEx
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
 			if queries.Equal(local.Accession, foreign.Reaction) {
-				local.R.Reactionsidereactions = append(local.R.Reactionsidereactions, foreign)
+				local.R.ReactionsideReactions = append(local.R.ReactionsideReactions, foreign)
 				if foreign.R == nil {
-					foreign.R = &reactionsidereactionR{}
+					foreign.R = &reactionsideReactionR{}
 				}
-				foreign.R.ReactionsidereactionReaction = local
+				foreign.R.ReactionsideReactionReaction = local
 				break
 			}
 		}
@@ -709,11 +709,11 @@ func (reactionL) LoadUniprots(ctx context.Context, e boil.ContextExecutor, singu
 	return nil
 }
 
-// AddReactionsidereactions adds the given related objects to the existing relationships
+// AddReactionsideReactions adds the given related objects to the existing relationships
 // of the reaction, optionally inserting them as new records.
-// Appends related to o.R.Reactionsidereactions.
-// Sets related.R.ReactionsidereactionReaction appropriately.
-func (o *Reaction) AddReactionsidereactions(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Reactionsidereaction) error {
+// Appends related to o.R.ReactionsideReactions.
+// Sets related.R.ReactionsideReactionReaction appropriately.
+func (o *Reaction) AddReactionsideReactions(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ReactionsideReaction) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -723,9 +723,9 @@ func (o *Reaction) AddReactionsidereactions(ctx context.Context, exec boil.Conte
 			}
 		} else {
 			updateQuery := fmt.Sprintf(
-				"UPDATE \"reactionsidereaction\" SET %s WHERE %s",
+				"UPDATE \"reactionside_reaction\" SET %s WHERE %s",
 				strmangle.SetParamNames("\"", "\"", 0, []string{"reaction"}),
-				strmangle.WhereClause("\"", "\"", 0, reactionsidereactionPrimaryKeyColumns),
+				strmangle.WhereClause("\"", "\"", 0, reactionsideReactionPrimaryKeyColumns),
 			)
 			values := []interface{}{o.Accession, rel.Reaction, rel.Reactionside}
 
@@ -744,19 +744,19 @@ func (o *Reaction) AddReactionsidereactions(ctx context.Context, exec boil.Conte
 
 	if o.R == nil {
 		o.R = &reactionR{
-			Reactionsidereactions: related,
+			ReactionsideReactions: related,
 		}
 	} else {
-		o.R.Reactionsidereactions = append(o.R.Reactionsidereactions, related...)
+		o.R.ReactionsideReactions = append(o.R.ReactionsideReactions, related...)
 	}
 
 	for _, rel := range related {
 		if rel.R == nil {
-			rel.R = &reactionsidereactionR{
-				ReactionsidereactionReaction: o,
+			rel.R = &reactionsideReactionR{
+				ReactionsideReactionReaction: o,
 			}
 		} else {
-			rel.R.ReactionsidereactionReaction = o
+			rel.R.ReactionsideReactionReaction = o
 		}
 	}
 	return nil
