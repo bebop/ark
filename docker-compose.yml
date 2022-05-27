@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  database:
+    image: postgres:12.11-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    # volumes:
+    #   - data:/var/lib/postgresql/data
+  # server:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - database
+  #   networks:
+  #     - default
+  #   ports:
+  #   - "8080:8080"
+volumes:
+  data:

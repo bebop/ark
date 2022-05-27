@@ -2,4 +2,21 @@
 # sqlite3 is being run can change.
 # For example generation time and model test time.
 [sqlite3]
-dbname = "/Users/timothystiles/git/allbase/data/test.db"
+dbname = "/Users/timothystiles/git/allbase/data/allbase.db"
+
+[psql]
+  dbname  = "postgres"
+  host    = "localhost"
+  port    = 5432
+  user    = "postgres"
+  pass    = "postgres"
+  sslmode = "disable"
+  blacklist = ["migrations", "other"]
+
+[crdb]
+  user="root"
+  pass=""
+  host="localhost"
+  port=64851
+  dbname="allbase"
+  sslmode="disable"

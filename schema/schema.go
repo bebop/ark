@@ -1,25 +1,22 @@
 package schema
 
 import (
+	"database/sql"
 	"log"
-	"os"
 	"strings"
 
 	"github.com/huandu/go-sqlbuilder"
-	"github.com/jmoiron/sqlx"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
-func createDatabase(dbPath string) error {
-	if _, err := os.Stat(dbPath); !os.IsNotExist(err) {
-		log.Fatal("Database already exists. Run 'allbase clean' to remove it.")
-	}
-
+func createDatabase() error {
 	// Begin SQLite
 	log.Println("Creating database...")
-	db, err := sqlx.Open("sqlite3", dbPath)
+	db, err := sql.Open("postgres", "dbname=postgres user=postgres password=postgres sslmode=disable")
 
 	if err != nil {
-		log.Fatalf("Failed to open sqlite in %s: %s", dbPath, err)
+		log.Fatalf("Failed to open postgres")
 	}
 
 	defer db.Close()
@@ -67,18 +64,24 @@ func CreateSchema() string {
 		REACTION                       = "reaction"
 		REACTIONSIDE                   = "reactionside"
 		UNIPROT                        = "uniprot"
+		ALLBASEDOT                     = ""
+		ALLBASE                        = "allbase"
 	)
 
 	// each built string will be appended to this slice and returned at the end of the function
 	var tableStringSlice []string
 
+	// // create the allbase database itself
+	// databaseDeclaration := "CREATE DATABASE " + ALLBASE
+	// tableStringSlice = append(tableStringSlice, databaseDeclaration)
+
 	// create seqhash table
 	seqhash := sqlbuilder.NewCreateTableBuilder()
-	seqhash.CreateTable(SEQHASH).IfNotExists()
+	seqhash.CreateTable(ALLBASEDOT + SEQHASH).IfNotExists()
 	seqhash.Define(SEQHASH, TEXT, NOTNULL, PRIMARYKEY)
 	seqhash.Define("sequence", TEXT, NOTNULL)
-	seqhash.Define("circular", INTEGER, NOTNULL, DEFAULTFALSE)
-	seqhash.Define("doublestranded", INTEGER, NOTNULL, DEFAULTTRUE)
+	seqhash.Define("circular", BOOL, NOTNULL, DEFAULTFALSE)
+	seqhash.Define("doublestranded", BOOL, NOTNULL, DEFAULTTRUE)
 	seqhash.Define("seqhashtype", TEXT, NOTNULL, "CHECK (seqhashtype IN ('DNA', 'RNA', 'PROTEIN'))")
 	seqhash.Define("translation", TEXT, REFERENCESEQHASH)
 	seqhashTableString, _ := seqhash.Build()
@@ -87,7 +90,7 @@ func CreateSchema() string {
 
 	// create genbank table
 	genbank := sqlbuilder.NewCreateTableBuilder()
-	genbank.CreateTable(GENBANK).IfNotExists()
+	genbank.CreateTable(ALLBASEDOT + GENBANK).IfNotExists()
 	genbank.Define(ACCESSION, TEXT, PRIMARYKEY)
 	genbank.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
 	genbankTableString, _ := genbank.Build()
@@ -95,7 +98,7 @@ func CreateSchema() string {
 
 	// create genbank features table
 	genbankFeatures := sqlbuilder.NewCreateTableBuilder()
-	genbankFeatures.CreateTable("genbank_features").IfNotExists()
+	genbankFeatures.CreateTable(ALLBASEDOT + "genbank_features").IfNotExists()
 	genbankFeatures.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
 	genbankFeatures.Define("parent", TEXT, NOTNULL, "REFERENCES genbank(accession)")
 	genbankFeatures.Define("PRIMARY KEY(", SEQHASH, ", ", "parent", ")")
@@ -104,7 +107,7 @@ func CreateSchema() string {
 
 	// create uniprot table
 	uniprot := sqlbuilder.NewCreateTableBuilder()
-	uniprot.CreateTable(UNIPROT).IfNotExists()
+	uniprot.CreateTable(ALLBASEDOT + UNIPROT).IfNotExists()
 	uniprot.Define(ACCESSION, TEXT, PRIMARYKEY)
 	uniprot.Define("database", TEXT, NOTNULL)
 	uniprot.Define(SEQHASH, TEXT, NOTNULL, REFERENCESEQHASH)
@@ -115,7 +118,7 @@ func CreateSchema() string {
 
 	// create chebi table <- what is chebi @Koeng101? chembl?
 	chebi := sqlbuilder.NewCreateTableBuilder()
-	chebi.CreateTable(CHEBI).IfNotExists()
+	chebi.CreateTable(ALLBASEDOT + CHEBI).IfNotExists()
 	chebi.Define(ACCESSION, TEXT, PRIMARYKEY)
 	chebi.Define("subclass_of", TEXT, REFERENCECHEBIACCESSION)
 	chebiTableString, _ := chebi.Build()
@@ -123,7 +126,7 @@ func CreateSchema() string {
 
 	// create compound table
 	compound := sqlbuilder.NewCreateTableBuilder()
-	compound.CreateTable(COMPOUND).IfNotExists()
+	compound.CreateTable(ALLBASEDOT + COMPOUND).IfNotExists()
 	compound.Define(ID, INTEGER, NOTNULL)
 	compound.Define(ACCESSION, TEXT, PRIMARYKEY)
 	compound.Define("position", TEXT)
@@ -139,7 +142,7 @@ func CreateSchema() string {
 
 	// create reactivePart table
 	reactivePart := sqlbuilder.NewCreateTableBuilder()
-	reactivePart.CreateTable("reactive_part").IfNotExists()
+	reactivePart.CreateTable(ALLBASEDOT + "reactive_part").IfNotExists()
 	reactivePart.Define(ID, INTEGER)
 	reactivePart.Define(ACCESSION, TEXT, PRIMARYKEY)
 	reactivePart.Define(NAME, TEXT)
@@ -150,7 +153,7 @@ func CreateSchema() string {
 
 	// create reaction table
 	reaction := sqlbuilder.NewCreateTableBuilder()
-	reaction.CreateTable(REACTION).IfNotExists()
+	reaction.CreateTable(ALLBASEDOT + REACTION).IfNotExists()
 	reaction.Define(ID, INTEGER)
 	reaction.Define("directional", BOOL, NOTNULL, DEFAULTFALSE)
 	reaction.Define(ACCESSION, TEXT, PRIMARYKEY)
@@ -167,14 +170,14 @@ func CreateSchema() string {
 
 	// create reactionside table
 	reactionside := sqlbuilder.NewCreateTableBuilder()
-	reactionside.CreateTable(REACTIONSIDE).IfNotExists()
+	reactionside.CreateTable(ALLBASEDOT + REACTIONSIDE).IfNotExists()
 	reactionside.Define(ACCESSION, TEXT, PRIMARYKEY)
 	reactionsideTableString, _ := reactionside.Build()
 	tableStringSlice = append(tableStringSlice, reactionsideTableString)
 
 	// create reactionside_reaction table
 	reactionsideReaction := sqlbuilder.NewCreateTableBuilder()
-	reactionsideReaction.CreateTable("reactionside_reaction").IfNotExists()
+	reactionsideReaction.CreateTable(ALLBASEDOT + "reactionside_reaction").IfNotExists()
 	reactionsideReaction.Define(REACTION, TEXT, NOTNULL, REFERENCEREACTIONACCESSION)
 	reactionsideReaction.Define(REACTIONSIDE, TEXT, NOTNULL, REFERENCEREACTIONSIDEACCESSION)
 	reactionsideReaction.Define("reactionside_reaction_type", TEXT, NOTNULL, "CHECK(reactionside_reaction_type IN ('substrate_or_product', 'substrate', 'product'))")
@@ -184,7 +187,7 @@ func CreateSchema() string {
 
 	// create reactionParticipant table
 	reactionParticipant := sqlbuilder.NewCreateTableBuilder()
-	reactionParticipant.CreateTable("reaction_participant").IfNotExists()
+	reactionParticipant.CreateTable(ALLBASEDOT + "reaction_participant").IfNotExists()
 	reactionParticipant.Define(COMPOUND, TEXT, REFERENCECOMPOUNDACCESSION)
 	reactionParticipant.Define(REACTIONSIDE, TEXT, NOTNULL, REFERENCEREACTIONSIDEACCESSION)
 	reactionParticipant.Define("contains", INTEGER)
@@ -197,7 +200,7 @@ func CreateSchema() string {
 
 	// create uniprot_to_reaction table
 	uniprotToReaction := sqlbuilder.NewCreateTableBuilder()
-	uniprotToReaction.CreateTable("uniprot_to_reaction").IfNotExists()
+	uniprotToReaction.CreateTable(ALLBASEDOT + "uniprot_to_reaction").IfNotExists()
 	uniprotToReaction.Define(REACTION, TEXT, REFERENCEREACTIONACCESSION)
 	uniprotToReaction.Define(UNIPROT, TEXT, "REFERENCES uniprot(accession)")
 	uniprotToReaction.Define("PRIMARY KEY(", REACTION, ", ", UNIPROT, ")")

@@ -4,10 +4,11 @@ import (
 	//"context"
 	//"fmt"
 
+	"io/ioutil"
 	"log"
 
 	//"net/http"
-	"os"
+
 	"testing"
 
 	"github.com/jmoiron/sqlx"
@@ -17,18 +18,109 @@ import (
 	//"github.com/ory/dockertest/v3"
 	//dc "github.com/ory/dockertest/v3/docker"
 
+	"context"
+	"database/sql"
+	"fmt"
+	"time"
+
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/wait"
 )
 
 var db *sqlx.DB
 
 //var minioClient *minio.Client
 
-func TestCreateDatabase(t *testing.T) {
-	err := createDatabase("../data/test.db")
+// Task represents a unit of work to complete. We're going to be using this in
+// our example as a way to organize data that is being manipulated in
+// the database.
+type task struct {
+	ID          string     `json:"id"`
+	Description string     `json:"description"`
+	DateDue     *time.Time `json:"date_due,string"`
+	DateCreated time.Time  `json:"date_created,string"`
+	DateUpdated time.Time  `json:"date_updated"`
+}
 
-	// cleanup database
-	defer os.Remove("../data/test.db")
+type cockroachDBContainer struct {
+	testcontainers.Container
+	URI string
+}
+
+func setupCockroachDB(ctx context.Context) (*cockroachDBContainer, error) {
+	req := testcontainers.ContainerRequest{
+		Image:        "cockroachdb/cockroach:latest-v21.1",
+		ExposedPorts: []string{"26257/tcp", "8080/tcp"},
+		WaitingFor:   wait.ForHTTP("/health").WithPort("8080"),
+		Cmd:          []string{"start-single-node", "--insecure"},
+	}
+	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+		ContainerRequest: req,
+		Started:          true,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	mappedPort, err := container.MappedPort(ctx, "26257")
+	if err != nil {
+		return nil, err
+	}
+
+	hostIP, err := container.Host(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	uri := fmt.Sprintf("postgres://root@%s:%s", hostIP, mappedPort.Port())
+
+	return &cockroachDBContainer{Container: container, URI: uri}, nil
+}
+
+func initCockroachDB(ctx context.Context, db sql.DB) error {
+	// Actual SQL for initializing the database should probably live elsewhere
+	schema := CreateSchema()
+
+	//write to file as backup
+	_ = ioutil.WriteFile("schema.sql", []byte(schema), 0644)
+	_, err := db.ExecContext(ctx, CreateSchema())
+
+	return err
+}
+
+func TestIntegrationDBInsertSelect(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test")
+	}
+
+	ctx := context.Background()
+
+	cdbContainer, err := setupCockroachDB(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cdbContainer.Terminate(ctx)
+
+	containerURI := cdbContainer.URI + "/allbase"
+	db, err := sql.Open("pgx", containerURI)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	err = initCockroachDB(ctx, *db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+}
+
+func TestCreateDatabase(t *testing.T) {
+	err := createDatabase()
 
 	if err != nil {
 		log.Fatalf("Failed on error during database creation: %s", err)
@@ -36,84 +128,84 @@ func TestCreateDatabase(t *testing.T) {
 
 }
 
-func TestMain(m *testing.M) {
-	var err error
-	//pool, err := dockertest.NewPool("")
-	//if err != nil {
-	//	log.Fatalf("Could not connect to docker: %s", err)
-	//}
+// func TestMain(m *testing.M) {
+// 	var err error
+// 	//pool, err := dockertest.NewPool("")
+// 	//if err != nil {
+// 	//	log.Fatalf("Could not connect to docker: %s", err)
+// 	//}
 
-	//options := &dockertest.RunOptions{
-	//	Repository:   "minio/minio",
-	//	Tag:          "latest",
-	//	Cmd:          []string{"server", "/data"},
-	//	PortBindings: map[dc.Port][]dc.PortBinding{"9000/tcp": {{HostPort: "9000"}}},
-	//	Env:          []string{"MINIO_ACCESS_KEY=MYACCESSKEY", "MINIO_SECRET_KEY=MYSECRETKEY"},
-	//}
+// 	//options := &dockertest.RunOptions{
+// 	//	Repository:   "minio/minio",
+// 	//	Tag:          "latest",
+// 	//	Cmd:          []string{"server", "/data"},
+// 	//	PortBindings: map[dc.Port][]dc.PortBinding{"9000/tcp": {{HostPort: "9000"}}},
+// 	//	Env:          []string{"MINIO_ACCESS_KEY=MYACCESSKEY", "MINIO_SECRET_KEY=MYSECRETKEY"},
+// 	//}
 
-	//resource, err := pool.RunWithOptions(options)
-	//if err != nil {
-	//	log.Fatalf("Could not start resource: %s", err)
-	//}
+// 	//resource, err := pool.RunWithOptions(options)
+// 	//if err != nil {
+// 	//	log.Fatalf("Could not start resource: %s", err)
+// 	//}
 
-	//endpoint := fmt.Sprintf("localhost:%s", resource.GetPort("9000/tcp"))
-	//// or you could use the following, because we mapped the port 9000 to the port 9000 on the host
-	//// endpoint := "localhost:9000"
+// 	//endpoint := fmt.Sprintf("localhost:%s", resource.GetPort("9000/tcp"))
+// 	//// or you could use the following, because we mapped the port 9000 to the port 9000 on the host
+// 	//// endpoint := "localhost:9000"
 
-	//// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
-	//// the minio client does not do service discovery for you (i.e. it does not check if connection can be established), so we have to use the health check
-	//if err := pool.Retry(func() error {
-	//	url := fmt.Sprintf("http://%s/minio/health/live", endpoint)
-	//	resp, err := http.Get(url)
-	//	if err != nil {
-	//		return err
-	//	}
-	//	if resp.StatusCode != http.StatusOK {
-	//		return fmt.Errorf("status code not OK")
-	//	}
-	//	resp.Body.Close()
-	//	return nil
-	//}); err != nil {
-	//	log.Fatalf("Could not connect to docker: %s", err)
-	//}
+// 	//// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
+// 	//// the minio client does not do service discovery for you (i.e. it does not check if connection can be established), so we have to use the health check
+// 	//if err := pool.Retry(func() error {
+// 	//	url := fmt.Sprintf("http://%s/minio/health/live", endpoint)
+// 	//	resp, err := http.Get(url)
+// 	//	if err != nil {
+// 	//		return err
+// 	//	}
+// 	//	if resp.StatusCode != http.StatusOK {
+// 	//		return fmt.Errorf("status code not OK")
+// 	//	}
+// 	//	resp.Body.Close()
+// 	//	return nil
+// 	//}); err != nil {
+// 	//	log.Fatalf("Could not connect to docker: %s", err)
+// 	//}
 
-	//// now we can instantiate minio client
-	//minioClient, err = minio.New(endpoint, &minio.Options{
-	//	Creds:  credentials.NewStaticV4("MYACCESSKEY", "MYSECRETKEY", ""),
-	//	Secure: false,
-	//})
-	//if err != nil {
-	//	log.Println("Failed to create minio client:", err)
-	//}
+// 	//// now we can instantiate minio client
+// 	//minioClient, err = minio.New(endpoint, &minio.Options{
+// 	//	Creds:  credentials.NewStaticV4("MYACCESSKEY", "MYSECRETKEY", ""),
+// 	//	Secure: false,
+// 	//})
+// 	//if err != nil {
+// 	//	log.Println("Failed to create minio client:", err)
+// 	//}
 
-	//// now we can use the client, for example, to list the buckets
-	//_, err = minioClient.ListBuckets(context.Background())
-	//if err != nil {
-	//	log.Fatalf("error while listing buckets: %v", err)
-	//}
+// 	//// now we can use the client, for example, to list the buckets
+// 	//_, err = minioClient.ListBuckets(context.Background())
+// 	//if err != nil {
+// 	//	log.Fatalf("error while listing buckets: %v", err)
+// 	//}
 
-	// Begin SQLite
-	db, err = sqlx.Open("sqlite3", ":memory:")
-	if err != nil {
-		log.Fatalf("Failed to open sqlite in memory: %s", err)
-	}
+// 	// Begin SQLite
+// 	db, err = sqlx.Open("sqlite3", ":memory:")
+// 	if err != nil {
+// 		log.Fatalf("Failed to open sqlite in memory: %s", err)
+// 	}
 
-	// Execute our schema in memory
-	_, err = db.Exec(CreateSchema())
-	if err != nil {
-		log.Fatalf("Failed to execute schema: %s", err)
-	}
+// 	// Execute our schema in memory
+// 	_, err = db.Exec(CreateSchema())
+// 	if err != nil {
+// 		log.Fatalf("Failed to execute schema: %s", err)
+// 	}
 
-	// Run the rest of our tests
-	code := m.Run()
+// 	// Run the rest of our tests
+// 	code := m.Run()
 
-	//// You can't defer this because os.Exit doesn't care for defer
-	//if err := pool.Purge(resource); err != nil {
-	//	log.Fatalf("Could not purge resource: %s", err)
-	//}
+// 	//// You can't defer this because os.Exit doesn't care for defer
+// 	//if err := pool.Purge(resource); err != nil {
+// 	//	log.Fatalf("Could not purge resource: %s", err)
+// 	//}
 
-	os.Exit(code)
-}
+// 	os.Exit(code)
+// }
 
 // func TestUniprotInsert(t *testing.T) {
 // 	// First, test Rhea insert. We need both to test uniprot2rhea
