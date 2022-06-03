@@ -16,12 +16,14 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
+
+	_ "modernc.org/sqlite"
 )
 
-func createDatabase() error {
+func createDatabase(dbPath string) error {
 	// Begin SQLite
 	log.Println("Creating database...")
-	db, err := sql.Open("postgres", "dbname=postgres user=postgres password=postgres sslmode=disable")
+	db, err := sql.Open("sqlite", dbPath)
 
 	if err != nil {
 		log.Fatalf("Failed to open postgres")

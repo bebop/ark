@@ -30,7 +30,7 @@ var db *sqlx.DB
 //var minioClient *minio.Client
 
 func TestCreateDatabase(t *testing.T) {
-	err := createDatabase("../data/test.db")
+	err := createDatabase("../data/allbase.db")
 
 	// cleanup database
 	defer os.Remove("../data/test.db")
