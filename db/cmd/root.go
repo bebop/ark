@@ -39,7 +39,7 @@ func init() {
 	// viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))
 	viper.SetDefault("author", "Timothy Stiles, Keoni Gandall")
 	viper.SetDefault("license", "MIT")
-	rootCmd.AddCommand(localCmd)
+	// rootCmd.AddCommand(localCmd)
 	rootCmd.AddCommand(cleanCmd)
 	rootCmd.AddCommand(downloadCmd)
 }
