@@ -26,8 +26,8 @@ import (
 type Seqhash struct {
 	Seqhash        string      `boil:"seqhash" json:"seqhash" toml:"seqhash" yaml:"seqhash"`
 	Sequence       string      `boil:"sequence" json:"sequence" toml:"sequence" yaml:"sequence"`
-	Circular       int64       `boil:"circular" json:"circular" toml:"circular" yaml:"circular"`
-	Doublestranded int64       `boil:"doublestranded" json:"doublestranded" toml:"doublestranded" yaml:"doublestranded"`
+	Circular       string      `boil:"circular" json:"circular" toml:"circular" yaml:"circular"`
+	Doublestranded string      `boil:"doublestranded" json:"doublestranded" toml:"doublestranded" yaml:"doublestranded"`
 	Seqhashtype    string      `boil:"seqhashtype" json:"seqhashtype" toml:"seqhashtype" yaml:"seqhashtype"`
 	Translation    null.String `boil:"translation" json:"translation,omitempty" toml:"translation" yaml:"translation,omitempty"`
 
@@ -72,15 +72,15 @@ var SeqhashTableColumns = struct {
 var SeqhashWhere = struct {
 	Seqhash        whereHelperstring
 	Sequence       whereHelperstring
-	Circular       whereHelperint64
-	Doublestranded whereHelperint64
+	Circular       whereHelperstring
+	Doublestranded whereHelperstring
 	Seqhashtype    whereHelperstring
 	Translation    whereHelpernull_String
 }{
 	Seqhash:        whereHelperstring{field: "\"seqhash\".\"seqhash\""},
 	Sequence:       whereHelperstring{field: "\"seqhash\".\"sequence\""},
-	Circular:       whereHelperint64{field: "\"seqhash\".\"circular\""},
-	Doublestranded: whereHelperint64{field: "\"seqhash\".\"doublestranded\""},
+	Circular:       whereHelperstring{field: "\"seqhash\".\"circular\""},
+	Doublestranded: whereHelperstring{field: "\"seqhash\".\"doublestranded\""},
 	Seqhashtype:    whereHelperstring{field: "\"seqhash\".\"seqhashtype\""},
 	Translation:    whereHelpernull_String{field: "\"seqhash\".\"translation\""},
 }
