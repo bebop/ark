@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/PuerkitoBio/goquery v1.7.1
-	github.com/TimothyStiles/poly v0.13.0
+	github.com/TimothyStiles/poly v0.19.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gin-gonic/gin v1.8.0
 	github.com/huandu/go-sqlbuilder v1.13.0
