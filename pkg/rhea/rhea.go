@@ -11,6 +11,9 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/allyourbasepair/allbase/models"
+	"github.com/volatiletech/null/v8"
 )
 
 /******************************************************************************
@@ -49,9 +52,9 @@ the entire Rhea database is basically a series of:
 
 // Rhea is a struct of the entire Rhea Database in a simplified higher-level way.
 type Rhea struct {
-	ReactionParticipants []ReactionParticipant `json:"reactionParticipants"`
-	Compounds            []Compound            `json:"compounds"`
-	Reactions            []Reaction            `json:"reactions"`
+	ReactionParticipants []models.ReactionParticipant `json:"reactionParticipants"`
+	Compounds            []models.Compound            `json:"compounds"`
+	Reactions            []models.Reaction            `json:"reactions"`
 }
 
 // Compound is a struct of a Rhea compound. These are chemicals - sometimes they are
@@ -120,119 +123,125 @@ which contains all of the higher level structs
 ******************************************************************************/
 
 // NewReaction returns a Reaction.
-func NewReaction(description Description, subclass Subclass) Reaction {
-	return Reaction{
-		ID:                   description.ID,
-		Directional:          subclass.Resource == "http://rdf.rhea-db.org/DirectionalReaction",
-		Accession:            description.Accession,
-		Status:               description.Status.Resource,
-		Comment:              description.Comment,
-		Equation:             description.Equation,
-		HTMLEquation:         description.HTMLEquation,
-		IsChemicallyBalanced: description.IsChemicallyBalanced,
-		IsTransport:          description.IsTransport,
-		Ec:                   description.EC.Resource,
-		Citations:            description.CitationStrings(),
-		Substrates:           description.SubstrateAccessionIDs(),
-		Products:             description.ProductAccessionIDs(),
-		SubstrateOrProducts:  description.SubstrateOrProductAccessionIDs(),
-		Location:             description.Location.Resource}
+func NewReaction(description Description, subclass Subclass) models.Reaction {
+	return models.Reaction{
+		ID:                   null.Int64From(int64(description.ID)),
+		Directional:          strconv.FormatBool((subclass.Resource == "http://rdf.rhea-db.org/DirectionalReaction")),
+		Accession:            null.StringFrom(description.Accession),
+		Status:               null.StringFrom(description.Status.Resource),
+		Comment:              null.StringFrom(description.Comment),
+		Equation:             null.StringFrom(description.Equation),
+		HTMLEquation:         null.StringFrom(description.HTMLEquation),
+		IsChemicallyBalanced: strconv.FormatBool(description.IsChemicallyBalanced),
+		IsTransport:          strconv.FormatBool(description.IsTransport),
+		Ec:                   null.StringFrom(description.EC.Resource),
+		// Citations:            description.CitationStrings(),
+		// Substrates:           description.SubstrateAccessionIDs(),
+		// Products:             description.ProductAccessionIDs(),
+		// SubstrateOrProducts:  description.SubstrateOrProductAccessionIDs(),
+		Location: null.StringFrom(description.Location.Resource)}
 }
 
 // NewCompound returns a Compound.
-func NewCompound(description Description, subclass Subclass) Compound {
-	var newCompound Compound
-	compoundType := subclass.Resource[23:]
+func NewCompound(description Description, subclass Subclass) models.Compound {
+	var newCompound models.Compound
+	compoundType := string(subclass.Resource)[23:]
 	switch subclass.Resource {
 	case "http://rdf.rhea-db.org/SmallMolecule", "http://rdf.rhea-db.org/Polymer":
-		newCompound = Compound{
-			ID:        description.ID,
-			Accession: description.About,
-			Position:  description.Position,
-			Name:      description.Name,
-			HTMLName:  description.HTMLName,
-			Formula:   description.Formula,
-			Charge:    description.Charge,
-			ChEBI:     description.ChEBI.Resource,
+		newCompound = models.Compound{
+			ID:        int64(description.ID),
+			Accession: null.StringFrom(description.About),
+			Position:  null.StringFrom(description.Position),
+			Name:      null.StringFrom(description.Name),
+			HTMLName:  null.StringFrom(description.HTMLName),
+			Formula:   null.StringFrom(description.Formula),
+			Charge:    null.StringFrom(description.Charge),
+			// ChEBI:     null.StringFrom(description.ChEBI.Resource),
 
-			CompoundID:        description.ID,
-			CompoundAccession: description.Accession,
-			CompoundName:      description.Name,
-			CompoundHTMLName:  description.HTMLName,
-			CompoundType:      compoundType}
-		if compoundType == "Polymer" {
-			newCompound.ChEBI = description.UnderlyingChEBI.Resource
-		}
+			// CompoundID:        description.ID,
+			// CompoundAccession: description.Accession,
+			// CompoundName:      description.Name,
+			// CompoundHTMLName:  description.HTMLName,
+			CompoundType: compoundType}
+		// if compoundType == "Polymer" {
+		// 	newCompound.ChEBI = description.UnderlyingChEBI.Resource
+		// }
 		// Add subclass ChEBI
-		for _, sc := range description.Subclass {
-			if strings.Contains(sc.Resource, "CHEBI") {
-				newCompound.SubclassOfChEBI = sc.Resource
-			}
-		}
+		// for _, sc := range description.Subclass {
+		// 	if strings.Contains(sc.Resource, "CHEBI") {
+		// 		newCompound.SubclassOfChEBI = sc.Resource
+		// 	}
+		// }
 	case "http://rdf.rhea-db.org/GenericPolypeptide", "http://rdf.rhea-db.org/GenericPolynucleotide", "http://rdf.rhea-db.org/GenericHeteropolysaccharide":
-		newCompound = Compound{
-			Accession:        description.About,
-			CompoundID:       description.ID,
-			CompoundName:     description.Name,
-			CompoundHTMLName: description.HTMLName,
-			CompoundType:     compoundType}
+		newCompound = models.Compound{
+			Accession:    null.StringFrom(description.About),
+			ID:           int64(description.ID),
+			Name:         null.StringFrom(description.Name),
+			HTMLName:     null.StringFrom(description.HTMLName),
+			CompoundType: compoundType}
 	}
 	return newCompound
 }
 
 // NewReactionParticipant returns a ReactionParticipant.
-func NewReactionParticipant(description Description, containsx ContainsX, compoundParticipantMap map[string]string) (ReactionParticipant, error) {
+func NewReactionParticipant(description Description, containsx ContainsX, compoundParticipantMap map[string]string) (models.ReactionParticipant, error) {
 	// Get reaction sides
 	// gzip -d -k -c rhea.rdf.gz | grep -o -P '(?<=contains).*(?= rdf)' | tr ' ' '\n' | sort -u | tr '\n' ' '
 	// The exceptions to numeric contains are 2n, N, Nminus1, and Nplus1
-	var newReactionParticipant ReactionParticipant
+	var newReactionParticipant models.ReactionParticipant
 	switch containsx.XMLName.Local {
 	case "containsN":
-		newReactionParticipant = ReactionParticipant{
-			ReactionSide: description.About,
-			Contains:     1,
-			ContainsN:    true,
-			Minus:        false,
-			Plus:         false,
-			Accession:    containsx.Content}
+		newReactionParticipant = models.ReactionParticipant{
+			Reactionside: description.About,
+			Contains:     null.Int64From(int64(1)),
+			ContainsN:    strconv.FormatBool(true),
+			Minus:        strconv.FormatBool(false),
+			Plus:         strconv.FormatBool(false),
+			// Accession:    containsx.Content
+		}
 	case "contains2n":
-		newReactionParticipant = ReactionParticipant{
-			ReactionSide: description.About,
-			Contains:     2,
-			ContainsN:    true,
-			Minus:        false,
-			Plus:         false,
-			Accession:    containsx.Content}
+		newReactionParticipant = models.ReactionParticipant{
+			Reactionside: description.About,
+			Contains:     null.Int64From(int64(2)),
+			ContainsN:    strconv.FormatBool(true),
+			Minus:        strconv.FormatBool(false),
+			Plus:         strconv.FormatBool(false),
+			// Accession:    containsx.Content
+		}
 	case "containsNminus1":
-		newReactionParticipant = ReactionParticipant{
-			ReactionSide: description.About,
-			Contains:     1,
-			ContainsN:    true,
-			Minus:        true,
-			Plus:         false,
-			Accession:    containsx.Content}
+		newReactionParticipant = models.ReactionParticipant{
+			Reactionside: description.About,
+			Contains:     null.Int64From(int64(1)),
+			ContainsN:    strconv.FormatBool(true),
+			Minus:        strconv.FormatBool(true),
+			Plus:         strconv.FormatBool(false),
+			// Accession:    containsx.Content
+		}
 	case "containsNplus1":
-		newReactionParticipant = ReactionParticipant{
-			ReactionSide: description.About,
-			Contains:     1,
-			ContainsN:    true,
-			Minus:        false,
-			Plus:         true,
-			Accession:    containsx.Content}
+		newReactionParticipant = models.ReactionParticipant{
+			Reactionside: description.About,
+			Contains:     null.Int64From(int64(1)),
+			ContainsN:    strconv.FormatBool(true),
+			Minus:        strconv.FormatBool(false),
+			Plus:         strconv.FormatBool(true),
+			// Accession:    containsx.Content
+		}
 	default:
 		i, err := strconv.Atoi(containsx.XMLName.Local[8:])
 		if err != nil {
-			return ReactionParticipant{}, err
+			return models.ReactionParticipant{}, err
 		}
-		newReactionParticipant = ReactionParticipant{
-			ReactionSide: description.About,
-			Contains:     i,
-			ContainsN:    false,
-			Minus:        false,
-			Plus:         false,
-			Accession:    containsx.Content}
+		newReactionParticipant = models.ReactionParticipant{
+
+			Reactionside: description.About,
+			Contains:     null.Int64From(int64(i)),
+			ContainsN:    strconv.FormatBool(false),
+			Minus:        strconv.FormatBool(false),
+			Plus:         strconv.FormatBool(false),
+			// Accession:    containsx.Content
+		}
 	}
-	newReactionParticipant.Compound = compoundParticipantMap[description.Contains.Resource]
+	newReactionParticipant.Compound = null.StringFrom(description.Contains.Resource)
 	return newReactionParticipant, nil
 }
 
@@ -249,7 +258,7 @@ func Parse(rheaBytes []byte) (Rhea, error) {
 	// Initialize Rhea
 	var rhea Rhea
 	compoundParticipantMap := make(map[string]string)
-	compoundMap := make(map[string]Compound)
+	compoundMap := make(map[string]models.Compound)
 
 	for _, description := range rdf.Descriptions {
 		// Handle the case of a single compound -> reactive part, such as
@@ -287,14 +296,14 @@ func Parse(rheaBytes []byte) (Rhea, error) {
 				if !ok {
 					return Rhea{}, errors.New("Could not find " + description.About)
 				}
-				newCompound.ID = description.ID
-				newCompound.CompoundAccession = description.About
-				newCompound.Position = description.Position
-				newCompound.Name = description.Name
-				newCompound.HTMLName = description.HTMLName
-				newCompound.Formula = description.Formula
-				newCompound.Charge = description.Charge
-				newCompound.ChEBI = description.ChEBI.Resource
+				newCompound.ID = int64(description.ID)
+				newCompound.Accession = null.StringFrom(description.About)
+				newCompound.Position = null.StringFrom(description.Position)
+				newCompound.Name = null.StringFrom(description.Name)
+				newCompound.HTMLName = null.StringFrom(description.HTMLName)
+				newCompound.Formula = null.StringFrom(description.Formula)
+				newCompound.Charge = null.StringFrom(description.Charge)
+				newCompound.Chebi = null.StringFrom(description.ChEBI.Resource)
 				rhea.Compounds = append(rhea.Compounds, newCompound)
 			}
 		}
