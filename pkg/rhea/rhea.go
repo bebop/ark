@@ -150,27 +150,29 @@ func NewCompound(description Description, subclass Subclass) models.Compound {
 	case "http://rdf.rhea-db.org/SmallMolecule", "http://rdf.rhea-db.org/Polymer":
 		newCompound = models.Compound{
 			ID:        int64(description.ID),
-			Accession: null.StringFrom(description.About),
-			Position:  null.StringFrom(description.Position),
-			Name:      null.StringFrom(description.Name),
-			HTMLName:  null.StringFrom(description.HTMLName),
-			Formula:   null.StringFrom(description.Formula),
-			Charge:    null.StringFrom(description.Charge),
-			// ChEBI:     null.StringFrom(description.ChEBI.Resource),
+			Accession: null.StringFrom(description.About), // should be url
+			// Accession: null.StringFrom(description.Accession)
+			Position: null.StringFrom(description.Position),
+			Name:     null.StringFrom(description.Name),
+			HTMLName: null.StringFrom(description.HTMLName),
+			Formula:  null.StringFrom(description.Formula),
+			Charge:   null.StringFrom(description.Charge),
+			Chebi:    null.StringFrom(description.ChEBI.Resource),
 
 			// CompoundID:        description.ID,
 			// CompoundAccession: description.Accession,
 			// CompoundName:      description.Name,
 			// CompoundHTMLName:  description.HTMLName,
 			CompoundType: compoundType}
-		// if compoundType == "Polymer" {
-		// 	newCompound.ChEBI = description.UnderlyingChEBI.Resource
-		// }
+		if compoundType == "Polymer" {
+			newCompound.Chebi = null.StringFrom(description.UnderlyingChEBI.Resource)
+		}
 		// Add subclass ChEBI
 		// for _, sc := range description.Subclass {
-		// 	if strings.Contains(sc.Resource, "CHEBI") {
-		// 		newCompound.SubclassOfChEBI = sc.Resource
-		// 	}
+		// 	// if strings.Contains(sc.Resource, "CHEBI") {
+		// 	fmt.Println(newCompound.Chebi)
+		// 	fmt.Println(sc.Resource)
+		// 	// }
 		// }
 	case "http://rdf.rhea-db.org/GenericPolypeptide", "http://rdf.rhea-db.org/GenericPolynucleotide", "http://rdf.rhea-db.org/GenericHeteropolysaccharide":
 		newCompound = models.Compound{
