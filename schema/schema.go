@@ -154,7 +154,7 @@ func CreateSchema() string {
 	compound.Define("charge", TEXT)
 	compound.Define(CHEBI, TEXT, REFERENCECHEBIACCESSION)
 	compound.Define("polymerization_index", TEXT)
-	compound.Define("compound_type", TEXT, NOTNULL, "CHECK(compound_type IN ('small_molecule', 'polymer', 'generic_polypeptide', 'generic_polynucleotide', 'generic_heteropolysaccharide'))")
+	compound.Define("compound_type", TEXT, NOTNULL, "CHECK(compound_type IN ('SmallMolecule', 'Polymer', 'GenericPolypeptide', 'GenericPolynucleotide', 'GenericHeteropolysaccharide'))")
 	compoundTableString, _ := compound.Build()
 	tableStringSlice = append(tableStringSlice, compoundTableString)
 
