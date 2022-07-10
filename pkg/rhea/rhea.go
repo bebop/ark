@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/allyourbasepair/allbase/models"
+	"github.com/TimothyStiles/allbase/models"
 	"github.com/volatiletech/null/v8"
 )
 
