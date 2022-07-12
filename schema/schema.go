@@ -5,17 +5,19 @@ import (
 	"log"
 	"strings"
 
+	"github.com/TimothyStiles/allbase/pkg/config"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
 
 	_ "modernc.org/sqlite"
 )
 
-func createDatabase(dbPath string) error {
+// CreateDatabase creates a new database with the given name.
+func CreateDatabase(config config.Config) error {
 
 	// Begin SQLite
 	log.Println("Creating database...")
-	db, err := sqlx.Open("sqlite", dbPath)
+	db, err := sqlx.Open("sqlite", config.AllbasePath)
 
 	if err != nil {
 		log.Fatalf("Failed to open sqlite database: %s", err)
@@ -29,8 +31,7 @@ func createDatabase(dbPath string) error {
 		log.Fatalf("Failed to execute schema: %s", err)
 	}
 
-	// attach chembl schema
-	schemaStringBytes, err := ioutil.ReadFile("../data/chembl_schema.sql")
+	schemaStringBytes, err := ioutil.ReadFile(config.ChemblSchema)
 	if err != nil {
 		log.Fatalf("Failed to open chembl schema: %s", err)
 	}
@@ -40,7 +41,7 @@ func createDatabase(dbPath string) error {
 		log.Fatalf("Failed to execute schema: %s", err)
 	}
 
-	err = chemblAttach(db, dbPath)
+	err = chemblAttach(db, config.AllbasePath)
 	if err != nil {
 		log.Fatalf("Failed to attach chembl with error %s", err)
 	}
@@ -154,7 +155,7 @@ func CreateSchema() string {
 	compound.Define("charge", TEXT)
 	compound.Define(CHEBI, TEXT, REFERENCECHEBIACCESSION)
 	compound.Define("polymerization_index", TEXT)
-	compound.Define("compound_type", TEXT, NOTNULL, "CHECK(compound_type IN ('small_molecule', 'polymer', 'generic_polypeptide', 'generic_polynucleotide', 'generic_heteropolysaccharide'))")
+	compound.Define("compound_type", TEXT, NOTNULL, "CHECK(compound_type IN ('SmallMolecule', 'Polymer', 'GenericPolypeptide', 'GenericPolynucleotide', 'GenericHeteropolysaccharide'))")
 	compoundTableString, _ := compound.Build()
 	tableStringSlice = append(tableStringSlice, compoundTableString)
 

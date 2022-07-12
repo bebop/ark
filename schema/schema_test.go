@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/TimothyStiles/allbase/pkg/config"
 	"github.com/jmoiron/sqlx"
 
 	//"github.com/minio/minio-go/v7"
@@ -27,15 +28,19 @@ var db *sqlx.DB
 //var minioClient *minio.Client
 
 func TestCreateDatabase(t *testing.T) {
-	err := createDatabase("../data/test.db")
+	tmpDataDir, err := ioutil.TempDir("", "data-*")
+	tmpAllbaseConfig := config.DevDefault()
+	tmpAllbaseConfig.AllbasePath = filepath.Join(tmpDataDir, "test.db")
+	if err != nil {
+		t.Errorf("Failed to create temporary data directory")
+	}
+	defer os.RemoveAll(tmpDataDir)
 
-	// cleanup database
-	defer os.Remove("../data/test.db")
+	err = CreateDatabase(tmpAllbaseConfig)
 
 	if err != nil {
 		log.Fatalf("Failed on error during database creation: %s", err)
 	}
-
 }
 
 func TestMain(m *testing.M) {
@@ -119,23 +124,25 @@ func TestMain(m *testing.M) {
 
 func TestChemblAttach(t *testing.T) {
 	tmpDataDir, err := ioutil.TempDir("", "data-*")
+	testConfig := config.DevDefault()
+
 	if err != nil {
 		t.Errorf("Failed to create temporary data directory")
 	}
 	defer os.RemoveAll(tmpDataDir)
 
-	tmpChemblFilePath := filepath.Join(tmpDataDir, "chembl.db")
+	tmpChemblDBPath := filepath.Join(tmpDataDir, "chembl.db")
 
 	// Read Chembl schema
-	schemaStringBytes, err := ioutil.ReadFile("../data/chembl_schema.sql")
+	schemaStringBytes, err := ioutil.ReadFile(testConfig.ChemblSchema)
 	if err != nil {
 		t.Errorf("Failed to open chembl schema: %s", err)
 	}
 
 	// Begin SQLite
-	chemblDB, err := sqlx.Open("sqlite3", tmpChemblFilePath)
+	chemblDB, err := sqlx.Open("sqlite3", tmpChemblDBPath)
 	if err != nil {
-		t.Errorf("Failed to open sqlite in %s: %s", tmpChemblFilePath, err)
+		t.Errorf("Failed to open sqlite in %s: %s", tmpChemblDBPath, err)
 	}
 
 	// Execute our schema in memory
@@ -144,7 +151,7 @@ func TestChemblAttach(t *testing.T) {
 		t.Errorf("Failed to execute schema: %s", err)
 	}
 
-	err = chemblAttach(db, tmpChemblFilePath)
+	err = chemblAttach(db, tmpChemblDBPath)
 	if err != nil {
 		t.Errorf("Failed to attach chembl with error %s", err)
 	}

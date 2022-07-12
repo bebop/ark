@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/allyourbasepair/allbase/pkg/download"
+	"github.com/TimothyStiles/allbase/pkg/download"
 )
 
 func TestFile(t *testing.T) {

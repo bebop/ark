@@ -1,10 +1,9 @@
-module github.com/allyourbasepair/allbase
+module github.com/TimothyStiles/allbase
 
-go 1.17
+go 1.18
 
 require (
 	github.com/PuerkitoBio/goquery v1.7.1
-	github.com/TimothyStiles/poly v0.19.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gin-gonic/gin v1.8.0
 	github.com/huandu/go-sqlbuilder v1.13.0
@@ -34,12 +33,10 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
-	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.2.1-0.20191011153232-f91d3411e481 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -64,7 +61,6 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	lukechampine.com/blake3 v1.1.5 // indirect
 	lukechampine.com/uint128 v1.1.1 // indirect
 	modernc.org/cc/v3 v3.36.0 // indirect
 	modernc.org/ccgo/v3 v3.16.6 // indirect

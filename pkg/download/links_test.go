@@ -3,7 +3,7 @@ package download_test
 import (
 	"testing"
 
-	"github.com/allyourbasepair/allbase/pkg/download"
+	"github.com/TimothyStiles/allbase/pkg/download"
 )
 
 func TestGetPageLinks(t *testing.T) {

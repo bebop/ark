@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/allyourbasepair/allbase/pkg/download"
+	"github.com/TimothyStiles/allbase/pkg/download"
 	"github.com/spf13/cobra"
 )
 
