@@ -323,8 +323,8 @@ func Parse(rheaBytes []byte) (Rhea, error) {
 	return rhea, nil
 }
 
-// ReadGzippedXml reads in a a gzip'd Rhea dump (https://www.rhea-db.org/help/download) into bytes.
-func ReadGzippedXml(gzipPath string) ([]byte, error) {
+// ReadGzippedXML reads in a a gzip'd Rhea dump (https://www.rhea-db.org/help/download) into bytes.
+func ReadGzippedXML(gzipPath string) ([]byte, error) {
 	// Get gz'd file bytes
 	xmlFile, err := os.Open(gzipPath)
 	if err != nil {
@@ -350,7 +350,7 @@ func ReadGzippedXml(gzipPath string) ([]byte, error) {
 func Read(path string) (Rhea, error) {
 	// Read the Compressed Rhea XML to bytes
 	var rhea Rhea
-	rheaBytes, err := ReadGzippedXml(path)
+	rheaBytes, err := ReadGzippedXML(path)
 	if err != nil {
 		return rhea, err
 	}

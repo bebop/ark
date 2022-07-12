@@ -12,7 +12,7 @@ import (
 // Rhea parses and inserts Rhea data into the database.
 func Rhea(ctx context.Context, db *sqlx.DB, config config.Config) error {
 	// parse Rhea file
-	rheaBytes, err := rhea.ReadGzippedXml(config.RheaRDF)
+	rheaBytes, err := rhea.ReadGzippedXML(config.RheaRDF)
 	columns := boil.Infer()
 	if err != nil {
 		return err
