@@ -6,14 +6,16 @@ import (
 	"os"
 	"testing"
 
+	"github.com/TimothyStiles/allbase/pkg/config"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 var rhea Rhea
 
 func TestMain(m *testing.M) {
+	testConfig := config.TestDefault()
 	var err error
-	rhea, err = Read("../../data/rhea/rhea_mini.rdf.gz")
+	rhea, err = Read(testConfig.RheaRDF)
 	if err != nil {
 		log.Fatalf("Failed to read rhea: %v", err)
 	}
@@ -32,8 +34,9 @@ func ExampleRhea_ExportJSON() {
 }
 
 func TestReadRheaToUniprot(t *testing.T) {
+	testConfig := config.TestDefault()
 	lines := make(chan RheaToUniprot, 100)
-	go ReadRheaToUniprotTrembl("../../data/rhea/rhea2uniprot_sprot_minimized.tsv.gz", lines)
+	go ReadRheaToUniprotTrembl(testConfig.RheaToUniprotSprot, lines)
 
 	var line RheaToUniprot
 	for l := range lines {
@@ -46,8 +49,9 @@ func TestReadRheaToUniprot(t *testing.T) {
 }
 
 func ExampleReadRheaToUniprotSprot() {
+	testConfig := config.TestDefault()
 	lines := make(chan RheaToUniprot, 100)
-	go ReadRheaToUniprotSprot("../../data/rhea/rhea2uniprot_sprot_minimized.tsv", lines)
+	go ReadRheaToUniprotSprot(testConfig.RheaToUniprotSprot, lines)
 
 	var line RheaToUniprot
 	for l := range lines {
