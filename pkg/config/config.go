@@ -82,12 +82,12 @@ func DevDefault() Config {
 		DataPath:            devPath,
 		AllbasePath:         filepath.Join(devPath, "allbase.sqlite"),
 		RheaRDF:             filepath.Join(devPath, "rhea_mini.rdf.gz"),
-		RheaToUniprotSprot:  filepath.Join(devPath, "rhea_to_uniprot_sprot.tsv"),
-		RheaToUniprotTrembl: filepath.Join(devPath, "rhea_to_uniprot_trembl.tsv"),
+		RheaToUniprotSprot:  filepath.Join(devPath, "rhea_to_uniprot_sprot.tsv.gz"),
+		RheaToUniprotTrembl: filepath.Join(devPath, "rhea_to_uniprot_trembl.tsv.gz"),
 		ChemblSchema:        chemblSchemaPath,
 		ChemblSQLite:        filepath.Join(devPath, "chembl.sqlite"),
 		UniprotSprotXML:     filepath.Join(devPath, "uniprot_sprot_test.xml.gz"),
-		UniprotTremblXML:    filepath.Join(devPath, "uniprot_trembl.xml.gz"),
+		UniprotTremblXML:    filepath.Join(devPath, "uniprot_sprot_test.xml.gz"),
 		Genbank:             filepath.Join(devPath, "genbank"),
 	}
 }
