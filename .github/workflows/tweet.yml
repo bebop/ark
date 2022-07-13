@@ -3,9 +3,9 @@ name: tweet
 on:
   release: 
   issues: 
+    types: [opened]
   pull_request:
-  issue_comment: 
-  discussion: 
+    types: [opened]
   push:
     branches:
       - notify # for testing purposes
