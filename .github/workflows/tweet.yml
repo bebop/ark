@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: get event payload url
-        uses: TimothyStiles/EventuallyUrl@v1.1.0
+        uses: TimothyStiles/Eventually@v1.1.0
       - name: debug
         uses: hmarr/debug-action@v2
       - name: post event url to twitter
