@@ -1,6 +1,7 @@
 name: tweet
 
 on:
+  release:
   issues: 
   pull_request:
   push:
@@ -11,14 +12,11 @@ jobs:
   tweet:
     runs-on: ubuntu-latest
     steps:
-      - name: get event payload url
-        uses: TimothyStiles/Eventually@v1.1.0
       - name: debug
         uses: hmarr/debug-action@v2
       - name: post event url to twitter
-        uses: m1ner79/Github-Twittction@v1.0.1
+        uses: TimothyStiles/Github-Twittction@v1.0.2
         with:
-            twitter_status: ${{ env.EVENT_URL }}
             twitter_consumer_key: ${{ secrets.TWITTER_CONSUMER_API_KEY }} 
             twitter_consumer_secret: ${{ secrets.TWITTER_CONSUMER_API_SECRET }} 
             twitter_access_token_key: ${{ secrets.TWITTER_ACCESS_TOKEN }} 
