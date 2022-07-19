@@ -4,11 +4,12 @@ go 1.18
 
 require (
 	github.com/PuerkitoBio/goquery v1.7.1
+	github.com/TimothyStiles/poly v0.20.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gin-gonic/gin v1.8.0
 	github.com/huandu/go-sqlbuilder v1.13.0
 	github.com/jmoiron/sqlx v1.3.4
-	github.com/mattn/go-sqlite3 v1.14.12
+	github.com/mattn/go-sqlite3 v1.14.13
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 	github.com/volatiletech/null/v8 v8.1.2
@@ -35,8 +36,10 @@ require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.2.1-0.20191011153232-f91d3411e481 // indirect
+	github.com/lunny/log v0.0.0-20160921050905-7887c61bf0de // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
