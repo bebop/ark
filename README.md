@@ -10,7 +10,8 @@
 
 ## Install
 
-Allbase is still in hot development and not production ready. We currently only ships a pre-release dev branch for contributors. Join us!
+Allbase is still in hot development and not production ready. We currently only ship a pre-release dev branch for contributors.
+
  `git clone https://github.com/TimothyStiles/allbase && cd allbase && go test -v ./...`
 
 ## Community
