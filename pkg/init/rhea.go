@@ -1,4 +1,4 @@
-package insert
+package init
 
 import (
 	"context"
