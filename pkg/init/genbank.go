@@ -45,16 +45,14 @@ func Genbank(ctx context.Context, db *bun.DB, config config.Config) error {
 			return err
 		}
 
-		// insert the Genbank data into the database (should be changed to bulk upsert)
-		for _, subGenbank := range genbanks {
-			_, err := db.NewInsert().
-				Model(&subGenbank).
-				Exec(ctx)
-
-			if err != nil {
-				return err
-			}
+		// insert the Genbank data into the database (should be changed to upsert)
+		_, err = db.NewInsert().
+			Model(&genbanks).
+			Exec(ctx)
+		if err != nil {
+			return err
 		}
+
 	}
 
 	return nil
