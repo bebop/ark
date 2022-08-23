@@ -34,6 +34,15 @@ func TestRhea(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{
+			name: "TestRhea",
+			args: args{
+				ctx:    ctx,
+				db:     db,
+				config: config.TestDefault(),
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -11,7 +11,7 @@ import (
 // Rhea parses and inserts the rhea data into the database.
 func Rhea(ctx context.Context, db *bun.DB, config config.Config) error {
 	// parse Rhea file
-	rheaBytes, err := rhea.ReadGzippedXML(config.RheaRDF)
+	rheaBytes, err := rhea.ReadGzippedXml(config.RheaRDF)
 	if err != nil {
 		return err
 	}
@@ -22,14 +22,12 @@ func Rhea(ctx context.Context, db *bun.DB, config config.Config) error {
 	}
 
 	// insert Rhea Reactions into the database
-	for _, rheaReaction := range parsedRhea.Reactions {
-		_, err := db.NewInsert().
-			Model(&rheaReaction).
-			Exec(ctx)
+	_, err = db.NewInsert().
+		Model(&parsedRhea).
+		Exec(ctx)
 
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -40,7 +38,7 @@ func CreateRheaTable(ctx context.Context, db *bun.DB) error {
 
 	// create uniprot table
 	_, err := db.NewCreateTable().
-		Model((*rhea.Rhea())(nil)).
+		Model((*rhea.Rhea)(nil)).
 		Exec(ctx)
 
 	return err
