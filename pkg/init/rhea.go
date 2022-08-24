@@ -21,7 +21,7 @@ func Rhea(ctx context.Context, db *bun.DB, config config.Config) error {
 		return err
 	}
 
-	// insert Rhea Reactions into the database
+	// insert Rhea into the database
 	_, err = db.NewInsert().
 		Model(&parsedRhea).
 		Exec(ctx)

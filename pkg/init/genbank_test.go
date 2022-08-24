@@ -2,25 +2,24 @@ package init
 
 import (
 	"context"
-	"database/sql"
+	"os"
 	"testing"
 
 	"github.com/TimothyStiles/allbase/pkg/config"
+	"github.com/TimothyStiles/allbase/pkg/db"
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"github.com/uptrace/bun/driver/sqliteshim"
 )
 
 func TestGenbank(t *testing.T) {
-
 	ctx := context.Background()
-	sqldb, err := sql.Open(sqliteshim.ShimName, "file::memory:?cache=shared")
-	if err != nil {
-		panic(err)
-	}
 
-	db := bun.NewDB(sqldb, sqlitedialect.New())
-	err = CreateGenbankTable(ctx, db)
+	testDB, err := db.CreateTestDB("genbank.db")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(testDB.DirPath)
+
+	err = CreateGenbankTable(ctx, testDB.DB)
 	if err != nil {
 		panic(err)
 	}
@@ -39,7 +38,7 @@ func TestGenbank(t *testing.T) {
 			name: "TestGenbank",
 			args: args{
 				ctx:    ctx,
-				db:     db,
+				db:     testDB.DB,
 				config: config.TestDefault(),
 
 				// TODO: Add test cases.

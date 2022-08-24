@@ -2,26 +2,25 @@ package init
 
 import (
 	"context"
-	"database/sql"
+	"os"
 	"testing"
 
 	"github.com/TimothyStiles/allbase/pkg/config"
+	"github.com/TimothyStiles/allbase/pkg/db"
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"github.com/uptrace/bun/driver/sqliteshim"
 )
 
 func TestUniprot(t *testing.T) {
 	ctx := context.Background()
-	sqldb, err := sql.Open(sqliteshim.ShimName, "file::memory:?cache=shared")
+	testDB, err := db.CreateTestDB("uniprot.db")
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
+	defer os.RemoveAll(testDB.DirPath)
 
-	db := bun.NewDB(sqldb, sqlitedialect.New())
-	err = CreateUniprotTable(ctx, db)
+	err = CreateUniprotTable(ctx, testDB.DB)
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 
 	type args struct {
@@ -39,7 +38,7 @@ func TestUniprot(t *testing.T) {
 			name: "TestUniprot",
 			args: args{
 				ctx:    ctx,
-				db:     db,
+				db:     testDB.DB,
 				config: config.TestDefault(),
 			},
 			wantErr: false,

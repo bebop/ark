@@ -2,27 +2,27 @@ package init
 
 import (
 	"context"
-	"database/sql"
+	"os"
 	"testing"
 
 	"github.com/TimothyStiles/allbase/pkg/config"
+	"github.com/TimothyStiles/allbase/pkg/db"
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"github.com/uptrace/bun/driver/sqliteshim"
 )
 
 func TestRhea(t *testing.T) {
 	ctx := context.Background()
-	sqldb, err := sql.Open(sqliteshim.ShimName, "file::memory:?cache=shared")
+	testDB, err := db.CreateTestDB("rhea.db")
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(testDB.DirPath)
+
+	err = CreateRheaTable(ctx, testDB.DB)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	db := bun.NewDB(sqldb, sqlitedialect.New())
-	err = CreateRheaTable(ctx, db)
-	if err != nil {
-		panic(err)
-	}
 	type args struct {
 		ctx    context.Context
 		db     *bun.DB
@@ -38,7 +38,7 @@ func TestRhea(t *testing.T) {
 			name: "TestRhea",
 			args: args{
 				ctx:    ctx,
-				db:     db,
+				db:     testDB.DB,
 				config: config.TestDefault(),
 			},
 			wantErr: false,
