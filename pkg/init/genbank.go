@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/TimothyStiles/allbase/models"
 	"github.com/TimothyStiles/allbase/pkg/config"
 	"github.com/TimothyStiles/poly/io/genbank"
 	"github.com/uptrace/bun"
@@ -44,10 +45,19 @@ func Genbank(ctx context.Context, db *bun.DB, config config.Config) error {
 		if err != nil {
 			return err
 		}
+		// convert genbanks to genbanksDB
+		genbanksDB := make([]models.GenbankWithTags, len(genbanks))
+		for i, record := range genbanks {
+			genbanksDB[i] = models.GenbankWithTags{
+				Meta:     record.Meta,
+				Features: record.Features,
+				Sequence: record.Sequence,
+			}
+		}
 
 		// insert the Genbank data into the database (should be changed to upsert)
 		_, err = db.NewInsert().
-			Model(&genbanks).
+			Model(&genbanksDB).
 			Exec(ctx)
 		if err != nil {
 			return err
@@ -61,7 +71,7 @@ func Genbank(ctx context.Context, db *bun.DB, config config.Config) error {
 // CreateGenbankTable creates the Genbank table.
 func CreateGenbankTable(ctx context.Context, db *bun.DB) error {
 	_, err := db.NewCreateTable().
-		Model((*genbank.Genbank)(nil)).
+		Model((*models.GenbankWithTags)(nil)).
 		Exec(ctx)
 
 	return err
