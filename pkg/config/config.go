@@ -52,6 +52,9 @@ type Config struct {
 	// AdminPassword is the admin password for the allbase database.
 	AdminPassword string `json:"admin_password"`
 
+	// DBName is the name of the allbase database.
+	DBName string `json:"db_name"`
+
 	// RheaRDF is the path to the Rhea RDF file.
 	RheaRDF string `json:"rhea_rdf"`
 
@@ -89,6 +92,7 @@ func DevDefault() Config {
 		AllbaseURL:          "ws://localhost:8000/rpc",
 		AdminUser:           "root", // TODO: Change this.
 		AdminPassword:       "root",
+		DBName:              "allbase",
 		RheaRDF:             filepath.Join(devPath, "rhea_mini.rdf.gz"),
 		RheaToUniprotSprot:  filepath.Join(devPath, "rhea_to_uniprot_sprot.tsv.gz"),
 		RheaToUniprotTrembl: filepath.Join(devPath, "rhea_to_uniprot_trembl.tsv.gz"),
@@ -112,6 +116,7 @@ func ProdDefault() Config {
 		AllbaseURL:          "", // Sysadmin to fill in.
 		AdminUser:           "", // Sysadmin to fill in.
 		AdminPassword:       "", // Sysadmin to fill in.
+		DBName:              "allbase",
 		RheaRDF:             filepath.Join(prodPath, "rhea.rdf.gz"),
 		RheaToUniprotSprot:  filepath.Join(prodPath, "rhea_to_uniprot_sprot.tsv"),
 		RheaToUniprotTrembl: filepath.Join(prodPath, "rhea_to_uniprot_trembl.tsv"),
