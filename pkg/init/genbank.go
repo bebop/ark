@@ -8,14 +8,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/TimothyStiles/allbase/models"
 	"github.com/TimothyStiles/allbase/pkg/config"
 	"github.com/TimothyStiles/poly/io/genbank"
-	"github.com/uptrace/bun"
+	"github.com/TimothyStiles/poly/seqhash"
+	"github.com/TimothyStiles/surrealdb.go"
 )
 
 // Genbank parses and inserts the intitial Genbank data into the database.
-func Genbank(ctx context.Context, db *bun.DB, config config.Config) error {
+func Genbank(ctx context.Context, db *surrealdb.DB, config config.Config) error {
 
 	// get list of Genbank Files
 	globPattern := filepath.Join(config.Genbank, "/*.seq.gz")
@@ -45,34 +45,28 @@ func Genbank(ctx context.Context, db *bun.DB, config config.Config) error {
 		if err != nil {
 			return err
 		}
-		// convert genbanks to genbanksDB
-		genbanksDB := make([]models.GenbankWithTags, len(genbanks))
-		for i, record := range genbanks {
-			genbanksDB[i] = models.GenbankWithTags{
-				Meta:     record.Meta,
-				Features: record.Features,
-				Sequence: record.Sequence,
+
+		_, err = db.Use("genbank", config.DBName)
+		//
+		// insert each Genbank into the database
+		for _, genbankRecord := range genbanks {
+
+			// hash sequence
+			sequenceHash, err := seqhash.Hash(genbankRecord.Sequence, "DNA", genbankRecord.Meta.Locus.Circular, true)
+			genbankRecord.Meta.SequenceHash = sequenceHash
+
+			entryID := "genbank:" + sequenceHash
+			// insert the Genbank into the database
+
+			_, err = db.Create(entryID, genbankRecord)
+			if err != nil {
+				_, err = db.Change(entryID, genbankRecord)
+
+			} else {
+				return err
 			}
 		}
-
-		// insert the Genbank data into the database (should be changed to upsert)
-		_, err = db.NewInsert().
-			Model(&genbanksDB).
-			Exec(ctx)
-		if err != nil {
-			return err
-		}
-
 	}
 
 	return nil
-}
-
-// CreateGenbankTable creates the Genbank table.
-func CreateGenbankTable(ctx context.Context, db *bun.DB) error {
-	_, err := db.NewCreateTable().
-		Model((*models.GenbankWithTags)(nil)).
-		Exec(ctx)
-
-	return err
 }

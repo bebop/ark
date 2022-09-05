@@ -1,42 +1,30 @@
 package db
 
 import (
-	"database/sql"
-	"io/ioutil"
-	"path/filepath"
-
-	"github.com/TimothyStiles/allbase/pkg/env"
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"github.com/uptrace/bun/driver/sqliteshim"
+	"github.com/TimothyStiles/allbase/pkg/config"
+	"github.com/TimothyStiles/surrealdb.go"
 )
 
 // CreateTestDB creates a temporary database for testing.
-func CreateTestDB(dbName string) (TestDB, error) {
-	testDB := TestDB{}
-	tmpDataPath := filepath.Join(env.RootPath(), "data")
-	var err error
-
-	testDB.DirPath, err = ioutil.TempDir(tmpDataPath, "tmp-*")
-	if err != nil {
-		return TestDB{}, err
-	}
-
-	testDB.DBPath = filepath.Join(testDB.DirPath, dbName)
-
-	sqldb, err := sql.Open(sqliteshim.ShimName, testDB.DBPath)
+func CreateTestDB(namespace string, testConfig config.Config) (*surrealdb.DB, error) {
+	// create a temporary database
+	testDB, err := surrealdb.New(testConfig.AllbaseURL)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	testDB.DB = bun.NewDB(sqldb, sqlitedialect.New())
+	_, err = testDB.Signin(map[string]interface{}{
+		"user": testConfig.AdminUser,
+		"pass": testConfig.AdminPassword,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	// use the temporary database
+	_, err = testDB.Use(namespace, testConfig.DBName)
+
 	return testDB, nil
-}
-
-// TestDB is a temporary database for testing.
-type TestDB struct {
-	DB      *bun.DB
-	DBPath  string
-	DirPath string
 }
