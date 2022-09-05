@@ -2,30 +2,24 @@ package init
 
 import (
 	"context"
-	"os"
 	"testing"
 
 	"github.com/TimothyStiles/allbase/pkg/config"
 	"github.com/TimothyStiles/allbase/pkg/db"
-	"github.com/uptrace/bun"
+	"github.com/TimothyStiles/surrealdb.go"
 )
 
 func TestUniprot(t *testing.T) {
 	ctx := context.Background()
-	testDB, err := db.CreateTestDB("uniprot.db")
+	testConfig := config.TestDefault()
+	testDB, err := db.CreateTestDB("uniprot", testConfig)
 	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(testDB.DirPath)
-
-	err = CreateUniprotTable(ctx, testDB.DB)
-	if err != nil {
-		t.Fatal(err)
+		t.Errorf("error creating test database: %v", err)
 	}
 
 	type args struct {
 		ctx    context.Context
-		db     *bun.DB
+		db     *surrealdb.DB
 		config config.Config
 	}
 	tests := []struct {
@@ -33,13 +27,14 @@ func TestUniprot(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			name: "TestUniprot",
 			args: args{
 				ctx:    ctx,
-				db:     testDB.DB,
-				config: config.TestDefault(),
+				db:     testDB,
+				config: testConfig,
+
+				// TODO: Add test cases.
 			},
 			wantErr: false,
 		},
