@@ -5,41 +5,35 @@ import (
 
 	"github.com/TimothyStiles/allbase/pkg/config"
 	"github.com/TimothyStiles/allbase/pkg/rhea"
-	"github.com/uptrace/bun"
+	"github.com/TimothyStiles/surrealdb.go"
 )
 
 // Rhea parses and inserts the rhea data into the database.
-func Rhea(ctx context.Context, db *bun.DB, config config.Config) error {
+func Rhea(ctx context.Context, db *surrealdb.DB, config config.Config) error {
 	// parse Rhea file
 	rheaBytes, err := rhea.ReadGzippedXml(config.RheaRDF)
-	if err != nil {
-		return err
-	}
-
 	parsedRhea, err := rhea.Parse(rheaBytes)
 	if err != nil {
 		return err
 	}
 
-	// insert Rhea into the database
-	_, err = db.NewInsert().
-		Model(&parsedRhea).
-		Exec(ctx)
+	// insert compounds
+	for _, compound := range parsedRhea.Compounds {
 
-	if err != nil {
-		return err
+		// compoundID := "compound:" + strconv.Itoa(compound.ID) // TODO: remove if not needed
+		// fmt.Println("parsed rhea", parsedRhea)
+		_, err := db.Create("compound", compound)
+		if err != nil {
+			_, err := db.Update("compound", compound)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
+	// TODO: insert reaction participants and reaction sides
+
+	// TODO: insert reactions
+
 	return nil
-}
-
-// CreateRheaTable creates the rhea table in the database.
-func CreateRheaTable(ctx context.Context, db *bun.DB) error {
-
-	// create uniprot table
-	_, err := db.NewCreateTable().
-		Model((*rhea.Rhea)(nil)).
-		Exec(ctx)
-
-	return err
 }

@@ -53,11 +53,11 @@ type Rhea struct {
 // macro-molecule and a reactivePart. When building into a database, you will have to
 // split this pairing for normalization.
 type Compound struct {
-	ID                  int    `json:"id" db:"id"`
-	Accession           string `json:"accession" db:"accession"`
-	Position            string `json:"position" db:"position"`
-	Name                string `json:"name" db:"name"`
-	HTMLName            string `json:"htmlName" db:"htmlname"`
+	ID        int    `json:"id" db:"id"`
+	Accession string `json:"accession" db:"accession"`
+	Position  string `json:"position" db:"position"`
+	Name      string `json:"name" db:"name"`
+	// HTMLName            string `json:"htmlName" db:"htmlname"`
 	Formula             string `json:"formula" db:"formula"`
 	Charge              string `json:"charge" db:"charge"`
 	ChEBI               string `json:"chebi" db:"chebi"`
@@ -66,8 +66,8 @@ type Compound struct {
 	CompoundID          int    `json:"compoundid" db:"compoundid"`
 	CompoundAccession   string `json:"compoundaccession" db:"compoundaccession"`
 	CompoundName        string `json:"compoundname" db:"compoundname"`
-	CompoundHTMLName    string `json:"compoundhtmlName" db:"compoundhtmlname"`
-	CompoundType        string `json:"compoundType" db:"compoundtype"`
+	// CompoundHTMLName    string `json:"compoundhtmlName" db:"compoundhtmlname"`
+	CompoundType string `json:"compoundType" db:"compoundtype"`
 }
 
 // ReactionParticipant represents a Rhea ReactionParticipant. ReactionParticipants represent Compounds in Reactions. They
@@ -85,13 +85,13 @@ type ReactionParticipant struct {
 // Reaction represents a Rhea reaction. Substrates, Products, and SubstrateOrProducts are all ReactionSide accession
 // numbers, which can be linked to the ReactionParticipant's ReactionSide accession
 type Reaction struct {
-	ID                   int      `json:"id" db:"id"`
-	Directional          bool     `json:"directional" db:"directional"`
-	Accession            string   `json:"accession" db:"accession"`
-	Status               string   `json:"status" db:"status"`
-	Comment              string   `json:"comment" db:"comment"`
-	Equation             string   `json:"equation" db:"equation"`
-	HTMLEquation         string   `json:"htmlequation" db:"htmlequation"`
+	ID          int    `json:"id" db:"id"`
+	Directional bool   `json:"directional" db:"directional"`
+	Accession   string `json:"accession" db:"accession"`
+	Status      string `json:"status" db:"status"`
+	Comment     string `json:"comment" db:"comment"`
+	Equation    string `json:"equation" db:"equation"`
+	// HTMLEquation         string   `json:"htmlequation" db:"htmlequation"`
 	IsChemicallyBalanced bool     `json:"ischemicallybalanced" db:"ischemicallybalanced"`
 	IsTransport          bool     `json:"istransport" db:"istransport"`
 	Ec                   string   `json:"ec" db:"ec"`
@@ -111,13 +111,13 @@ which contains all of the higher level structs
 // NewReaction returns a Reaction.
 func NewReaction(description Description, subclass Subclass) Reaction {
 	return Reaction{
-		ID:                   description.ID,
-		Directional:          subclass.Resource == "http://rdf.rhea-db.org/DirectionalReaction",
-		Accession:            description.Accession,
-		Status:               description.Status.Resource,
-		Comment:              description.Comment,
-		Equation:             description.Equation,
-		HTMLEquation:         description.HTMLEquation,
+		ID:          description.ID,
+		Directional: subclass.Resource == "http://rdf.rhea-db.org/DirectionalReaction",
+		Accession:   description.Accession,
+		Status:      description.Status.Resource,
+		Comment:     description.Comment,
+		Equation:    description.Equation,
+		// HTMLEquation:         description.HTMLEquation,
 		IsChemicallyBalanced: description.IsChemicallyBalanced,
 		IsTransport:          description.IsTransport,
 		Ec:                   description.EC.Resource,
@@ -139,16 +139,16 @@ func NewCompound(description Description, subclass Subclass) Compound {
 			Accession: description.About,
 			Position:  description.Position,
 			Name:      description.Name,
-			HTMLName:  description.HTMLName,
-			Formula:   description.Formula,
-			Charge:    description.Charge,
-			ChEBI:     description.ChEBI.Resource,
+			// HTMLName:  description.HTMLName,
+			Formula: description.Formula,
+			Charge:  description.Charge,
+			ChEBI:   description.ChEBI.Resource,
 
 			CompoundID:        description.ID,
 			CompoundAccession: description.Accession,
 			CompoundName:      description.Name,
-			CompoundHTMLName:  description.HTMLName,
-			CompoundType:      compoundType}
+			// CompoundHTMLName:  description.HTMLName,
+			CompoundType: compoundType}
 		if compoundType == "Polymer" {
 			newCompound.ChEBI = description.UnderlyingChEBI.Resource
 		}
@@ -160,11 +160,12 @@ func NewCompound(description Description, subclass Subclass) Compound {
 		}
 	case "http://rdf.rhea-db.org/GenericPolypeptide", "http://rdf.rhea-db.org/GenericPolynucleotide", "http://rdf.rhea-db.org/GenericHeteropolysaccharide":
 		newCompound = Compound{
-			Accession:        description.About,
-			CompoundID:       description.ID,
-			CompoundName:     description.Name,
-			CompoundHTMLName: description.HTMLName,
-			CompoundType:     compoundType}
+			Accession:    description.About,
+			CompoundID:   description.ID,
+			CompoundName: description.Name,
+			// CompoundHTMLName: description.HTMLName,
+			CompoundType: compoundType,
+		}
 	}
 	return newCompound
 }
@@ -280,7 +281,7 @@ func Parse(rheaBytes []byte) (Rhea, error) {
 				newCompound.CompoundAccession = description.About
 				newCompound.Position = description.Position
 				newCompound.Name = description.Name
-				newCompound.HTMLName = description.HTMLName
+				// newCompound.HTMLName = description.HTMLName
 				newCompound.Formula = description.Formula
 				newCompound.Charge = description.Charge
 				newCompound.ChEBI = description.ChEBI.Resource

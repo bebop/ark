@@ -34,9 +34,9 @@ func insertUniprotXML(ctx context.Context, db *surrealdb.DB, path string) error 
 		_, err = db.Create(entryID, entry)
 		if err != nil {
 			_, err = db.Change(entryID, entry)
-
-		} else {
-			return err
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil

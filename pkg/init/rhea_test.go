@@ -2,30 +2,24 @@ package init
 
 import (
 	"context"
-	"os"
 	"testing"
 
 	"github.com/TimothyStiles/allbase/pkg/config"
 	"github.com/TimothyStiles/allbase/pkg/db"
-	"github.com/uptrace/bun"
+	"github.com/TimothyStiles/surrealdb.go"
 )
 
 func TestRhea(t *testing.T) {
 	ctx := context.Background()
-	testDB, err := db.CreateTestDB("rhea.db")
+	testConfig := config.TestDefault()
+	testDB, err := db.CreateTestDB("rhea", testConfig)
 	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(testDB.DirPath)
-
-	err = CreateRheaTable(ctx, testDB.DB)
-	if err != nil {
-		t.Fatal(err)
+		t.Errorf("error creating test database: %v", err)
 	}
 
 	type args struct {
 		ctx    context.Context
-		db     *bun.DB
+		db     *surrealdb.DB
 		config config.Config
 	}
 	tests := []struct {
@@ -33,13 +27,14 @@ func TestRhea(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			name: "TestRhea",
 			args: args{
 				ctx:    ctx,
-				db:     testDB.DB,
-				config: config.TestDefault(),
+				db:     testDB,
+				config: testConfig,
+
+				// TODO: Add test cases.
 			},
 			wantErr: false,
 		},
