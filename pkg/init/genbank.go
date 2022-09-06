@@ -61,9 +61,10 @@ func Genbank(ctx context.Context, db *surrealdb.DB, config config.Config) error 
 			_, err = db.Create(entryID, genbankRecord)
 			if err != nil {
 				_, err = db.Change(entryID, genbankRecord)
+				if err != nil {
+					return err
+				}
 
-			} else {
-				return err
 			}
 		}
 	}
