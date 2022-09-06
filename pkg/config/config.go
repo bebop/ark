@@ -92,7 +92,7 @@ func DevDefault() Config {
 		AllbaseURL:          "ws://localhost:8000/rpc",
 		AdminUser:           "root", // TODO: Change this.
 		AdminPassword:       "root",
-		DBName:              "allbase",
+		DBName:              "allbaseTest",
 		RheaRDF:             filepath.Join(devPath, "rhea_mini.rdf.gz"),
 		RheaToUniprotSprot:  filepath.Join(devPath, "rhea_to_uniprot_sprot.tsv.gz"),
 		RheaToUniprotTrembl: filepath.Join(devPath, "rhea_to_uniprot_trembl.tsv.gz"),
