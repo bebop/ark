@@ -24,7 +24,9 @@ func CreateTestDB(namespace string, testConfig config.Config) (*surrealdb.DB, er
 	}
 
 	// use the temporary database
+	_, err = testDB.Delete(namespace)
 	_, err = testDB.Use(namespace, testConfig.DBName)
+	_, err = testDB.Delete(namespace)
 
 	return testDB, nil
 }
