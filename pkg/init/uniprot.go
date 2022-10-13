@@ -2,7 +2,6 @@ package init
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/TimothyStiles/allbase/pkg/config"
 	"github.com/TimothyStiles/poly/io/uniprot"
@@ -29,7 +28,6 @@ func insertUniprotXML(ctx context.Context, db *surrealdb.DB, path string) error 
 		// insert uniprot entry
 		sequenceHash, err := seqhash.Hash(entry.Sequence.Value, "PROTEIN", false, false)
 		entryID := "uniprot:" + sequenceHash
-		fmt.Println(entry)
 
 		_, err = db.Create(entryID, entry)
 		if err != nil {
