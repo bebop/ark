@@ -1,23 +1,21 @@
 package retsynth
 
 import (
+	"math"
 	"os"
-	"strings"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-
-
-// Get the file path of the Retsynth database from the environment variable, if it exists otherwise set default path
-var RetsynthDBPath, ok = os.LookupEnv("RETSYNTH_DB_PATH")
-if !ok {
-	RetsynthDBPath = "./minimal.db"
-}
-
-
 //Easy database connector
 func ConnectDB() (*sqlx.DB, error) {
+	
+	// Get the file path of the Retsynth database from the environment variable, if it exists otherwise set default path
+	var RetsynthDBPath, ok = os.LookupEnv("RETSYNTH_DB_PATH")
+	if !ok {
+		RetsynthDBPath = "./minimal.db"
+	}
 	var db *sqlx.DB
 	var err error
 	db, err = sqlx.Connect("sqlite3", RetsynthDBPath)
@@ -44,7 +42,7 @@ func GetUniqueMetabolicClusters() ([]string, error) {
 
 
 //Retrieves model IDs from a specified cluster in the database
-func GetModelIDsFromCluster(cluster string) ([]cluster, error) {
+func GetModelIDsFromCluster(cluster string) ([]string, error) {
 	db, err := ConnectDB()
 	if err != nil {
 		return nil, err
@@ -85,7 +83,7 @@ func GetOrganismName(organismID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return name
+	return name, err
 }
 
 // Retrieves ID of organism given a specific organism name
@@ -100,7 +98,7 @@ func GetOrganismID(organismName string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return ID
+	return ID, err
 }
 
 // Retrieves compound ID given a compound name
@@ -115,7 +113,7 @@ func GetCompoundID(compoundName string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return ID
+	return ID, err
 }
 
 // Retrieves compound ID with the most similar name to the given compound name
@@ -130,7 +128,7 @@ func GetLikeCompoundID(compoundName string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return ID
+	return ID, err
 }
 
 // Retrieves compound ID given an inchi string
@@ -145,7 +143,7 @@ func GetCompoundIDFromInchi(inchi string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return ID
+	return ID, err
 }
 
 //Retrieves inchi string given a compound ID
@@ -160,7 +158,7 @@ func GetCompoundInchi(compoundID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return inchi
+	return inchi, err
 }
 
 
@@ -176,7 +174,7 @@ func GetCompoundName(compoundID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return name
+	return name, err
 }
 
 // Retrieves compound name given an inchi string
@@ -191,7 +189,7 @@ func GetCompoundNameFromInchi(inchi string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return name
+	return name, err
 }
 
 // Retrieves the compartment that the compound is in
@@ -206,7 +204,7 @@ func GetCompoundCompartment(compoundID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return compartment
+	return compartment, err
 }
 
 // Retrieves name of the reaction given the reaction ID
@@ -221,7 +219,7 @@ func GetReactionName(reactionID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return name
+	return name, err
 }
 
 // Retrieves reaction IDs that have a given compound ID as a reactant or product
@@ -277,7 +275,7 @@ func GetReactionsWithProduct(compoundID string) ([]string, error) {
 	}
 	var compoundIDs []string
 	query := "SELECT reaction_ID FROM reaction_compound WHERE cpd_ID = ? AND is_prod = ?"
-	err = db.Select(&compoundIDs, query, reactionID, true)
+	err = db.Select(&compoundIDs, query, compoundID, true)
 	if err != nil {
 		return nil, err
 	}
@@ -450,18 +448,18 @@ func GetStoichiometry(reactionID string, compoundID string, isProduct bool) (flo
 }
 
 // Retrieves the catalyst of reaction
-func GetReactionCatalyst(reactionID string) (string, error) {
+func GetReactionCatalysts(reactionID string) ([]string, error) {
 	db, err := ConnectDB()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	var catalyst string
+	var catalysts []string
 	query := "SELECT catalysts_ID FROM reaction_catalysts WHERE reaction_ID = ?"
-	err = db.Get(&catalyst, query, reactionID)
+	err = db.Get(&catalysts, query, reactionID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return catalyst, err
+	return catalysts, err
 }
 
 // Retrieves the compartment ID
@@ -483,13 +481,13 @@ func GetCompartmentID(compartmentName string) (string, error) {
 func GetReactionSolvents(reactionID string) ([]string, error) {
 	db, err := ConnectDB()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	var solvent []string
 	query := "SELECT solvents_ID FROM reaction_solvents WHERE reaction_ID = ?"
 	err = db.Get(&solvent, query, reactionID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	return solvent, err
 }
@@ -498,13 +496,13 @@ func GetReactionSolvents(reactionID string) ([]string, error) {
 func GetReactionTemperature(reactionID string) (float64, error) {
 	db, err := ConnectDB()
 	if err != nil {
-		return "", err
+		return math.SmallestNonzeroFloat64, err
 	}
 	var temperature float64
 	query := "SELECT temperature FROM reaction_spresi_info WHERE reaction_ID = ?"
 	err = db.Get(&temperature, query, reactionID)
 	if err != nil {
-		return "", err
+		return math.SmallestNonzeroFloat64, err
 	}
 	return temperature, err
 }
@@ -513,13 +511,13 @@ func GetReactionTemperature(reactionID string) (float64, error) {
 func GetReactionPressure(reactionID string) (float64, error) {
 	db, err := ConnectDB()
 	if err != nil {
-		return "", err
+		return math.SmallestNonzeroFloat64, err
 	}
 	var pressure float64
 	query := "SELECT pressure FROM reaction_spresi_info WHERE reaction_ID = ?"
 	err = db.Get(&pressure, query, reactionID)
 	if err != nil {
-		return "", err
+		return math.SmallestNonzeroFloat64, err
 	}
 	return pressure, err
 }
@@ -528,13 +526,13 @@ func GetReactionPressure(reactionID string) (float64, error) {
 func GetReactionTime(reactionID string) (float64, error) {
 	db, err := ConnectDB()
 	if err != nil {
-		return "", err
+		return math.SmallestNonzeroFloat64, err
 	}
 	var time float64
 	query := "SELECT total_time FROM reaction_spresi_info WHERE reaction_ID = ?"
 	err = db.Get(&time, query, reactionID)
 	if err != nil {
-		return "", err
+		return math.SmallestNonzeroFloat64, err
 	}
 	return time, err
 }
@@ -543,13 +541,13 @@ func GetReactionTime(reactionID string) (float64, error) {
 func GetReactionYield(reactionID string) (float64, error) {
 	db, err := ConnectDB()
 	if err != nil {
-		return "", err
+		return math.SmallestNonzeroFloat64, err
 	}
 	var yield float64
 	query := "SELECT yield FROM reaction_spresi_info WHERE reaction_ID = ?"
 	err = db.Get(&yield, query, reactionID)
 	if err != nil {
-		return "", err
+		return math.SmallestNonzeroFloat64, err
 	}
 	return yield, err
 }
@@ -708,13 +706,13 @@ func GetCASNumber(compoundID string) (string, error) {
 func GetCompoundIDByFormula(formula string) ([]string, error) {
 	db, err := ConnectDB()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	var compoundIDs []string
 	query := "SELECT ID FROM compound WHERE chemicalformula = ?"
 	err = db.Get(&compoundIDs, query, formula)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	return compoundIDs, err
 }
@@ -723,13 +721,13 @@ func GetCompoundIDByFormula(formula string) ([]string, error) {
 func GetCompoundNameBySearchTerm(searchTerm string) ([]string, error) {
 	db, err := ConnectDB()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	var compoundNames []string
 	query := "SELECT name FROM compound WHERE name LIKE ? OR chemicalformula LIKE ? OR ID LIKE ? OR kegg_id LIKE ? OR casnumber LIKE ?"
 	err = db.Get(&compoundNames, query, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	return compoundNames, err
 }
@@ -750,7 +748,7 @@ func GetModelIDByFileName(fileName string) (string, error) {
 }
 
 // Retrieves all model IDs in the database
-func GetAllModelIDs() ([]string, error) {
+func GetAllFBAModelIDs() ([]string, error) {
 	db, err := ConnectDB()
 	if err != nil {
 		return nil, err
