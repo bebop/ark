@@ -167,7 +167,7 @@ func TestGetModelCompounds(t *testing.T) {
 }
 
 func TestGetAllCompounds(t *testing.T) {
-	_, err := GetAllCompounds()
+	_, err := GetAllCompoundIDs()
 	if err != nil {
 		t.Error("Error getting all compounds")
 	}

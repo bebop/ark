@@ -311,7 +311,7 @@ func GetModelCompounds(modelID string) ([]string, error) {
 }
 
 // Retrieves all comounds in the database
-func GetAllCompounds() ([]string, error) {
+func GetAllCompoundIDs() ([]string, error) {
 	db, err := ConnectDB()
 	if err != nil {
 		return nil, err
