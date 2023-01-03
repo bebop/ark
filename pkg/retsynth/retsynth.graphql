@@ -1,0 +1,97 @@
+type Model {
+  ID: String!
+  FileName: String!
+}
+
+type FBAModel {
+  ID: String!
+  FileName: String!
+}
+
+type Compound {
+  ID: String!
+  Name: String!
+  Compartments: String!
+  KeggID: String!
+  ChemicalFormula: String!
+  InchiString: String!
+  CASNumber: String!
+}
+
+type Compartment {
+  ID: String!
+  Name: String!
+}
+
+type ModelCompound {
+  CompundID: String!
+  ModelID: String!
+}
+
+type Reaction {
+  ID: String!
+  Name: String!
+  KeggID: String!
+  Type: String!
+}
+
+type ModelReaction {
+  ReactionID: String!
+  ModelID: String!
+  IsReversible: Boolean!
+}
+
+type ReactionCompound {
+  ReactionID: String!
+  CompoundID: String!
+  IsProduct: Boolean!
+  Stochiometry: Int!
+  FileNumer: Int!
+}
+
+type ReactionReversibility {
+  ReactionID: String!
+  IsReversible: Boolean!
+}
+
+type ReactionGene {
+  ReactionID: String!
+  ModelID: String!
+  GeneID: String!
+}
+
+type ReactionProtein {
+  ReactionID: String!
+  ModelID: String!
+  ProteinID: String!
+}
+
+type Gene {
+  ID: String!
+  Name: String!
+  Type: String!
+  ModelID: String!
+}
+
+type Protein {
+  ID: String!
+  Name: String!
+  Type: String!
+  ModelID: String!
+}
+
+type Query {
+  model(ID: String!): Model
+  fbaModel(ID: String!): FBAModel
+  compound(ID: String!): Compound
+  compartment(ID: String!): Compartment
+  modelCompound(CompoundID: String!, ModelID: String!): ModelCompound
+  reaction(ID: String!): Reaction
+  modelReaction(ReactionID: String!, ModelID: String!): ModelReaction
+  reactionCompound(ReactionID: String!, CompoundID: String!): ReactionCompound
+  reactionReversibility(ReactionID: String!): ReactionReversibility
+  reactionGene(ReactionID: String!, ModelID: String!): ReactionGene
+  reactionProtein(ReactionID: String!, ModelID: String!): ReactionProtein
+  gene(ID: String!): Gene
+  protein(ID: String!): Protein
+}
