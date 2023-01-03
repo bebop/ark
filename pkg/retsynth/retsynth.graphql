@@ -19,12 +19,12 @@ type Query {
   reactantCompoundIDs(reactionID: String): [String]
   getReactionsWithProduct(compoundID: String): [String]
   modelCompounds(modelID: String): [String]
-  compoundIDs(): [String]
-  compoundInchiStrings(): [String]
+  compoundIDs: [String]
+  compoundInchiStrings: [String]
 
-  modelReaction(modelID: String, reactionID: String): ModelReaction
+  modelReactions(modelID: String): [String]
   
-  reactionIDs(): [String]
+  reactionIDs: [String]
   reactionReversibility(reactionID: String, modelID: String): Boolean
   
   reactionReversibilityGlobal(reactionID: String): Boolean
@@ -42,19 +42,19 @@ type Query {
   reactionReference(reactionID: String): String
   reactionByType(reactionType: String): [String]
   reactionType(reactionID: String): String
-  reactionKEGGIDs(): [String]
+  reactionKEGGIDs: [String]
   reactionKEGGID(reactionID: String): String
 
   compoundKEGGID(compoundID: String): String
-  compoundKEGGIDs(): [String]
-  chemicalFormulas(): [String]
+  compoundKEGGIDs: [String]
+  chemicalFormulas: [String]
   chemicalFormula(compoundID: String): String
-  compoundCASNumbers(): [String]
+  compoundCASNumbers: [String]
   compoundCASNumber(compoundID: String): String
   compoundIDByFormula(formula: String): [String]
   compoundNameBySearchTerm(searchTerm: String): [String]
   modedIDByFileName(fileName: String): String
 
-  fbaModelIDs(): [String]
+  fbaModelIDs: [String]
 
 }
