@@ -1,0 +1,60 @@
+type Query {
+  uniqueMetabolicClusters: [String]
+  modelIDsFromCluster(cluster: String): [String]
+  allModelIDs: [String]
+  organismName(organismID: String): String
+  organismID(organismName: String): String
+  compoundID(compoundName: String): String
+  likeCompoundID(compoundName: String): String
+  compoundIDFromInchi(inchi: String): String
+  compoundInchi(compoundID: String): String
+  compoundNameFromInchi(inchi: String): String
+  compoundName(compoundID: String): String
+  compoundCompartment(compoundID: String): String
+  reactionName(reactionID: String): String
+  reactionID(reactionName: String): String
+  reactionIDsFromCompound(compoundID: String, isProduct: Boolean): [String]
+  reactionSpecies(reactionID: String): [String]
+
+  reactantCompoundIDs(reactionID: String): [String]
+  getReactionsWithProduct(compoundID: String): [String]
+  modelCompounds(modelID: String): [String]
+  compoundIDs(): [String]
+  compoundInchiStrings(): [String]
+
+  modelReaction(modelID: String, reactionID: String): ModelReaction
+  
+  reactionIDs(): [String]
+  reactionReversibility(reactionID: String, modelID: String): Boolean
+  
+  reactionReversibilityGlobal(reactionID: String): Boolean
+
+  reactionGeneAssociations(reactionID: String, modelID: String): [String]
+  reactionProteinAssociations(reactionID: String, modelID: String): [String]
+  stoichiometry(reactionID: String, compoundID: String, isProduct: Boolean): Float
+  reactionCatalysts(reactionID: String): [String]
+  compartmentID(compartmentName: String): String
+  reactionSolvents(reactionID: String): [String]
+  reactionTemperature(reactionID: String): Float
+  reactionPressure(reactionID: String): Float
+  reactionTime(reactionID: String): Float
+  reactionYield(reactionID: String): Float
+  reactionReference(reactionID: String): String
+  reactionByType(reactionType: String): [String]
+  reactionType(reactionID: String): String
+  reactionKEGGIDs(): [String]
+  reactionKEGGID(reactionID: String): String
+
+  compoundKEGGID(compoundID: String): String
+  compoundKEGGIDs(): [String]
+  chemicalFormulas(): [String]
+  chemicalFormula(compoundID: String): String
+  compoundCASNumbers(): [String]
+  compoundCASNumber(compoundID: String): String
+  compoundIDByFormula(formula: String): [String]
+  compoundNameBySearchTerm(searchTerm: String): [String]
+  modedIDByFileName(fileName: String): String
+
+  fbaModelIDs(): [String]
+
+}
