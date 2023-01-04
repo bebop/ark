@@ -8,13 +8,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-//Easy database connector
+// Easy database connector
 func ConnectDB() (*sqlx.DB, error) {
-	
+
 	// Get the file path of the Retsynth database from the environment variable, if it exists otherwise set default path
 	var RetsynthDBPath, ok = os.LookupEnv("RETSYNTH_DB_PATH")
 	if !ok {
-		RetsynthDBPath = "./minimal.db"
+		RetsynthDBPath = "../../data/dev/retsynth/minimal.db"
 	}
 	var db *sqlx.DB
 	var err error
@@ -25,7 +25,7 @@ func ConnectDB() (*sqlx.DB, error) {
 	return db, err
 }
 
-//Retrieves unique metabolic clusters (organisms with the exact same metabolism) in the database
+// Retrieves unique metabolic clusters (organisms with the exact same metabolism) in the database
 func GetUniqueMetabolicClusters() ([]string, error) {
 	db, err := ConnectDB()
 	if err != nil {
@@ -40,8 +40,7 @@ func GetUniqueMetabolicClusters() ([]string, error) {
 	return clusters, err
 }
 
-
-//Retrieves model IDs from a specified cluster in the database
+// Retrieves model IDs from a specified cluster in the database
 func GetModelIDsFromCluster(cluster string) ([]string, error) {
 	db, err := ConnectDB()
 	if err != nil {
@@ -146,8 +145,8 @@ func GetCompoundIDFromInchi(inchi string) (string, error) {
 	return ID, err
 }
 
-//Retrieves inchi string given a compound ID
-func GetCompoundInchi(compoundID string) (string, error) {	
+// Retrieves inchi string given a compound ID
+func GetCompoundInchi(compoundID string) (string, error) {
 	db, err := ConnectDB()
 	if err != nil {
 		return "", err
@@ -160,7 +159,6 @@ func GetCompoundInchi(compoundID string) (string, error) {
 	}
 	return inchi, err
 }
-
 
 // Retrieves compound name given a compound ID
 func GetCompoundName(compoundID string) (string, error) {
@@ -313,7 +311,7 @@ func GetModelCompounds(modelID string) ([]string, error) {
 }
 
 // Retrieves all comounds in the database
-func GetAllCompounds() ([]string, error) {
+func GetAllCompoundIDs() ([]string, error) {
 	db, err := ConnectDB()
 	if err != nil {
 		return nil, err
@@ -402,7 +400,7 @@ func GetReactionReversibilityGlobal(reactionID string) (bool, error) {
 	return reversible, err
 }
 
-//Retrieves gene associations for a reaction of a given metabolic network (model ID)
+// Retrieves gene associations for a reaction of a given metabolic network (model ID)
 func GetReactionGeneAssociations(reactionID string, modelID string) ([]string, error) {
 	db, err := ConnectDB()
 	if err != nil {
@@ -761,4 +759,3 @@ func GetAllFBAModelIDs() ([]string, error) {
 	}
 	return modelIDs, err
 }
-
