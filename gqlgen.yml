@@ -1,6 +1,6 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  # - graph/*.graphql
+  - graph/*.graphql
   - pkg/retsynth/*.graphql
 
 # Where should the generated server code go?
@@ -23,6 +23,7 @@ resolver:
   layout: follow-schema
   dir: graph
   package: graph
+  filename_template: "{name}.resolvers.go"
 
 # Optional: turn on use ` + "`" + `gqlgen:"fieldName"` + "`" + ` tags in your models
 # struct_tag: json
@@ -43,7 +44,7 @@ resolver:
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-#  - "github.com/TimothyStiles/allbase/graph/model"
+ - "github.com/TimothyStiles/allbase/pkg/retsynth"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
