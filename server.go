@@ -8,12 +8,13 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/TimothyStiles/allbase/graph"
+	"github.com/TimothyStiles/allbase/parameters"
 )
 
 func StartGraphQLServer() {
 	port, ok := os.LookupEnv("PORT")
 	if !ok {
-		port = defaultPort
+		port = parameters.DefaultServerPort
 	}
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))

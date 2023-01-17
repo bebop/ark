@@ -2,23 +2,15 @@ package retsynth
 
 import (
 	"math"
-	"os"
 
+	"github.com/TimothyStiles/allbase/parameters"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 // Easy database connector
 func ConnectDB() (*sqlx.DB, error) {
-
-	// Get the file path of the Retsynth database from the environment variable, if it exists otherwise set default path
-	var RetsynthDBPath, ok = os.LookupEnv("RETSYNTH_DB_PATH")
-	if !ok {
-		RetsynthDBPath = "../../data/dev/retsynth/minimal.db"
-	}
-	var db *sqlx.DB
-	var err error
-	db, err = sqlx.Connect("sqlite3", RetsynthDBPath)
+	var db, err = sqlx.Connect("sqlite3", parameters.RetsynthDBPath())
 	if err != nil {
 		return db, err
 	}
