@@ -10,11 +10,9 @@ import (
 	"github.com/TimothyStiles/allbase/graph"
 )
 
-const defaultPort = "8080"
-
-func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
+func StartGraphQLServer() {
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
 		port = defaultPort
 	}
 
@@ -25,4 +23,5 @@ func main() {
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
+
 }

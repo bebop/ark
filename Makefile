@@ -9,12 +9,16 @@ graphql-generate:
 
 run-playground:
 	echo "Running graphql playground..."
-	go run ./server.go
+	go run .
 
-build:
+clean:
+	echo "Cleaning..."
+	rm -rf ./bin
+
+build: install-dependencies
 	echo "Building..."
-	go build -o ./bin/server ./server.go
+	go build -o ./bin/allbase .
 
 run-server:
 	echo "Running server..."
-	./bin/server
+	./bin/allbase
