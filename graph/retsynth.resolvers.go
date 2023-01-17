@@ -258,8 +258,3 @@ func (r *queryResolver) ModedIDByFileName(ctx context.Context, fileName *string)
 func (r *queryResolver) FbaModelIDs(ctx context.Context) ([]*string, error) {
 	panic(fmt.Errorf("not implemented: FbaModelIDs - fbaModelIDs"))
 }
-
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
-
-type queryResolver struct{ *Resolver }

@@ -70,6 +70,21 @@ func GetAllModelIDs() ([]string, error) {
 	return models, err
 }
 
+// Retrieves all model objects from the database
+func GetAllModels() []Model {
+	db, err := ConnectDB()
+	if err != nil {
+		panic(err)
+	}
+	var models []Model
+	query := "SELECT * FROM model"
+	err = db.Select(&models, query)
+	if err != nil {
+		panic(err)
+	}
+	return models
+}
+
 // Retrieves name of organism given a specific organism ID
 func GetOrganismName(organismID string) (string, error) {
 	db, err := ConnectDB()
@@ -323,6 +338,21 @@ func GetAllCompoundIDs() ([]string, error) {
 		return nil, err
 	}
 	return compounds, err
+}
+
+// Retrieve all compounds in the database
+func GetAllCompounds() []Compound {
+	db, err := ConnectDB()
+	if err != nil {
+		panic(err)
+	}
+	var compounds []Compound
+	query := "SELECT * FROM compound"
+	err = db.Select(&compounds, query)
+	if err != nil {
+		panic(err)
+	}
+	return compounds
 }
 
 // Retrieves all compound inchistrings in the database

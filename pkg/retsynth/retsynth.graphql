@@ -1,4 +1,4 @@
-type Query {
+extend type Query {
   uniqueMetabolicClusters: [String]
   modelIDsFromCluster(cluster: String): [String]
   allModelIDs: [String]

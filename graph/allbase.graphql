@@ -49,11 +49,6 @@ type ReactionCompound {
   FileNumer: Int!
 }
 
-type ReactionReversibility {
-  ReactionID: String!
-  IsReversible: Boolean!
-}
-
 type ReactionGene {
   ReactionID: String!
   ModelID: String!
@@ -81,17 +76,19 @@ type Protein {
 }
 
 type Query {
-  model(ID: String!): Model
-  fbaModel(ID: String!): FBAModel
-  compound(ID: String!): Compound
-  compartment(ID: String!): Compartment
-  modelCompound(CompoundID: String!, ModelID: String!): ModelCompound
-  reaction(ID: String!): Reaction
-  modelReaction(ReactionID: String!, ModelID: String!): ModelReaction
-  reactionCompound(ReactionID: String!, CompoundID: String!): ReactionCompound
-  reactionReversibility(ReactionID: String!): ReactionReversibility
-  reactionGene(ReactionID: String!, ModelID: String!): ReactionGene
-  reactionProtein(ReactionID: String!, ModelID: String!): ReactionProtein
-  gene(ID: String!): Gene
-  protein(ID: String!): Protein
+  compounds: [Compound]
+  organisms: [Model]
+  # model(ID: String!): Model
+  # fbaModel(ID: String!): FBAModel
+  # compound(ID: String!): Compound
+  # compartment(ID: String!): Compartment
+  # modelCompound(CompoundID: String!, ModelID: String!): ModelCompound
+  # reaction(ID: String!): Reaction
+  # modelReaction(ReactionID: String!, ModelID: String!): ModelReaction
+  # reactionCompound(ReactionID: String!, CompoundID: String!): ReactionCompound
+  # reactionGene(ReactionID: String!, ModelID: String!): ReactionGene
+  # reactionProtein(ReactionID: String!, ModelID: String!): ReactionProtein
+  # gene(ID: String!): Gene
+  # protein(ID: String!): Protein
 }
+
