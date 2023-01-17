@@ -5,6 +5,8 @@ package retsynth
 
 import (
 	"testing"
+
+	"github.com/magiconair/properties/assert"
 )
 
 //	func setupSuite() {
@@ -15,6 +17,16 @@ func TestConnectDB(t *testing.T) {
 	if err != nil {
 		t.Error("Error connecting to the database")
 	}
+}
+
+func TestGetAllCompounds(t *testing.T) {
+	compounds := GetAllCompounds()
+	assert.Equal(t, len(compounds), 2120)
+}
+
+func TestGetAllModels(t *testing.T) {
+	models := GetAllModels()
+	assert.Equal(t, len(models), 44)
 }
 
 func TestGetUniqueMetabolicClusters(t *testing.T) {
@@ -166,7 +178,7 @@ func TestGetModelCompounds(t *testing.T) {
 	}
 }
 
-func TestGetAllCompounds(t *testing.T) {
+func TestGetAllCompoundIDs(t *testing.T) {
 	_, err := GetAllCompoundIDs()
 	if err != nil {
 		t.Error("Error getting all compounds")

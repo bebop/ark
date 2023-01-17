@@ -10,3 +10,11 @@ graphql-generate:
 run-playground:
 	echo "Running graphql playground..."
 	go run ./server.go
+
+build:
+	echo "Building..."
+	go build -o ./bin/server ./server.go
+
+run-server:
+	echo "Running server..."
+	./bin/server

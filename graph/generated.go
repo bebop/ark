@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strconv"
 	"sync"
+	"sync/atomic"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -37,6 +38,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Compound() CompoundResolver
 	Query() QueryResolver
 }
 
@@ -52,7 +54,7 @@ type ComplexityRoot struct {
 	Compound struct {
 		CASNumber       func(childComplexity int) int
 		ChemicalFormula func(childComplexity int) int
-		Compartments    func(childComplexity int) int
+		Compartment     func(childComplexity int) int
 		ID              func(childComplexity int) int
 		InchiString     func(childComplexity int) int
 		KeggID          func(childComplexity int) int
@@ -177,6 +179,14 @@ type ComplexityRoot struct {
 	}
 }
 
+type CompoundResolver interface {
+	Name(ctx context.Context, obj *retsynth.Compound) (string, error)
+	Compartment(ctx context.Context, obj *retsynth.Compound) (string, error)
+	KeggID(ctx context.Context, obj *retsynth.Compound) (string, error)
+	ChemicalFormula(ctx context.Context, obj *retsynth.Compound) (string, error)
+	InchiString(ctx context.Context, obj *retsynth.Compound) (string, error)
+	CASNumber(ctx context.Context, obj *retsynth.Compound) (string, error)
+}
 type QueryResolver interface {
 	Compounds(ctx context.Context) ([]*retsynth.Compound, error)
 	Organisms(ctx context.Context) ([]*retsynth.Model, error)
@@ -275,12 +285,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Compound.ChemicalFormula(childComplexity), true
 
-	case "Compound.Compartments":
-		if e.complexity.Compound.Compartments == nil {
+	case "Compound.Compartment":
+		if e.complexity.Compound.Compartment == nil {
 			break
 		}
 
-		return e.complexity.Compound.Compartments(childComplexity), true
+		return e.complexity.Compound.Compartment(childComplexity), true
 
 	case "Compound.ID":
 		if e.complexity.Compound.ID == nil {
@@ -2083,7 +2093,7 @@ func (ec *executionContext) _Compound_Name(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Name, nil
+		return ec.resolvers.Compound().Name(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2104,8 +2114,8 @@ func (ec *executionContext) fieldContext_Compound_Name(ctx context.Context, fiel
 	fc = &graphql.FieldContext{
 		Object:     "Compound",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -2113,8 +2123,8 @@ func (ec *executionContext) fieldContext_Compound_Name(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Compound_Compartments(ctx context.Context, field graphql.CollectedField, obj *retsynth.Compound) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Compound_Compartments(ctx, field)
+func (ec *executionContext) _Compound_Compartment(ctx context.Context, field graphql.CollectedField, obj *retsynth.Compound) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Compound_Compartment(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2127,7 +2137,7 @@ func (ec *executionContext) _Compound_Compartments(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Compartments, nil
+		return ec.resolvers.Compound().Compartment(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2144,12 +2154,12 @@ func (ec *executionContext) _Compound_Compartments(ctx context.Context, field gr
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Compound_Compartments(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Compound_Compartment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Compound",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -2171,7 +2181,7 @@ func (ec *executionContext) _Compound_KeggID(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.KeggID, nil
+		return ec.resolvers.Compound().KeggID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2192,8 +2202,8 @@ func (ec *executionContext) fieldContext_Compound_KeggID(ctx context.Context, fi
 	fc = &graphql.FieldContext{
 		Object:     "Compound",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -2215,7 +2225,7 @@ func (ec *executionContext) _Compound_ChemicalFormula(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ChemicalFormula, nil
+		return ec.resolvers.Compound().ChemicalFormula(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2236,8 +2246,8 @@ func (ec *executionContext) fieldContext_Compound_ChemicalFormula(ctx context.Co
 	fc = &graphql.FieldContext{
 		Object:     "Compound",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -2259,7 +2269,7 @@ func (ec *executionContext) _Compound_InchiString(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.InchiString, nil
+		return ec.resolvers.Compound().InchiString(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2280,8 +2290,8 @@ func (ec *executionContext) fieldContext_Compound_InchiString(ctx context.Contex
 	fc = &graphql.FieldContext{
 		Object:     "Compound",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -2303,7 +2313,7 @@ func (ec *executionContext) _Compound_CASNumber(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CASNumber, nil
+		return ec.resolvers.Compound().CASNumber(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2324,8 +2334,8 @@ func (ec *executionContext) fieldContext_Compound_CASNumber(ctx context.Context,
 	fc = &graphql.FieldContext{
 		Object:     "Compound",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -3121,8 +3131,8 @@ func (ec *executionContext) fieldContext_Query_compounds(ctx context.Context, fi
 				return ec.fieldContext_Compound_ID(ctx, field)
 			case "Name":
 				return ec.fieldContext_Compound_Name(ctx, field)
-			case "Compartments":
-				return ec.fieldContext_Compound_Compartments(ctx, field)
+			case "Compartment":
+				return ec.fieldContext_Compound_Compartment(ctx, field)
 			case "KeggID":
 				return ec.fieldContext_Compound_KeggID(ctx, field)
 			case "ChemicalFormula":
@@ -8295,50 +8305,128 @@ func (ec *executionContext) _Compound(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = ec._Compound_ID(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "Name":
+			field := field
 
-			out.Values[i] = ec._Compound_Name(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Compound_Name(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
 			}
-		case "Compartments":
 
-			out.Values[i] = ec._Compound_Compartments(ctx, field, obj)
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
+			})
+		case "Compartment":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Compound_Compartment(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
 			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "KeggID":
+			field := field
 
-			out.Values[i] = ec._Compound_KeggID(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Compound_KeggID(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
 			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "ChemicalFormula":
+			field := field
 
-			out.Values[i] = ec._Compound_ChemicalFormula(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Compound_ChemicalFormula(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
 			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "InchiString":
+			field := field
 
-			out.Values[i] = ec._Compound_InchiString(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Compound_InchiString(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
 			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "CASNumber":
+			field := field
 
-			out.Values[i] = ec._Compound_CASNumber(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Compound_CASNumber(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
 			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

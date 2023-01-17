@@ -11,7 +11,7 @@ type FBAModel {
 type Compound {
   ID: String!
   Name: String!
-  Compartments: String!
+  Compartment: String!
   KeggID: String!
   ChemicalFormula: String!
   InchiString: String!

@@ -1,5 +1,7 @@
 package retsynth
 
+import "database/sql"
+
 // Models is a struct that contains the information about a model
 type Model struct {
 	ID       string `db:"ID" json:"ID"`              //ID is the model ID
@@ -14,13 +16,13 @@ type FBAModel struct {
 
 // Compounds is a struct that contains the information about a compound
 type Compound struct {
-	ID              string `db:"ID" json:"ID"`                           //ID is the compound ID
-	Name            string `db:"name" json:"name"`                       //Name is the compound name
-	Compartments    string `db:"compartments" json:"compartments"`       //Compartments is the compartment of the compound
-	KeggID          string `db:"kegg_id" json:"kegg_id"`                 //KeggID is the Kegg ID of the compound
-	ChemicalFormula string `db:"chemicalformula" json:"chemicalformula"` //ChemicalFormula is the chemical formula of the compound
-	InchiString     string `db:"inchistring" json:"inchistring"`         //InchiString is the Inchi string of the compound
-	CASNumber       string `db:"casnumber" json:"casnumber"`             //CASNumber is the CAS number of the compound
+	ID              string         `db:"ID" json:"ID"`                           //ID is the compound ID
+	Name            sql.NullString `db:"name" json:"name"`                       //Name is the compound name
+	Compartment     sql.NullString `db:"compartment" json:"compartment"`         //Compartments is the compartment of the compound
+	KeggID          sql.NullString `db:"kegg_id" json:"kegg_id"`                 //KeggID is the Kegg ID of the compound
+	ChemicalFormula sql.NullString `db:"chemicalformula" json:"chemicalformula"` //ChemicalFormula is the chemical formula of the compound
+	InchiString     sql.NullString `db:"inchistring" json:"inchistring"`         //InchiString is the Inchi string of the compound
+	CASNumber       sql.NullString `db:"casnumber" json:"casnumber"`             //CASNumber is the CAS number of the compound
 }
 
 // Compartments is a struct that contains the information about a compartment

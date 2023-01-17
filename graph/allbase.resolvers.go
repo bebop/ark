@@ -10,6 +10,62 @@ import (
 	"github.com/TimothyStiles/allbase/pkg/retsynth"
 )
 
+// Name is the resolver for the Name field.
+func (r *compoundResolver) Name(ctx context.Context, obj *retsynth.Compound) (string, error) {
+	// Pull out the name from the compound
+	if !obj.Name.Valid {
+		return "", nil
+	} else {
+		return obj.Name.String, nil
+	}
+}
+
+// Compartment is the resolver for the Compartment field.
+func (r *compoundResolver) Compartment(ctx context.Context, obj *retsynth.Compound) (string, error) {
+	// Pull out the compartment from the compound
+	return obj.Compartment.String, nil
+}
+
+// KeggID is the resolver for the KeggID field.
+func (r *compoundResolver) KeggID(ctx context.Context, obj *retsynth.Compound) (string, error) {
+	// Pull out the KeggID from the compound
+	if !obj.KeggID.Valid {
+		return "", nil
+	} else {
+		return obj.KeggID.String, nil
+	}
+}
+
+// ChemicalFormula is the resolver for the ChemicalFormula field.
+func (r *compoundResolver) ChemicalFormula(ctx context.Context, obj *retsynth.Compound) (string, error) {
+	// Pull out the ChemicalFormula from the compound
+	if !obj.ChemicalFormula.Valid {
+		return "", nil
+	} else {
+		return obj.ChemicalFormula.String, nil
+	}
+}
+
+// InchiString is the resolver for the InchiString field.
+func (r *compoundResolver) InchiString(ctx context.Context, obj *retsynth.Compound) (string, error) {
+	// Pull out the InchiString from the compound
+	if !obj.InchiString.Valid {
+		return "", nil
+	} else {
+		return obj.InchiString.String, nil
+	}
+}
+
+// CASNumber is the resolver for the CASNumber field.
+func (r *compoundResolver) CASNumber(ctx context.Context, obj *retsynth.Compound) (string, error) {
+	// Pull out the CASNumber from the compound
+	if !obj.CASNumber.Valid {
+		return "", nil
+	} else {
+		return obj.CASNumber.String, nil
+	}
+}
+
 // Compounds is the resolver for the compounds field.
 func (r *queryResolver) Compounds(ctx context.Context) ([]*retsynth.Compound, error) {
 	// Query the database for all compounds.
@@ -32,7 +88,18 @@ func (r *queryResolver) Organisms(ctx context.Context) ([]*retsynth.Model, error
 	return returnModels, nil
 }
 
+// Compound returns CompoundResolver implementation.
+func (r *Resolver) Compound() CompoundResolver { return &compoundResolver{r} }
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+type compoundResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
