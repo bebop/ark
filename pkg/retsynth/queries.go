@@ -189,7 +189,7 @@ func GetReactionName(reactionID string) sql.NullString {
 func GetReactionIDsFromCompound(compoundID string, isProduct bool) []string {
 	db := ConnectDB()
 	var reactionIDs []string
-	query := "SELECT reaction_ID FROM reaction_compound WHERE cpd_ID = ? AND is_product = ?"
+	query := "SELECT reaction_ID FROM reaction_compound WHERE cpd_ID = ? AND is_prod = ?"
 	var err = db.Select(&reactionIDs, query, compoundID, isProduct)
 	if err != nil {
 		panic(err)
@@ -216,7 +216,7 @@ func GetReactantCompoundIDs(reactionID string) []string {
 	query := "SELECT cpd_ID FROM reaction_compound WHERE reaction_ID = ? AND is_product = ?"
 	var err = db.Select(&compoundIDs, query, reactionID, false)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return compoundIDs
 }
@@ -228,7 +228,7 @@ func GetReactionsWithProduct(compoundID string) []string {
 	query := "SELECT reaction_ID FROM reaction_compound WHERE cpd_ID = ? AND is_prod = ?"
 	var err = db.Select(&compoundIDs, query, compoundID, true)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return compoundIDs
 }
@@ -240,7 +240,7 @@ func GetProductCompundIDs(reactionID string) []string {
 	query := "SELECT cpd_ID FROM reaction_compound WHERE reaction_ID = ? AND is_prod = ?"
 	var err = db.Select(&products, query, reactionID, true)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return products
 }
@@ -252,7 +252,7 @@ func GetModelCompounds(modelID string) []string {
 	query := "SELECT cpd_ID FROM model_compound WHERE model_ID = ?"
 	var err = db.Select(&compounds, query, modelID)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return compounds
 }
@@ -264,7 +264,7 @@ func GetAllCompoundIDs() []string {
 	query := "SELECT ID FROM compound"
 	var err = db.Select(&compounds, query)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return compounds
 }
@@ -276,7 +276,7 @@ func GetAllCompounds() []Compound {
 	query := "SELECT * FROM compound"
 	var err = db.Select(&compounds, query)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return compounds
 }
@@ -288,7 +288,7 @@ func GetAllCompoundInchistrings() []string {
 	query := "SELECT inchistring FROM compound"
 	var err = db.Select(&inchistrings, query)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return inchistrings
 }
@@ -300,7 +300,7 @@ func GetModelReactions(modelID string) []string {
 	query := "SELECT reaction_ID FROM model_reaction WHERE model_ID = ?"
 	var err = db.Select(&reactions, query, modelID)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return reactions
 }
@@ -312,33 +312,33 @@ func GetAllReactions() []string {
 	query := "SELECT ID FROM reaction"
 	var err = db.Select(&reactions, query)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return reactions
 }
 
 // Retrieves reverisbility information of a reaction in a specified metabolic model (model ID)
-func GetReactionReversibility(reactionID string, modelID string) bool {
+func GetReactionReversibility(reactionID string, modelID string) sql.NullBool {
 	db := ConnectDB()
 	var reversible bool
 	query := "SELECT is_rev FROM model_reaction WHERE reaction_ID = ? AND model_ID = ?"
 	var err = db.Get(&reversible, query, reactionID, modelID)
 	if err != nil {
-		panic(err)
+		return sql.NullBool{Bool: false, Valid: false}
 	}
-	return reversible
+	return sql.NullBool{Bool: reversible, Valid: true}
 }
 
 // Retrieves reversibility information of a reaction independent of model
-func GetReactionReversibilityGlobal(reactionID string) bool {
+func GetReactionReversibilityGlobal(reactionID string) sql.NullBool {
 	db := ConnectDB()
 	var reversible bool
 	query := "SELECT is_reversible FROM reaction_reversibility WHERE reaction_ID = ?"
 	var err = db.Get(&reversible, query, reactionID)
 	if err != nil {
-		return false
+		return sql.NullBool{Bool: false, Valid: false}
 	}
-	return reversible
+	return sql.NullBool{Bool: reversible, Valid: true}
 }
 
 // Retrieves gene associations for a reaction of a given metabolic network (model ID)
@@ -348,7 +348,7 @@ func GetReactionGeneAssociations(reactionID string, modelID string) []string {
 	query := "SELECT gene_ID FROM reaction_gene WHERE reaction_ID = ? AND model_ID = ?"
 	var err = db.Select(&genes, query, reactionID, modelID)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return genes
 }
@@ -360,7 +360,7 @@ func GetReactionProteinAssociations(reactionID string, modelID string) []string 
 	query := "SELECT protein_ID FROM reaction_protein WHERE reaction_ID = ? AND model_ID = ?"
 	var err = db.Select(&proteins, query, reactionID, modelID)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return proteins
 }
@@ -384,7 +384,7 @@ func GetReactionCatalysts(reactionID string) []string {
 	query := "SELECT catalysts_ID FROM reaction_catalysts WHERE reaction_ID = ?"
 	var err = db.Get(&catalysts, query, reactionID)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return catalysts
 }
@@ -540,7 +540,7 @@ func GetAllCompoundKEGGIDs() []string {
 	query := "SELECT kegg_id FROM compound"
 	var err = db.Select(&compoundIDs, query)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return compoundIDs
 }
@@ -552,7 +552,7 @@ func GetAllChemicalFormulas() []string {
 	query := "SELECT chemicalformula FROM compound"
 	var err = db.Select(&formulas, query)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return formulas
 }
@@ -588,7 +588,7 @@ func GetCompoundIDByFormula(formula string) []string {
 	query := "SELECT ID FROM compound WHERE chemicalformula = ?"
 	var err = db.Get(&compoundIDs, query, formula)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return compoundIDs
 }
@@ -600,7 +600,7 @@ func GetCompoundNameBySearchTerm(searchTerm string) []string {
 	query := "SELECT name FROM compound WHERE name LIKE ? OR chemicalformula LIKE ? OR ID LIKE ? OR kegg_id LIKE ? OR casnumber LIKE ?"
 	var err = db.Get(&compoundNames, query, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return compoundNames
 }
@@ -624,7 +624,7 @@ func GetAllFBAModelIDs() []string {
 	query := "SELECT ID FROM fba_models"
 	var err = db.Select(&modelIDs, query)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return modelIDs
 }

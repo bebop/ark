@@ -14,6 +14,22 @@ func setup() {
 	os.Setenv("RETSYNTH_DB_PATH", "../../data/dev/retsynth/minimal.db")
 }
 
+// Tests if the retrieved data has a random subset of the expected data
+func sparseExist(data []string, sparse []string) bool {
+	for _, sparsevalue := range sparse {
+		exist := false
+		for _, datavalue := range data {
+			if sparsevalue == datavalue {
+				exist = true
+			}
+		}
+		if !exist {
+			return false
+		}
+	}
+	return true
+}
+
 func TestConnectDB(t *testing.T) {
 	setup()
 	data := ConnectDB()
@@ -415,6 +431,7 @@ func TestGetCompoundInchi(t *testing.T) {
 }
 
 func TestGetCompoundName(t *testing.T) {
+	setup()
 	type args struct {
 		compoundID string
 	}
@@ -426,9 +443,9 @@ func TestGetCompoundName(t *testing.T) {
 		{
 			name: "TestGetCompoundName",
 			args: args{
-				compoundID: "cpd00002",
+				compoundID: "C00305_e0",
 			},
-			want: sql.NullString{String: "ATP", Valid: true},
+			want: sql.NullString{String: "Mg", Valid: true},
 		},
 	}
 	for _, tt := range tests {
@@ -441,6 +458,7 @@ func TestGetCompoundName(t *testing.T) {
 }
 
 func TestGetCompoundNameFromInchi(t *testing.T) {
+	setup()
 	type args struct {
 		inchi string
 	}
@@ -452,9 +470,9 @@ func TestGetCompoundNameFromInchi(t *testing.T) {
 		{
 			name: "TestGetCompoundNameFromInchi",
 			args: args{
-				inchi: "InChI=1S/C6H12O6/c7-1-3(9)5(11)6(12)4(10)2-8/h3,5,7-10H,1-2H2,(H,8,9)(H,11,12)/t3-,5+/m0/s1",
+				inchi: "InChI=1S/Mg/q+2",
 			},
-			want: sql.NullString{String: "Glucose", Valid: true},
+			want: sql.NullString{String: "Mg", Valid: true},
 		},
 	}
 	for _, tt := range tests {
@@ -467,6 +485,7 @@ func TestGetCompoundNameFromInchi(t *testing.T) {
 }
 
 func TestGetCompoundCompartment(t *testing.T) {
+	setup()
 	type args struct {
 		compoundID string
 	}
@@ -478,9 +497,16 @@ func TestGetCompoundCompartment(t *testing.T) {
 		{
 			name: "TestGetCompoundCompartment",
 			args: args{
-				compoundID: "cpd00002",
+				compoundID: "C00001_c0",
 			},
-			want: sql.NullString{String: "c", Valid: true},
+			want: sql.NullString{String: "c0", Valid: true},
+		},
+		{
+			name: "TestGetCompoundCompartment",
+			args: args{
+				compoundID: "gibberish_id",
+			},
+			want: sql.NullString{String: "", Valid: false},
 		},
 	}
 	for _, tt := range tests {
@@ -493,6 +519,7 @@ func TestGetCompoundCompartment(t *testing.T) {
 }
 
 func TestGetReactionName(t *testing.T) {
+	setup()
 	type args struct {
 		reactionID string
 	}
@@ -504,9 +531,16 @@ func TestGetReactionName(t *testing.T) {
 		{
 			name: "TestGetReactionName",
 			args: args{
-				reactionID: "rxn00001",
+				reactionID: "rxn10163_c0",
 			},
-			want: sql.NullString{String: "ATP + H2O <=> ADP + phosphate", Valid: true},
+			want: sql.NullString{String: "Tetradecanoate transport via proton symport", Valid: true},
+		},
+		{
+			name: "TestGetReactionName",
+			args: args{
+				reactionID: "gibberish_id",
+			},
+			want: sql.NullString{String: "", Valid: false},
 		},
 	}
 	for _, tt := range tests {
@@ -519,6 +553,7 @@ func TestGetReactionName(t *testing.T) {
 }
 
 func TestGetReactionIDsFromCompound(t *testing.T) {
+	setup()
 	type args struct {
 		compoundID string
 		isProduct  bool
@@ -528,7 +563,14 @@ func TestGetReactionIDsFromCompound(t *testing.T) {
 		args args
 		want []string
 	}{
-		// TODO: Add test cases.
+		{
+			name: "TestGetReactionIDsFromCompound",
+			args: args{
+				compoundID: "C00001_c0",
+				isProduct:  false,
+			},
+			want: []string{"rxn00001_c0", "rxn00002_c0", "rxn00003_c0", "rxn00004_c0", "rxn00005_c0", "rxn00006_c0", "rxn00007_c0", "rxn00008_c0", "rxn00009_c0", "rxn00010_c0", "rxn00011_c0", "rxn00012_c0", "rxn00013_c0", "rxn00014_c0", "rxn00015_c0", "rxn00016_c0", "rxn00017_c0", "rxn00018_c0", "rxn00019_c0", "rxn00020_c0", "rxn00021_c0", "rxn00022_c0", "rxn00023_c0", "rxn00024_c0", "rxn00025_c0", "rxn00026_c0", "rxn00027_c0", "rxn00028_c0", "rxn00029_c0", "rxn00030_c0", "rxn00031_c0", "rxn00032_c0", "rxn00033_c0", "rxn00034_c0", "rxn00035_c0", "rxn00036_c0", "rxn00037_c0", "rxn00038_c0", "rxn00039_c0", "rxn00040_c0", "rxn00041_c0", "rxn00042_c0", "rxn00043_c0", "rxn00044_c0", "rxn00045_c0", "rxn00046_c0", "rxn00047_c0", "rxn00048_c0", "rxn00049_c0", "rxn00050_c0", "rxn00051_c0", "rxn00052_c0", "rxn00053_c0", "rxn00054_c0", "rxn00055_c0", "rxn00056_c0", "rxn00057_c0", "rxn00058_c0", "rxn00059_c0", "rxn00060_c0", "rxn00061_c0", "rxn00062_c0"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -540,6 +582,7 @@ func TestGetReactionIDsFromCompound(t *testing.T) {
 }
 
 func TestGetReactionSpecies(t *testing.T) {
+	setup()
 	type args struct {
 		reactionID string
 	}
@@ -548,11 +591,28 @@ func TestGetReactionSpecies(t *testing.T) {
 		args args
 		want []string
 	}{
-		// TODO: Add test cases.
+		{
+			name: "TestGetReactionSpecies",
+			args: args{
+				reactionID: "R03067_c0",
+			},
+			want: []string{
+				"633.137",
+				"64187.567",
+				"632.719",
+				"64187.527",
+				"64187.564",
+				"64187.564",
+				"64187.539",
+				"64187.571",
+				"64187.563",
+				"64187.559",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetReactionSpecies(tt.args.reactionID); !reflect.DeepEqual(got, tt.want) {
+			if got := GetReactionSpecies(tt.args.reactionID); !sparseExist(got, tt.want) {
 				t.Errorf("GetReactionSpecies() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1065,6 +1125,7 @@ func TestGetReactionKEGGID(t *testing.T) {
 }
 
 func TestGetCompoundKEGGID(t *testing.T) {
+	setup()
 	type args struct {
 		compoundID string
 	}
@@ -1073,7 +1134,13 @@ func TestGetCompoundKEGGID(t *testing.T) {
 		args args
 		want sql.NullString
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test GetCompoundKEGGID",
+			args: args{
+				compoundID: "C00001_c0",
+			},
+			want: sql.NullString{String: "C00001", Valid: true},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1085,15 +1152,30 @@ func TestGetCompoundKEGGID(t *testing.T) {
 }
 
 func TestGetAllCompoundKEGGIDs(t *testing.T) {
+	setup()
 	tests := []struct {
 		name string
 		want []string
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test GetAllCompoundKEGGIDs",
+			want: []string{
+				"C05812",
+				"C00811",
+				"None",
+				"C00668",
+				"C01842",
+				"None",
+				"C00255",
+				"None",
+				"C00077",
+				"C01096",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetAllCompoundKEGGIDs(); !reflect.DeepEqual(got, tt.want) {
+			if got := GetAllCompoundKEGGIDs(); !sparseExist(got, tt.want) {
 				t.Errorf("GetAllCompoundKEGGIDs() = %v, want %v", got, tt.want)
 			}
 		})
