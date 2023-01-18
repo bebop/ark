@@ -15,10 +15,7 @@ import (
 // RunServerChecks runs all the checks to make sure the server is ready to run.
 func RunServerChecks() {
 	// Check if the retsynth database connection is valid
-	var _, err = retsynth.ConnectDB()
-	if err != nil {
-		panic(err)
-	}
+	_ = retsynth.ConnectDB()
 }
 
 // StartGraphQLServer starts the GraphQL server on the port specified in the environment variable PORT or 8080 if not specified.

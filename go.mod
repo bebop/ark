@@ -8,7 +8,6 @@ require (
 	github.com/TimothyStiles/poly v0.20.0
 	github.com/TimothyStiles/surrealdb.go v0.0.0-20220905012407-571308281d15
 	github.com/jmoiron/sqlx v1.3.4
-	github.com/magiconair/properties v1.8.6
 	github.com/mattn/go-sqlite3 v1.14.14
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.14.0
@@ -26,6 +25,7 @@ require (
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/lib/pq v1.2.1-0.20191011153232-f91d3411e481 // indirect
 	github.com/lunny/log v0.0.0-20160921050905-7887c61bf0de // indirect
+	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect

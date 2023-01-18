@@ -1,6 +1,8 @@
 package retsynth
 
 import (
+	"database/sql"
+
 	"github.com/TimothyStiles/allbase/parameters"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -8,7 +10,7 @@ import (
 
 // Easy database connector
 func ConnectDB() *sqlx.DB {
-	var db, var err = sqlx.Connect("sqlite3", parameters.RetsynthDBPath())
+	var db, err = sqlx.Connect("sqlite3", parameters.RetsynthDBPath())
 	if err != nil {
 		panic(err)
 	}
@@ -31,10 +33,10 @@ func GetUniqueMetabolicClusters() []string {
 func GetModelIDsFromCluster(cluster string) []string {
 	db := ConnectDB()
 	var models []string
-	query := "SELECT model_id FROM cluster WHERE cluster_num = ?"
+	query := "SELECT ID FROM cluster WHERE cluster_num = ?"
 	var err = db.Select(&models, query, cluster)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return models
 }
@@ -43,7 +45,7 @@ func GetModelIDsFromCluster(cluster string) []string {
 func GetAllModelIDs() []string {
 	db := ConnectDB()
 	var models []string
-	query := "SELECT DISTINCT model_id FROM model"
+	query := "SELECT DISTINCT ID FROM model"
 	var err = db.Select(&models, query)
 	if err != nil {
 		panic(err)
@@ -63,124 +65,124 @@ func GetAllModels() []Model {
 	return models
 }
 
-// Retrieves name of organism given a specific organism ID
-func GetOrganismName(organismID string) string {
+// Retrieves name of organism given a specific organism ID reutrns empty string if not found
+func GetOrganismName(organismID string) sql.NullString {
 	db := ConnectDB()
 	var name string
-	query := "SELECT name FROM organism WHERE ID = ?"
+	query := "SELECT file_name FROM model WHERE ID = ?"
 	var err = db.Get(&name, query, organismID)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return name
+	return sql.NullString{String: name, Valid: true}
 }
 
 // Retrieves ID of organism given a specific organism name
-func GetOrganismID(organismName string) string {
+func GetOrganismID(organismName string) sql.NullString {
 	db := ConnectDB()
 	var ID string
-	query := "SELECT ID FROM organism WHERE name = ?"
+	query := "SELECT ID FROM model WHERE file_name = ?"
 	var err = db.Get(&ID, query, organismName)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return ID
+	return sql.NullString{String: ID, Valid: true}
 }
 
 // Retrieves compound ID given a compound name
-func GetCompoundID(compoundName string) string {
+func GetCompoundID(compoundName string) sql.NullString {
 	db := ConnectDB()
 	var ID string
 	query := "SELECT ID FROM compound WHERE name = ?"
 	var err = db.Get(&ID, query, compoundName)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return ID
+	return sql.NullString{String: ID, Valid: true}
 }
 
 // Retrieves compound ID with the most similar name to the given compound name
-func GetLikeCompoundID(compoundName string) string {
+func GetLikeCompoundID(compoundName string) sql.NullString {
 	db := ConnectDB()
 	var ID string
 	query := "SELECT ID FROM compound WHERE name LIKE ?"
 	var err = db.Get(&ID, query, compoundName)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return ID
+	return sql.NullString{String: ID, Valid: true}
 }
 
 // Retrieves compound ID given an inchi string
-func GetCompoundIDFromInchi(inchi string) string {
+func GetCompoundIDFromInchi(inchi string) sql.NullString {
 	db := ConnectDB()
 	var ID string
 	query := "SELECT ID FROM compound WHERE inchistring = ?"
 	var err = db.Get(&ID, query, inchi)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return ID
+	return sql.NullString{String: ID, Valid: true}
 }
 
 // Retrieves inchi string given a compound ID
-func GetCompoundInchi(compoundID string) string {
+func GetCompoundInchi(compoundID string) sql.NullString {
 	db := ConnectDB()
 	var inchi string
 	query := "SELECT inchistring FROM compound WHERE ID = ?"
 	var err = db.Get(&inchi, query, compoundID)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return inchi
+	return sql.NullString{String: inchi, Valid: true}
 }
 
 // Retrieves compound name given a compound ID
-func GetCompoundName(compoundID string) string {
+func GetCompoundName(compoundID string) sql.NullString {
 	db := ConnectDB()
 	var name string
 	query := "SELECT name FROM compound WHERE ID = ?"
 	var err = db.Get(&name, query, compoundID)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return name
+	return sql.NullString{String: name, Valid: true}
 }
 
 // Retrieves compound name given an inchi string
-func GetCompoundNameFromInchi(inchi string) string {
+func GetCompoundNameFromInchi(inchi string) sql.NullString {
 	db := ConnectDB()
 	var name string
 	query := "SELECT name FROM compound WHERE inchistring = ?"
 	var err = db.Get(&name, query, inchi)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return name
+	return sql.NullString{String: name, Valid: true}
 }
 
 // Retrieves the compartment that the compound is in
-func GetCompoundCompartment(compoundID string) string {
+func GetCompoundCompartment(compoundID string) sql.NullString {
 	db := ConnectDB()
 	var compartment string
 	query := "SELECT compartment FROM compound WHERE ID = ?"
 	var err = db.Get(&compartment, query, compoundID)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return compartment
+	return sql.NullString{String: compartment, Valid: true}
 }
 
 // Retrieves name of the reaction given the reaction ID
-func GetReactionName(reactionID string) string {
+func GetReactionName(reactionID string) sql.NullString {
 	db := ConnectDB()
 	var name string
 	query := "SELECT name FROM reaction WHERE ID = ?"
 	var err = db.Get(&name, query, reactionID)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return name
+	return sql.NullString{String: name, Valid: true}
 }
 
 // Retrieves reaction IDs that have a given compound ID as a reactant or product
@@ -364,18 +366,15 @@ func GetReactionProteinAssociations(reactionID string, modelID string) []string 
 }
 
 // Retrieves stoichiometry of a compound for a given reaction
-func GetStoichiometry(reactionID string, compoundID string, isProduct bool) float64 {
-	db, err := ConnectDB()
-	if err != nil {
-		return 0
-	}
+func GetStoichiometry(reactionID string, compoundID string, isProduct bool) sql.NullFloat64 {
+	db := ConnectDB()
 	var stoichiometry float64
 	query := "SELECT stoichiometry FROM reaction_compound WHERE reaction_ID = ? AND cpd_ID = ? AND is_prod = ?"
 	var err = db.Get(&stoichiometry, query, reactionID, compoundID, isProduct)
 	if err != nil {
-		return 0
+		return sql.NullFloat64{Float64: 0, Valid: false}
 	}
-	return stoichiometry
+	return sql.NullFloat64{Float64: stoichiometry, Valid: true}
 }
 
 // Retrieves the catalyst of reaction
@@ -391,15 +390,15 @@ func GetReactionCatalysts(reactionID string) []string {
 }
 
 // Retrieves the compartment ID
-func GetCompartmentID(compartmentName string) string {
+func GetCompartmentID(compartmentName string) sql.NullString {
 	db := ConnectDB()
 	var compartmentID string
 	query := "SELECT ID FROM compartments WHERE name LIKE ?"
 	var err = db.Get(&compartmentID, query, compartmentName)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return compartmentID
+	return sql.NullString{String: compartmentID, Valid: true}
 }
 
 // Retrieves solvents of reaction
@@ -409,69 +408,69 @@ func GetReactionSolvents(reactionID string) []string {
 	query := "SELECT solvents_ID FROM reaction_solvents WHERE reaction_ID = ?"
 	var err = db.Get(&solvent, query, reactionID)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return solvent
 }
 
 // Retrieves the temperaature of the reaction is performed at
-func GetReactionTemperature(reactionID string) float64 {
+func GetReactionTemperature(reactionID string) sql.NullFloat64 {
 	db := ConnectDB()
 	var temperature float64
 	query := "SELECT temperature FROM reaction_spresi_info WHERE reaction_ID = ?"
 	var err = db.Get(&temperature, query, reactionID)
 	if err != nil {
-		panic(err)
+		return sql.NullFloat64{Float64: 0, Valid: false}
 	}
-	return temperature
+	return sql.NullFloat64{Float64: temperature, Valid: true}
 }
 
 // Retrieves the pressure reaction is performed at
-func GetReactionPressure(reactionID string) float64 {
+func GetReactionPressure(reactionID string) sql.NullFloat64 {
 	db := ConnectDB()
 	var pressure float64
 	query := "SELECT pressure FROM reaction_spresi_info WHERE reaction_ID = ?"
 	var err = db.Get(&pressure, query, reactionID)
 	if err != nil {
-		panic(err)
+		return sql.NullFloat64{Float64: 0, Valid: false}
 	}
-	return pressure
+	return sql.NullFloat64{Float64: pressure, Valid: true}
 }
 
 // Retrieves the time that is required to perform reaction
-func GetReactionTime(reactionID string) float64 {
+func GetReactionTime(reactionID string) sql.NullFloat64 {
 	db := ConnectDB()
 	var time float64
 	query := "SELECT total_time FROM reaction_spresi_info WHERE reaction_ID = ?"
 	var err = db.Get(&time, query, reactionID)
 	if err != nil {
-		panic(err)
+		return sql.NullFloat64{Float64: 0, Valid: false}
 	}
-	return time
+	return sql.NullFloat64{Float64: time, Valid: true}
 }
 
 // Retrieves yield that was reported with reaction
-func GetReactionYield(reactionID string) float64 {
+func GetReactionYield(reactionID string) sql.NullFloat64 {
 	db := ConnectDB()
 	var yield float64
 	query := "SELECT yield FROM reaction_spresi_info WHERE reaction_ID = ?"
 	var err = db.Get(&yield, query, reactionID)
 	if err != nil {
-		panic(err)
+		return sql.NullFloat64{Float64: 0, Valid: false}
 	}
-	return yield
+	return sql.NullFloat64{Float64: yield, Valid: true}
 }
 
 // Retrieves the reference of reaction
-func GetReactionReference(reactionID string) string {
+func GetReactionReference(reactionID string) sql.NullString {
 	db := ConnectDB()
 	var reference string
 	query := "SELECT reference FROM reaction_spresi_info WHERE reaction_ID = ?"
 	var err = db.Get(&reference, query, reactionID)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return reference
+	return sql.NullString{String: reference, Valid: true}
 }
 
 // Retrieves reactions based on type
@@ -481,21 +480,21 @@ func GetReactionsByType(reactionType string) []string {
 	query := "SELECT ID FROM reactions WHERE type = ?"
 	var err = db.Select(&reactions, query, reactionType)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return reactions
 }
 
 // Retrieves reaction on type
-func GetReactionType(reactionID string) string {
+func GetReactionType(reactionID string) sql.NullString {
 	db := ConnectDB()
 	var reactionType string
 	query := "SELECT type FROM reactions WHERE ID = ?"
 	var err = db.Get(&reactionType, query, reactionID)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return reactionType
+	return sql.NullString{String: reactionType, Valid: true}
 }
 
 // Retrieves all reaction KEGG IDs
@@ -505,33 +504,33 @@ func GetAllReactionKEGGIDs() []string {
 	query := "SELECT kegg_id FROM reaction"
 	var err = db.Select(&reactionIDs, query)
 	if err != nil {
-		panic(err)
+		return nil
 	}
 	return reactionIDs
 }
 
 // Retrieves kegg ID for a reaction based on main ID
-func GetReactionKEGGID(reactionID string) string {
+func GetReactionKEGGID(reactionID string) sql.NullString {
 	db := ConnectDB()
 	var reactionKEGGID string
 	query := "SELECT kegg_id FROM reaction WHERE ID = ?"
 	var err = db.Get(&reactionKEGGID, query, reactionID)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return reactionKEGGID
+	return sql.NullString{String: reactionKEGGID, Valid: true}
 }
 
 // Retrieves kegg ID for a compound based on main ID
-func GetCompoundKEGGID(compoundID string) string {
+func GetCompoundKEGGID(compoundID string) sql.NullString {
 	db := ConnectDB()
 	var compoundKEGGID string
 	query := "SELECT kegg_id FROM compound WHERE ID = ?"
 	var err = db.Get(&compoundKEGGID, query, compoundID)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return compoundKEGGID
+	return sql.NullString{String: compoundKEGGID, Valid: true}
 }
 
 // Retrieves all compound Kegg IDs
@@ -559,27 +558,27 @@ func GetAllChemicalFormulas() []string {
 }
 
 // Retrieves chemicalformula for compound ID
-func GetChemicalFormula(compoundID string) string {
+func GetChemicalFormula(compoundID string) sql.NullString {
 	db := ConnectDB()
 	var formula string
 	query := "SELECT chemicalformula FROM compound WHERE ID = ?"
 	var err = db.Get(&formula, query, compoundID)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return formula
+	return sql.NullString{String: formula, Valid: true}
 }
 
 // Retrieves casnumber for compound ID
-func GetCASNumber(compoundID string) string {
+func GetCASNumber(compoundID string) sql.NullString {
 	db := ConnectDB()
 	var casNumber string
 	query := "SELECT casnumber FROM compound WHERE ID = ?"
 	var err = db.Get(&casNumber, query, compoundID)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return casNumber
+	return sql.NullString{String: casNumber, Valid: true}
 }
 
 // Retrieves compound IDs for Chemical formula
@@ -607,15 +606,15 @@ func GetCompoundNameBySearchTerm(searchTerm string) []string {
 }
 
 // Retrieves model ID for given file_name
-func GetModelIDByFileName(fileName string) string {
+func GetModelIDByFileName(fileName string) sql.NullString {
 	db := ConnectDB()
 	var modelID string
 	query := "SELECT ID FROM model WHERE file_name = ?"
 	var err = db.Get(&modelID, query, fileName)
 	if err != nil {
-		panic(err)
+		return sql.NullString{String: "", Valid: false}
 	}
-	return modelID
+	return sql.NullString{String: modelID, Valid: true}
 }
 
 // Retrieves all model IDs in the database
