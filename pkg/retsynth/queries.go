@@ -321,7 +321,7 @@ func GetAllReactions() []string {
 func GetReactionReversibility(reactionID string, modelID string) sql.NullBool {
 	db := ConnectDB()
 	var reversible bool
-	query := "SELECT is_rev FROM model_reaction WHERE reaction_ID = ? AND model_ID = ?"
+	query := "SELECT is_rev FROM model_reaction WHERE reaction_ID = ? AND model_ID = ? LIMIT 1"
 	var err = db.Get(&reversible, query, reactionID, modelID)
 	if err != nil {
 		return sql.NullBool{Bool: false, Valid: false}
