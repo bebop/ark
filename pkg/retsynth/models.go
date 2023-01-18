@@ -21,8 +21,8 @@ type Compound struct {
 	Compartment     sql.NullString `db:"compartment" json:"compartment"`         //Compartments is the compartment of the compound
 	KeggID          sql.NullString `db:"kegg_id" json:"kegg_id"`                 //KeggID is the Kegg ID of the compound
 	ChemicalFormula sql.NullString `db:"chemicalformula" json:"chemicalformula"` //ChemicalFormula is the chemical formula of the compound
-	InchiString     sql.NullString `db:"inchistring" json:"inchistring"`         //InchiString is the Inchi string of the compound
 	CASNumber       sql.NullString `db:"casnumber" json:"casnumber"`             //CASNumber is the CAS number of the compound
+	InchiString     sql.NullString `db:"inchistring" json:"inchistring"`         //InchiString is the Inchi string of the compound
 }
 
 // Compartments is a struct that contains the information about a compartment

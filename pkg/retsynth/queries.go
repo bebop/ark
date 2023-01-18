@@ -213,7 +213,7 @@ func GetReactionSpecies(reactionID string) []string {
 func GetReactantCompoundIDs(reactionID string) []string {
 	db := ConnectDB()
 	var compoundIDs []string
-	query := "SELECT cpd_ID FROM reaction_compound WHERE reaction_ID = ? AND is_product = ?"
+	query := "SELECT cpd_ID FROM reaction_compound WHERE reaction_ID = ? AND is_prod = ?"
 	var err = db.Select(&compoundIDs, query, reactionID, false)
 	if err != nil {
 		return nil
@@ -369,7 +369,7 @@ func GetReactionProteinAssociations(reactionID string, modelID string) []string 
 func GetStoichiometry(reactionID string, compoundID string, isProduct bool) sql.NullFloat64 {
 	db := ConnectDB()
 	var stoichiometry float64
-	query := "SELECT stoichiometry FROM reaction_compound WHERE reaction_ID = ? AND cpd_ID = ? AND is_prod = ?"
+	query := "SELECT stoichiometry FROM reaction_compound WHERE reaction_ID = ? AND cpd_ID = ? AND is_prod = ? LIMIT 1"
 	var err = db.Get(&stoichiometry, query, reactionID, compoundID, isProduct)
 	if err != nil {
 		return sql.NullFloat64{Float64: 0, Valid: false}
@@ -379,6 +379,7 @@ func GetStoichiometry(reactionID string, compoundID string, isProduct bool) sql.
 
 // Retrieves the catalyst of reaction
 func GetReactionCatalysts(reactionID string) []string {
+	//TODO: #64 The current schema doesnt have catalyst information, so this function fails
 	db := ConnectDB()
 	var catalysts []string
 	query := "SELECT catalysts_ID FROM reaction_catalysts WHERE reaction_ID = ?"
@@ -393,7 +394,7 @@ func GetReactionCatalysts(reactionID string) []string {
 func GetCompartmentID(compartmentName string) sql.NullString {
 	db := ConnectDB()
 	var compartmentID string
-	query := "SELECT ID FROM compartments WHERE name LIKE ?"
+	query := "SELECT ID FROM compartments WHERE name = ?"
 	var err = db.Get(&compartmentID, query, compartmentName)
 	if err != nil {
 		return sql.NullString{String: "", Valid: false}
@@ -403,6 +404,7 @@ func GetCompartmentID(compartmentName string) sql.NullString {
 
 // Retrieves solvents of reaction
 func GetReactionSolvents(reactionID string) []string {
+	// TODO: The current schema doesnt have solvent information, so this function fails
 	db := ConnectDB()
 	var solvent []string
 	query := "SELECT solvents_ID FROM reaction_solvents WHERE reaction_ID = ?"
@@ -477,7 +479,7 @@ func GetReactionReference(reactionID string) sql.NullString {
 func GetReactionsByType(reactionType string) []string {
 	db := ConnectDB()
 	var reactions []string
-	query := "SELECT ID FROM reactions WHERE type = ?"
+	query := "SELECT ID FROM reaction WHERE type = ?"
 	var err = db.Select(&reactions, query, reactionType)
 	if err != nil {
 		return nil
@@ -552,8 +554,10 @@ func GetAllChemicalFormulas() []string {
 	query := "SELECT chemicalformula FROM compound"
 	var err = db.Select(&formulas, query)
 	if err != nil {
+		print(err)
 		return nil
 	}
+	print(formulas)
 	return formulas
 }
 

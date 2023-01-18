@@ -16,7 +16,7 @@ func setup() {
 
 // Tests if the retrieved data has a random subset of the expected data.
 // The sparse data is queried using 'ORDER BY RANDOM() LIMIT 10' in the SQL query.
-func sparseExist[T comparable](data []T, sparse []T) bool {
+func sparseEquals[T comparable](data []T, sparse []T) bool {
 
 	for _, sparsevalue := range sparse {
 		exist := false
@@ -30,6 +30,18 @@ func sparseExist[T comparable](data []T, sparse []T) bool {
 		}
 	}
 	return true
+}
+
+type Ordered interface {
+	int | float64 | ~string
+}
+
+func unsortedEqual[T Ordered](data []T, expected []T) bool {
+
+	sort.Slice(data, func(i, j int) bool { return data[i] < data[j] })
+	sort.Slice(expected, func(i, j int) bool { return expected[i] < expected[j] })
+
+	return reflect.DeepEqual(data, expected)
 }
 
 func TestConnectDB(t *testing.T) {
@@ -571,12 +583,23 @@ func TestGetReactionIDsFromCompound(t *testing.T) {
 				compoundID: "C00001_c0",
 				isProduct:  false,
 			},
-			want: []string{"rxn00001_c0", "rxn00002_c0", "rxn00003_c0", "rxn00004_c0", "rxn00005_c0", "rxn00006_c0", "rxn00007_c0", "rxn00008_c0", "rxn00009_c0", "rxn00010_c0", "rxn00011_c0", "rxn00012_c0", "rxn00013_c0", "rxn00014_c0", "rxn00015_c0", "rxn00016_c0", "rxn00017_c0", "rxn00018_c0", "rxn00019_c0", "rxn00020_c0", "rxn00021_c0", "rxn00022_c0", "rxn00023_c0", "rxn00024_c0", "rxn00025_c0", "rxn00026_c0", "rxn00027_c0", "rxn00028_c0", "rxn00029_c0", "rxn00030_c0", "rxn00031_c0", "rxn00032_c0", "rxn00033_c0", "rxn00034_c0", "rxn00035_c0", "rxn00036_c0", "rxn00037_c0", "rxn00038_c0", "rxn00039_c0", "rxn00040_c0", "rxn00041_c0", "rxn00042_c0", "rxn00043_c0", "rxn00044_c0", "rxn00045_c0", "rxn00046_c0", "rxn00047_c0", "rxn00048_c0", "rxn00049_c0", "rxn00050_c0", "rxn00051_c0", "rxn00052_c0", "rxn00053_c0", "rxn00054_c0", "rxn00055_c0", "rxn00056_c0", "rxn00057_c0", "rxn00058_c0", "rxn00059_c0", "rxn00060_c0", "rxn00061_c0", "rxn00062_c0"},
+			want: []string{
+				"R08158_c0",
+				"R00383_c0",
+				"bio10_64187.565",
+				"R01100_c0",
+				"rxn08840_c0",
+				"rxn08202_c0",
+				"R01466_c0",
+				"R05366_c0",
+				"R08190_c0",
+				"R02133_c0",
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetReactionIDsFromCompound(tt.args.compoundID, tt.args.isProduct); !reflect.DeepEqual(got, tt.want) {
+			if got := GetReactionIDsFromCompound(tt.args.compoundID, tt.args.isProduct); !sparseEquals(got, tt.want) {
 				t.Errorf("GetReactionIDsFromCompound() = %v, want %v", got, tt.want)
 			}
 		})
@@ -614,7 +637,7 @@ func TestGetReactionSpecies(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetReactionSpecies(tt.args.reactionID); !sparseExist(got, tt.want) {
+			if got := GetReactionSpecies(tt.args.reactionID); !sparseEquals(got, tt.want) {
 				t.Errorf("GetReactionSpecies() = %v, want %v", got, tt.want)
 			}
 		})
@@ -634,7 +657,7 @@ func TestGetReactantCompoundIDs(t *testing.T) {
 		{
 			name: "TestGetReactantCompoundIDs",
 			args: args{
-				reactionID: "R03067_c0",
+				reactionID: "R00546_c0",
 			},
 			want: []string{
 				"C00001_c0",
@@ -646,10 +669,7 @@ func TestGetReactantCompoundIDs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetReactantCompoundIDs(tt.args.reactionID)
-			sort.Strings(got)
-			sort.Strings(tt.want)
-			if !reflect.DeepEqual(got, tt.want) {
+			if got := GetReactantCompoundIDs(tt.args.reactionID); !unsortedEqual(got, tt.want) {
 				t.Errorf("GetReactantCompoundIDs() = %v, want %v", got, tt.want)
 			}
 		})
@@ -669,7 +689,7 @@ func TestGetReactionsWithProduct(t *testing.T) {
 		{
 			name: "TestGetReactionsWithProduct",
 			args: args{
-				compoundID: "R03067_c0",
+				compoundID: "R00546_c0",
 			},
 			want: []string{
 				"C00001_c0",
@@ -681,10 +701,7 @@ func TestGetReactionsWithProduct(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetReactantCompoundIDs(tt.args.compoundID)
-			sort.Strings(got)
-			sort.Strings(tt.want)
-			if !reflect.DeepEqual(got, tt.want) {
+			if got := GetReactantCompoundIDs(tt.args.compoundID); !unsortedEqual(got, tt.want) {
 				t.Errorf("GetReactantCompoundIDs() = %v, want %v", got, tt.want)
 			}
 		})
@@ -707,19 +724,16 @@ func TestGetProductCompundIDs(t *testing.T) {
 				reactionID: "R00546_c0",
 			},
 			want: []string{
-				"C00001_c0",
-				"C00001_c0",
-				"C02715_c0",
-				"C02715_c0",
+				"C00049_c0",
+				"C00049_c0",
+				"C00060_c0",
+				"C00060_c0",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetProductCompundIDs(tt.args.reactionID)
-			sort.Strings(got)
-			sort.Strings(tt.want)
-			if !reflect.DeepEqual(got, tt.want) {
+			if got := GetProductCompundIDs(tt.args.reactionID); !unsortedEqual(got, tt.want) {
 				t.Errorf("GetProductCompundIDs() = %v, want %v", got, tt.want)
 			}
 		})
@@ -739,21 +753,25 @@ func TestGetModelCompounds(t *testing.T) {
 		{
 			name: "TestGetModelCompounds",
 			args: args{
-				modelID: "iJO1366",
+				modelID: "632.718",
 			},
 			want: []string{
-				"C00001_c0",
-				"C00002_c0",
-				"C00003_c0",
+				"cpd15700_c0",
+				"C05315_c0",
+				"C00249_e0",
+				"C00655_c0",
+				"C06366_c0",
+				"C03741_c0",
+				"C01177_c0",
+				"cpd15726_c0",
+				"C15926_c0",
+				"C00501_c0",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetModelCompounds(tt.args.modelID)
-			sort.Strings(got)
-			sort.Strings(tt.want)
-			if !reflect.DeepEqual(got, tt.want) {
+			if got := GetModelCompounds(tt.args.modelID); !sparseEquals(got, tt.want) {
 				t.Errorf("GetModelCompounds() = %v, want %v", got, tt.want)
 			}
 		})
@@ -777,7 +795,7 @@ func TestGetAllCompoundIDs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetAllCompoundIDs(); !sparseExist(got, tt.want) {
+			if got := GetAllCompoundIDs(); !sparseEquals(got, tt.want) {
 				t.Errorf("GetAllCompoundIDs() = %v, want %v", got, tt.want)
 			}
 		})
@@ -793,16 +811,15 @@ func TestGetAllCompounds(t *testing.T) {
 		{
 			name: "TestGetAllCompounds",
 			want: []Compound{
-				{},
-				{},
-				{},
-				{},
+				{ID: "C05172_c0", Name: sql.NullString{String: "Selenophosphate", Valid: true}, Compartment: sql.NullString{String: "c0", Valid: true}, KeggID: sql.NullString{String: "C05172", Valid: true}, ChemicalFormula: sql.NullString{String: "H3O3PSe", Valid: true}, CASNumber: sql.NullString{String: "", Valid: false}, InchiString: sql.NullString{String: "InChI=1S/H3O3PSe/c1-4(2,3)5/h(H3,1,2,3,5)", Valid: true}},
+				{ID: "C05448_c0", Name: sql.NullString{String: "3alpha,7alpha,24-Trihydroxy-5beta-cholestanoyl-CoA", Valid: true}, Compartment: sql.NullString{String: "c0", Valid: true}, KeggID: sql.NullString{String: "C05448", Valid: true}, ChemicalFormula: sql.NullString{String: "C48H80N7O20P3S", Valid: true}, CASNumber: sql.NullString{String: "", Valid: false}, InchiString: sql.NullString{String: "InChI=1S/C48H80N7O20P3S/c1-25(29-8-9-30-36-31(12-15-48(29,30)6)47(5)14-11-28(56)19-27(47)20-33(36)58)7-10-32(57)26(2)45(63)79-18-17-50-35(59)13-16-51-43(62)40(61)46(3,4)22-72-78(69,70)75-77(67,68)71-21-34-39(74-76(64,65)66)38(60)44(73-34)55-24-54-37-41(49)52-23-53-42(37)55/h23-34,36,38-40,44,56-58,60-61H,7-22H2,1-6H3,(H,50,59)(H,51,62)(H,67,68)(H,69,70)(H2,49,52,53)(H2,64,65,66)/t25-,26-,27+,28-,29-,30+,31+,32-,33-,34-,36+,38-,39-,40+,44-,47+,48-/m1/s1", Valid: true}},
+				{ID: "cpd11533_c0", Name: sql.NullString{String: "11-methyl-3-oxo-dodecanoyl-ACP", Valid: true}, Compartment: sql.NullString{String: "c0", Valid: true}, KeggID: sql.NullString{String: "", Valid: false}, ChemicalFormula: sql.NullString{String: "", Valid: false}, CASNumber: sql.NullString{String: "", Valid: false}},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetAllCompounds(); !sparseExist(got, tt.want) {
+			if got := GetAllCompounds(); !sparseEquals(got, tt.want) {
 				t.Errorf("GetAllCompounds() = %v, want %v", got, tt.want)
 			}
 		})
@@ -818,16 +835,17 @@ func TestGetAllCompoundInchistrings(t *testing.T) {
 		{
 			name: "TestGetAllCompoundInchistrings",
 			want: []string{
-				"",
-				"",
-				"",
-				"",
+				`InChI=1S/C41H68N7O17P3S/c1-4-5-6-7-8-9-10-11-12-13-14-15-16-17-18-19-20-21-32(50)69-25-24-43-31(49)22-23-44-39(53)36(52)41(2,3)27-62-68(59,60)65-67(57,58)61-26-30-35(64-66(54,55)56)34(51)40(63-30)48-29-47-33-37(42)45-28-46-38(33)48/h8-9,11-12,14-15,28-30,34-36,40,51-52H,4-7,10,13,16-27H2,1-3H3,(H,43,49)(H,44,53)(H,57,58)(H,59,60)(H2,42,45,46)(H2,54,55,56)/b9-8-,12-11-,15-14-/t30-,34-,35-,36+,40-/m1/s1`,
+				`InChI=1S/C6H14O12P2/c7-1-2(8)6(18-20(14,15)16)4(10)3(9)5(1)17-19(11,12)13/h1-10H,(H2,11,12,13)(H2,14,15,16)/t1-,2-,3-,4+,5?,6?/m1/s1`,
+				`InChI=1S/C6H12N3O4P/c7-5(3-13-14(10,11)12)1-6-2-8-4-9-6/h2,4-5H,1,3,7H2,(H,8,9)(H2,10,11,12)/t5-/m0/s1`,
+				`InChI=1S/C3H4N2O4/c4-3(9)5-1(6)2(7)8/h(H,7,8)(H3,4,5,6,9)`,
+				`InChI=1S/C9H8O6/c10-6(4-5-8(12)13)2-1-3-7(11)9(14)15/h1-5,11H,(H,12,13)(H,14,15)/b2-1-,5-4+,7-3+`,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetAllCompoundInchistrings(); !sparseExist(got, tt.want) {
+			if got := GetAllCompoundInchistrings(); !sparseEquals(got, tt.want) {
 				t.Errorf("GetAllCompoundInchistrings() = %v, want %v", got, tt.want)
 			}
 		})
@@ -847,21 +865,25 @@ func TestGetModelReactions(t *testing.T) {
 		{
 			name: "TestGetModelReactions",
 			args: args{
-				modelID: "iJO1366",
+				modelID: "632.719",
 			},
 			want: []string{
-				"R03067_c0",
-				"R03068_c0",
-				"R03069_c0",
+				"R01875_c0",
+				"R00956_c0",
+				"R01714_c0",
+				"R01059_c0",
+				"R00704_c0",
+				"R07281_c0",
+				"R00253_c0",
+				"R02971_c0",
+				"R02941_c0",
+				"R05234_c0",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetModelReactions(tt.args.modelID)
-			sort.Strings(got)
-			sort.Strings(tt.want)
-			if !reflect.DeepEqual(got, tt.want) {
+			if got := GetModelReactions(tt.args.modelID); !sparseEquals(got, tt.want) {
 				t.Errorf("GetModelReactions() = %v, want %v", got, tt.want)
 			}
 		})
@@ -877,15 +899,22 @@ func TestGetAllReactions(t *testing.T) {
 		{
 			name: "TestGetAllReactions",
 			want: []string{
-				"R03067_c0",
-				"R03068_c0",
-				"R03069_c0",
+				"R04857_c0",
+				"rxn13782_c0",
+				"rxn05516_c0",
+				"rxn08846_c0",
+				"R01271_c0",
+				"rxn05200_c0",
+				"R03018_c0",
+				"R01876_c0",
+				"R02285_c0",
+				"R02376_c0",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetAllReactions(); !sparseExist(got, tt.want) {
+			if got := GetAllReactions(); !sparseEquals(got, tt.want) {
 				t.Errorf("GetAllReactions() = %v, want %v", got, tt.want)
 			}
 		})
@@ -966,19 +995,18 @@ func TestGetReactionGeneAssociations(t *testing.T) {
 				modelID:    "632.718",
 			},
 			want: []string{
-				"b0002",
-				"b0003",
-				"b0004",
-				"b0005",
+				"632.718.peg.1395",
+				"632.718.peg.1396",
+				"632.718.peg.3649",
+				"632.718.peg.1396",
+				"632.718.peg.3649",
+				"632.718.peg.1395",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetReactionGeneAssociations(tt.args.reactionID, tt.args.modelID)
-			sort.Strings(got)
-			sort.Strings(tt.want)
-			if !reflect.DeepEqual(got, tt.want) {
+			if got := GetReactionGeneAssociations(tt.args.reactionID, tt.args.modelID); !unsortedEqual(got, tt.want) {
 				t.Errorf("GetReactionGeneAssociations() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1003,10 +1031,10 @@ func TestGetReactionProteinAssociations(t *testing.T) {
 				modelID:    "632.718",
 			},
 			want: []string{
-				"b0002",
-				"b0003",
-				"b0004",
-				"b0005",
+				"(EC 2.5.1.15)",
+				"(EC 2.5.1.19)",
+				"(EC 2.5.1.15)",
+				"(EC 2.5.1.19)",
 			},
 		},
 	}
@@ -1034,8 +1062,8 @@ func TestGetStoichiometry(t *testing.T) {
 		{
 			name: "TestGetStoichiometry",
 			args: args{
-				reactionID: "R03067_c0",
-				compoundID: "cpd00001_c0",
+				reactionID: "R00546_c0",
+				compoundID: "C00001_c0",
 				isProduct:  false,
 			},
 			want: sql.NullFloat64{Float64: 1, Valid: true},
@@ -1074,10 +1102,7 @@ func TestGetReactionCatalysts(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetReactionCatalysts(tt.args.reactionID)
-			sort.Strings(got)
-			sort.Strings(tt.want)
-			if !reflect.DeepEqual(got, tt.want) {
+			if got := GetReactionCatalysts(tt.args.reactionID); !unsortedEqual(got, tt.want) {
 				t.Errorf("GetReactionCatalysts() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1097,9 +1122,9 @@ func TestGetCompartmentID(t *testing.T) {
 		{
 			name: "TestGetCompartmentID",
 			args: args{
-				compartmentName: "c0",
+				compartmentName: "Cytosol",
 			},
-			want: sql.NullString{String: "632.718.1", Valid: true},
+			want: sql.NullString{String: "c0", Valid: true},
 		},
 	}
 	for _, tt := range tests {
@@ -1134,10 +1159,7 @@ func TestGetReactionSolvents(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetReactionSolvents(tt.args.reactionID)
-			sort.Strings(got)
-			sort.Strings(tt.want)
-			if !reflect.DeepEqual(got, tt.want) {
+			if got := GetReactionSolvents(tt.args.reactionID); !unsortedEqual(got, tt.want) {
 				t.Errorf("GetReactionSolvents() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1292,14 +1314,25 @@ func TestGetReactionsByType(t *testing.T) {
 		{
 			name: "TestGetReactionsByType",
 			args: args{
-				reactionType: "synthesis",
+				reactionType: "bio",
 			},
-			want: []string{"R03067_c0", "R03067_c1", "R03067_c2", "R03067_c3", "R03067_c4", "R03067_c5", "R03067_c6", "R03067_c7", "R03067_c8", "R03067_c9", "R03067_c10", "R03067_c11", "R03067_c12", "R03067_c13", "R03067_c14", "R03067_c15", "R03067_c16", "R03067_c17", "R03067_c18", "R03067_c19", "R03067_c20", "R03067_c21", "R03067_c22", "R03067_c23", "R03067_c24", "R03067_c25", "R03067_c26", "R03067_c27", "R03067_c28", "R03067_c29", "R03067_c30", "R03067_c31", "R03067_c32", "R03067_c33", "R03067_c34", "R03067_c35", "R03067_c36", "R03067_c37", "R03067_c38", "R03067_c39", "R03067_c40", "R03067_c41", "R03067_c42", "R03067_c43", "R03067_c44", "R03067_c45", "R03067_c46", "R03067_c47", "R03067_c48", "R03067_c49", "R03067_c50", "R03067_c51", "R03067_c52", "R03067_c53", "R03067_c54", "R03067_c55", "R03067_c56", "R03067_c57", "R03067_c58", "R03067_c59", "R03067_c60", "R03067_c61", "R03067_c62", "R03067_c63", "R03067_c64", "R03067_c65", "R03067_c66", "R03067_c67", "R03067_c68", "R03067_c69", "R03067"},
+			want: []string{
+				"R00214_c0",
+				"rxn05456_c0",
+				"R05599_c0",
+				"R01103_c0",
+				"R00946_c0",
+				"R04425_c0",
+				"rxn05667_c0",
+				"R04091_c0",
+				"rxn09978_c0",
+				"bio10_636.15",
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetReactionsByType(tt.args.reactionType); !sparseExist(got, tt.want) {
+			if got := GetReactionsByType(tt.args.reactionType); !sparseEquals(got, tt.want) {
 				t.Errorf("GetReactionsByType() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1352,7 +1385,7 @@ func TestGetAllReactionKEGGIDs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetAllReactionKEGGIDs(); !sparseExist(got, tt.want) {
+			if got := GetAllReactionKEGGIDs(); !sparseEquals(got, tt.want) {
 				t.Errorf("GetAllReactionKEGGIDs() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1440,7 +1473,7 @@ func TestGetAllCompoundKEGGIDs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetAllCompoundKEGGIDs(); !sparseExist(got, tt.want) {
+			if got := GetAllCompoundKEGGIDs(); !sparseEquals(got, tt.want) {
 				t.Errorf("GetAllCompoundKEGGIDs() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1448,7 +1481,10 @@ func TestGetAllCompoundKEGGIDs(t *testing.T) {
 }
 
 func TestGetAllChemicalFormulas(t *testing.T) {
+
 	setup()
+	got := GetAllChemicalFormulas()
+	print(got)
 	tests := []struct {
 		name string
 		want []string
@@ -1456,14 +1492,19 @@ func TestGetAllChemicalFormulas(t *testing.T) {
 		{
 			name: "Test GetAllChemicalFormulas",
 			want: []string{
-				"C00001_c0",
-				"C00002_c0",
+				"C2HCl3",
+				"C20H12O",
+				"C37H66N7O17P3S",
+				"C55H77CoN15O11",
+				"C24H41N8O17P3S",
+				"C10H17N3O6S",
+				"C6H12O7",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetAllChemicalFormulas(); !sparseExist(got, tt.want) {
+			if got := GetAllChemicalFormulas(); !sparseEquals(got, tt.want) {
 				t.Errorf("GetAllChemicalFormulas() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1485,7 +1526,7 @@ func TestGetChemicalFormula(t *testing.T) {
 			args: args{
 				compoundID: "C00001_c0",
 			},
-			want: sql.NullString{String: "C6H12O6", Valid: true},
+			want: sql.NullString{String: "H20", Valid: true},
 		},
 	}
 	for _, tt := range tests {
@@ -1512,7 +1553,7 @@ func TestGetCASNumber(t *testing.T) {
 			args: args{
 				compoundID: "C00001_c0",
 			},
-			want: sql.NullString{String: "50-00-0", Valid: true},
+			want: sql.NullString{String: "7732-18-5", Valid: true},
 		},
 	}
 	for _, tt := range tests {
@@ -1540,18 +1581,25 @@ func TestGetCompoundIDByFormula(t *testing.T) {
 				formula: "C6H12O6",
 			},
 			want: []string{
-				"C00031_c0",
-				"C00031_c1",
-				"C00031_c2",
+				"C00267_c0",
+				"C00267_e0",
+				"C00137_c0",
+				"C00221_c0",
+				"C00936_e0",
+				"C01720_c0",
+				"C02782_c0",
+				"C10906_e0",
+				"C00962_c0",
+				"C00124_c0",
+				"C00936_c0",
+				"C00124_e0",
+				"C10906_c0",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetCompoundIDByFormula(tt.args.formula)
-			sort.Strings(got)
-			sort.Strings(tt.want)
-			if !reflect.DeepEqual(got, tt.want) {
+			if got := GetCompoundIDByFormula(tt.args.formula); !unsortedEqual(got, tt.want) {
 				t.Errorf("GetCompoundIDByFormula() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1584,10 +1632,7 @@ func TestGetCompoundNameBySearchTerm(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetCompoundNameBySearchTerm(tt.args.searchTerm)
-			sort.Strings(got)
-			sort.Strings(tt.want)
-			if !reflect.DeepEqual(got, tt.want) {
+			if got := GetCompoundNameBySearchTerm(tt.args.searchTerm); !unsortedEqual(got, tt.want) {
 				t.Errorf("GetCompoundNameBySearchTerm() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1607,9 +1652,9 @@ func TestGetModelIDByFileName(t *testing.T) {
 		{
 			name: "Test GetModelIDByFileName",
 			args: args{
-				fileName: "iJO1366.xml",
+				fileName: "Aeromonas_taiwanensis_strain_Colony382_Complete",
 			},
-			want: sql.NullString{String: "iJO1366", Valid: true},
+			want: sql.NullString{String: "633417.11", Valid: true},
 		},
 	}
 	for _, tt := range tests {
@@ -1622,6 +1667,7 @@ func TestGetModelIDByFileName(t *testing.T) {
 }
 
 func TestGetAllFBAModelIDs(t *testing.T) {
+	setup()
 	tests := []struct {
 		name string
 		want []string
@@ -1629,15 +1675,22 @@ func TestGetAllFBAModelIDs(t *testing.T) {
 		{
 			name: "Test GetAllFBAModelIDs",
 			want: []string{
-				"iJO1366",
-				"iAF1260",
-				"iAF692",
+				"64187.571",
+				"64187.573",
+				"632.718",
+				"64187.553",
+				"64187.536",
+				"64187.564",
+				"636.15",
+				"639200.3",
+				"64187.566",
+				"64187.548",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetAllFBAModelIDs(); !sparseExist(got, tt.want) {
+			if got := GetAllFBAModelIDs(); !sparseEquals(got, tt.want) {
 				t.Errorf("GetAllFBAModelIDs() = %v, want %v", got, tt.want)
 			}
 		})
