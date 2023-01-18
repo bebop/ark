@@ -1354,7 +1354,7 @@ func TestGetReactionType(t *testing.T) {
 			args: args{
 				reactionID: "R03067_c0",
 			},
-			want: sql.NullString{String: "synthesis", Valid: true},
+			want: sql.NullString{String: "bio", Valid: true},
 		},
 	}
 	for _, tt := range tests {

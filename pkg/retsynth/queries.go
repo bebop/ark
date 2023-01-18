@@ -23,6 +23,9 @@ func GetUniqueMetabolicClusters() []string {
 	var clusters []string
 	query := "SELECT DISTINCT cluster_num FROM cluster"
 	var err = db.Select(&clusters, query)
+	if err == sql.ErrNoRows {
+		return nil
+	}
 	if err != nil {
 		panic(err)
 	}
@@ -35,6 +38,9 @@ func GetModelIDsFromCluster(cluster string) []string {
 	var models []string
 	query := "SELECT ID FROM cluster WHERE cluster_num = ?"
 	var err = db.Select(&models, query, cluster)
+	if err == sql.ErrNoRows {
+		return nil
+	}
 	if err != nil {
 		return nil
 	}
@@ -47,6 +53,9 @@ func GetAllModelIDs() []string {
 	var models []string
 	query := "SELECT DISTINCT ID FROM model"
 	var err = db.Select(&models, query)
+	if err == sql.ErrNoRows {
+		return nil
+	}
 	if err != nil {
 		panic(err)
 	}
@@ -71,8 +80,11 @@ func GetOrganismName(organismID string) sql.NullString {
 	var name string
 	query := "SELECT file_name FROM model WHERE ID = ?"
 	var err = db.Get(&name, query, organismID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: name, Valid: true}
 }
@@ -83,8 +95,11 @@ func GetOrganismID(organismName string) sql.NullString {
 	var ID string
 	query := "SELECT ID FROM model WHERE file_name = ?"
 	var err = db.Get(&ID, query, organismName)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: ID, Valid: true}
 }
@@ -95,8 +110,11 @@ func GetCompoundID(compoundName string) sql.NullString {
 	var ID string
 	query := "SELECT ID FROM compound WHERE name = ?"
 	var err = db.Get(&ID, query, compoundName)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: ID, Valid: true}
 }
@@ -107,8 +125,11 @@ func GetLikeCompoundID(compoundName string) sql.NullString {
 	var ID string
 	query := "SELECT ID FROM compound WHERE name LIKE ?"
 	var err = db.Get(&ID, query, compoundName)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: ID, Valid: true}
 }
@@ -119,8 +140,11 @@ func GetCompoundIDFromInchi(inchi string) sql.NullString {
 	var ID string
 	query := "SELECT ID FROM compound WHERE inchistring = ?"
 	var err = db.Get(&ID, query, inchi)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: ID, Valid: true}
 }
@@ -131,8 +155,11 @@ func GetCompoundInchi(compoundID string) sql.NullString {
 	var inchi string
 	query := "SELECT inchistring FROM compound WHERE ID = ?"
 	var err = db.Get(&inchi, query, compoundID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: inchi, Valid: true}
 }
@@ -143,8 +170,11 @@ func GetCompoundName(compoundID string) sql.NullString {
 	var name string
 	query := "SELECT name FROM compound WHERE ID = ?"
 	var err = db.Get(&name, query, compoundID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: name, Valid: true}
 }
@@ -155,8 +185,11 @@ func GetCompoundNameFromInchi(inchi string) sql.NullString {
 	var name string
 	query := "SELECT name FROM compound WHERE inchistring = ?"
 	var err = db.Get(&name, query, inchi)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: name, Valid: true}
 }
@@ -167,8 +200,11 @@ func GetCompoundCompartment(compoundID string) sql.NullString {
 	var compartment string
 	query := "SELECT compartment FROM compound WHERE ID = ?"
 	var err = db.Get(&compartment, query, compoundID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: compartment, Valid: true}
 }
@@ -179,8 +215,11 @@ func GetReactionName(reactionID string) sql.NullString {
 	var name string
 	query := "SELECT name FROM reaction WHERE ID = ?"
 	var err = db.Get(&name, query, reactionID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: name, Valid: true}
 }
@@ -203,6 +242,9 @@ func GetReactionSpecies(reactionID string) []string {
 	var species []string
 	query := "SELECT model_ID FROM model_reaction INDEXED BY modelreaction_ind2 WHERE reaction_ID = ?"
 	var err = db.Select(&species, query, reactionID)
+	if err == sql.ErrNoRows {
+		return nil
+	}
 	if err != nil {
 		panic(err)
 	}
@@ -215,6 +257,9 @@ func GetReactantCompoundIDs(reactionID string) []string {
 	var compoundIDs []string
 	query := "SELECT cpd_ID FROM reaction_compound WHERE reaction_ID = ? AND is_prod = ?"
 	var err = db.Select(&compoundIDs, query, reactionID, false)
+	if err == sql.ErrNoRows {
+		return nil
+	}
 	if err != nil {
 		return nil
 	}
@@ -227,6 +272,9 @@ func GetReactionsWithProduct(compoundID string) []string {
 	var compoundIDs []string
 	query := "SELECT reaction_ID FROM reaction_compound WHERE cpd_ID = ? AND is_prod = ?"
 	var err = db.Select(&compoundIDs, query, compoundID, true)
+	if err == sql.ErrNoRows {
+		return nil
+	}
 	if err != nil {
 		return nil
 	}
@@ -239,6 +287,9 @@ func GetProductCompundIDs(reactionID string) []string {
 	var products []string
 	query := "SELECT cpd_ID FROM reaction_compound WHERE reaction_ID = ? AND is_prod = ?"
 	var err = db.Select(&products, query, reactionID, true)
+	if err == sql.ErrNoRows {
+		return nil
+	}
 	if err != nil {
 		return nil
 	}
@@ -251,8 +302,11 @@ func GetModelCompounds(modelID string) []string {
 	var compounds []string
 	query := "SELECT cpd_ID FROM model_compound WHERE model_ID = ?"
 	var err = db.Select(&compounds, query, modelID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return compounds
 }
@@ -263,8 +317,11 @@ func GetAllCompoundIDs() []string {
 	var compounds []string
 	query := "SELECT ID FROM compound"
 	var err = db.Select(&compounds, query)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return compounds
 }
@@ -275,8 +332,11 @@ func GetAllCompounds() []Compound {
 	var compounds []Compound
 	query := "SELECT * FROM compound"
 	var err = db.Select(&compounds, query)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return compounds
 }
@@ -299,6 +359,9 @@ func GetModelReactions(modelID string) []string {
 	var reactions []string
 	query := "SELECT reaction_ID FROM model_reaction WHERE model_ID = ?"
 	var err = db.Select(&reactions, query, modelID)
+	if err == sql.ErrNoRows {
+		return nil
+	}
 	if err != nil {
 		return nil
 	}
@@ -311,6 +374,9 @@ func GetAllReactions() []string {
 	var reactions []string
 	query := "SELECT ID FROM reaction"
 	var err = db.Select(&reactions, query)
+	if err == sql.ErrNoRows {
+		return nil
+	}
 	if err != nil {
 		return nil
 	}
@@ -323,8 +389,11 @@ func GetReactionReversibility(reactionID string, modelID string) sql.NullBool {
 	var reversible bool
 	query := "SELECT is_rev FROM model_reaction WHERE reaction_ID = ? AND model_ID = ? LIMIT 1"
 	var err = db.Get(&reversible, query, reactionID, modelID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullBool{Bool: false, Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullBool{Bool: reversible, Valid: true}
 }
@@ -347,8 +416,11 @@ func GetReactionGeneAssociations(reactionID string, modelID string) []string {
 	var genes []string
 	query := "SELECT gene_ID FROM reaction_gene WHERE reaction_ID = ? AND model_ID = ?"
 	var err = db.Select(&genes, query, reactionID, modelID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return genes
 }
@@ -384,8 +456,11 @@ func GetReactionCatalysts(reactionID string) []string {
 	var catalysts []string
 	query := "SELECT catalysts_ID FROM reaction_catalysts WHERE reaction_ID = ?"
 	var err = db.Get(&catalysts, query, reactionID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return catalysts
 }
@@ -396,8 +471,11 @@ func GetCompartmentID(compartmentName string) sql.NullString {
 	var compartmentID string
 	query := "SELECT ID FROM compartments WHERE name = ?"
 	var err = db.Get(&compartmentID, query, compartmentName)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: compartmentID, Valid: true}
 }
@@ -409,8 +487,11 @@ func GetReactionSolvents(reactionID string) []string {
 	var solvent []string
 	query := "SELECT solvents_ID FROM reaction_solvents WHERE reaction_ID = ?"
 	var err = db.Get(&solvent, query, reactionID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return solvent
 }
@@ -469,8 +550,11 @@ func GetReactionReference(reactionID string) sql.NullString {
 	var reference string
 	query := "SELECT reference FROM reaction_spresi_info WHERE reaction_ID = ?"
 	var err = db.Get(&reference, query, reactionID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: reference, Valid: true}
 }
@@ -481,8 +565,11 @@ func GetReactionsByType(reactionType string) []string {
 	var reactions []string
 	query := "SELECT ID FROM reaction WHERE type = ?"
 	var err = db.Select(&reactions, query, reactionType)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return reactions
 }
@@ -491,10 +578,13 @@ func GetReactionsByType(reactionType string) []string {
 func GetReactionType(reactionID string) sql.NullString {
 	db := ConnectDB()
 	var reactionType string
-	query := "SELECT type FROM reactions WHERE ID = ?"
+	query := "SELECT type FROM reaction WHERE ID = ?"
 	var err = db.Get(&reactionType, query, reactionID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: reactionType, Valid: true}
 }
@@ -505,8 +595,11 @@ func GetAllReactionKEGGIDs() []string {
 	var reactionIDs []string
 	query := "SELECT kegg_id FROM reaction"
 	var err = db.Select(&reactionIDs, query)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return reactionIDs
 }
@@ -517,8 +610,11 @@ func GetReactionKEGGID(reactionID string) sql.NullString {
 	var reactionKEGGID string
 	query := "SELECT kegg_id FROM reaction WHERE ID = ?"
 	var err = db.Get(&reactionKEGGID, query, reactionID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: reactionKEGGID, Valid: true}
 }
@@ -529,8 +625,11 @@ func GetCompoundKEGGID(compoundID string) sql.NullString {
 	var compoundKEGGID string
 	query := "SELECT kegg_id FROM compound WHERE ID = ?"
 	var err = db.Get(&compoundKEGGID, query, compoundID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: compoundKEGGID, Valid: true}
 }
@@ -541,8 +640,11 @@ func GetAllCompoundKEGGIDs() []string {
 	var compoundIDs []string
 	query := "SELECT kegg_id FROM compound"
 	var err = db.Select(&compoundIDs, query)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return compoundIDs
 }
@@ -553,11 +655,12 @@ func GetAllChemicalFormulas() []string {
 	var formulas []string
 	query := "SELECT chemicalformula FROM compound"
 	var err = db.Select(&formulas, query)
-	if err != nil {
-		print(err)
+	if err == sql.ErrNoRows {
 		return nil
 	}
-	print(formulas)
+	if err != nil {
+		panic(err)
+	}
 	return formulas
 }
 
@@ -567,8 +670,11 @@ func GetChemicalFormula(compoundID string) sql.NullString {
 	var formula string
 	query := "SELECT chemicalformula FROM compound WHERE ID = ?"
 	var err = db.Get(&formula, query, compoundID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: formula, Valid: true}
 }
@@ -579,8 +685,11 @@ func GetCASNumber(compoundID string) sql.NullString {
 	var casNumber string
 	query := "SELECT casnumber FROM compound WHERE ID = ?"
 	var err = db.Get(&casNumber, query, compoundID)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: casNumber, Valid: true}
 }
@@ -591,8 +700,11 @@ func GetCompoundIDByFormula(formula string) []string {
 	var compoundIDs []string
 	query := "SELECT ID FROM compound WHERE chemicalformula = ?"
 	var err = db.Get(&compoundIDs, query, formula)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return compoundIDs
 }
@@ -603,8 +715,11 @@ func GetCompoundNameBySearchTerm(searchTerm string) []string {
 	var compoundNames []string
 	query := "SELECT name FROM compound WHERE name LIKE ? OR chemicalformula LIKE ? OR ID LIKE ? OR kegg_id LIKE ? OR casnumber LIKE ?"
 	var err = db.Get(&compoundNames, query, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return compoundNames
 }
@@ -615,8 +730,11 @@ func GetModelIDByFileName(fileName string) sql.NullString {
 	var modelID string
 	query := "SELECT ID FROM model WHERE file_name = ?"
 	var err = db.Get(&modelID, query, fileName)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return sql.NullString{String: "", Valid: false}
+	}
+	if err != nil {
+		panic(err)
 	}
 	return sql.NullString{String: modelID, Valid: true}
 }
@@ -627,8 +745,11 @@ func GetAllFBAModelIDs() []string {
 	var modelIDs []string
 	query := "SELECT ID FROM fba_models"
 	var err = db.Select(&modelIDs, query)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil
+	}
+	if err != nil {
+		panic(err)
 	}
 	return modelIDs
 }
