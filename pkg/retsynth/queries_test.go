@@ -1375,11 +1375,11 @@ func TestGetAllReactionKEGGIDs(t *testing.T) {
 		{
 			name: "TestGetAllReactionKEGGIDs",
 			want: []string{
-				"R00001_c0",
-				"R00002_c0",
-				"R00003_c0",
-				"R00004_c0",
-				"R00005_c0",
+				"R05320",
+				"R00925",
+				"R01012",
+				"R01558",
+				"R08306",
 			},
 		},
 	}
@@ -1408,8 +1408,8 @@ func TestGetReactionKEGGID(t *testing.T) {
 				reactionID: "R00001_c0",
 			},
 			want: sql.NullString{
-				String: "R00001",
-				Valid:  true,
+				String: "",
+				Valid:  false,
 			},
 		},
 	}

@@ -592,7 +592,7 @@ func GetReactionType(reactionID string) sql.NullString {
 // Retrieves all reaction KEGG IDs
 func GetAllReactionKEGGIDs() []string {
 	db := ConnectDB()
-	var reactionIDs []string
+	var reactionIDs []sql.NullString
 	query := "SELECT kegg_id FROM reaction"
 	var err = db.Select(&reactionIDs, query)
 	if err == sql.ErrNoRows {
@@ -601,7 +601,14 @@ func GetAllReactionKEGGIDs() []string {
 	if err != nil {
 		panic(err)
 	}
-	return reactionIDs
+	// Convert sql.NullString to string
+	var reactionKEGGIDs []string
+	for _, reactionID := range reactionIDs {
+		if reactionID.Valid {
+			reactionKEGGIDs = append(reactionKEGGIDs, reactionID.String)
+		}
+	}
+	return reactionKEGGIDs
 }
 
 // Retrieves kegg ID for a reaction based on main ID
