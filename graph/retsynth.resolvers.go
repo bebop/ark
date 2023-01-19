@@ -7,7 +7,39 @@ package graph
 import (
 	"context"
 	"fmt"
+
+	"github.com/TimothyStiles/allbase/pkg/retsynth"
 )
+
+// SearchCompounds is the resolver for the searchCompounds field.
+func (r *queryResolver) SearchCompounds(ctx context.Context, searchTerm *string) ([]*retsynth.Compound, error) {
+	// Do the search query
+	compounds := retsynth.GetCompoundBySearchTerm(*searchTerm)
+	if compounds == nil {
+		return nil, fmt.Errorf("no compounds found for the term %s", *searchTerm)
+	}
+	// Convert the compounds to the graphql return type
+	retcompounds := []*retsynth.Compound{}
+	for index, _ := range compounds {
+		retcompounds = append(retcompounds, &compounds[index])
+	}
+	return retcompounds, nil
+}
+
+// SearchOrganisms is the resolver for the searchOrganisms field.
+func (r *queryResolver) SearchOrganisms(ctx context.Context, searchTerm *string) ([]*retsynth.Model, error) {
+	// Do the search query
+	organisms := retsynth.GetOrganismBySearchTerm(*searchTerm)
+	if organisms == nil {
+		return nil, fmt.Errorf("no organisms found for the term %s", *searchTerm)
+	}
+	// Convert the compounds to the graphql return type
+	retorganisms := []*retsynth.Model{}
+	for index, _ := range organisms {
+		retorganisms = append(retorganisms, &organisms[index])
+	}
+	return retorganisms, nil
+}
 
 // UniqueMetabolicClusters is the resolver for the uniqueMetabolicClusters field.
 func (r *queryResolver) UniqueMetabolicClusters(ctx context.Context) ([]*string, error) {

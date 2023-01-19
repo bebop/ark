@@ -652,7 +652,7 @@ func GetAllCompoundKEGGIDs() []string {
 // Retrieves all chemicalformulas
 func GetAllChemicalFormulas() []string {
 	db := ConnectDB()
-	var formulas []string
+	var formulas []sql.NullString
 	query := "SELECT chemicalformula FROM compound"
 	var err = db.Select(&formulas, query)
 	if err == sql.ErrNoRows {
@@ -661,7 +661,14 @@ func GetAllChemicalFormulas() []string {
 	if err != nil {
 		panic(err)
 	}
-	return formulas
+	// Convert sql.NullString to string
+	var returnFormulas []string
+	for _, formula := range formulas {
+		if formula.Valid {
+			returnFormulas = append(returnFormulas, formula.String)
+		}
+	}
+	return returnFormulas
 }
 
 // Retrieves chemicalformula for compound ID
@@ -699,7 +706,7 @@ func GetCompoundIDByFormula(formula string) []string {
 	db := ConnectDB()
 	var compoundIDs []string
 	query := "SELECT ID FROM compound WHERE chemicalformula = ?"
-	var err = db.Get(&compoundIDs, query, formula)
+	var err = db.Select(&compoundIDs, query, formula)
 	if err == sql.ErrNoRows {
 		return nil
 	}
@@ -710,11 +717,13 @@ func GetCompoundIDByFormula(formula string) []string {
 }
 
 // Retrieves compound name for given search term (name/formula) TODO: Add more match criteria
-func GetCompoundNameBySearchTerm(searchTerm string) []string {
+func GetCompoundBySearchTerm(searchTerm string) []Compound {
+	// Update the search term with the % wildcard
+	searchTerm = "%" + searchTerm + "%"
 	db := ConnectDB()
-	var compoundNames []string
-	query := "SELECT name FROM compound WHERE name LIKE ? OR chemicalformula LIKE ? OR ID LIKE ? OR kegg_id LIKE ? OR casnumber LIKE ?"
-	var err = db.Get(&compoundNames, query, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm)
+	var compoundNames []Compound
+	query := "SELECT * FROM compound WHERE name LIKE ? OR chemicalformula LIKE ? OR ID LIKE ? OR kegg_id LIKE ? OR casnumber LIKE ? OR inchistring LIKE ?"
+	var err = db.Select(&compoundNames, query, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm)
 	if err == sql.ErrNoRows {
 		return nil
 	}
@@ -722,6 +731,22 @@ func GetCompoundNameBySearchTerm(searchTerm string) []string {
 		panic(err)
 	}
 	return compoundNames
+}
+
+// Retrieves organism name for given search term (name/formula) TODO: Add more match criteria as we go along
+func GetOrganismBySearchTerm(searchTerm string) []Model {
+	searchTerm = "%" + searchTerm + "%"
+	db := ConnectDB()
+	var organisms []Model
+	query := "SELECT * FROM model WHERE file_name LIKE ? OR ID LIKE ?"
+	var err = db.Select(&organisms, query, searchTerm, searchTerm)
+	if err == sql.ErrNoRows {
+		return nil
+	}
+	if err != nil {
+		panic(err)
+	}
+	return organisms
 }
 
 // Retrieves model ID for given file_name

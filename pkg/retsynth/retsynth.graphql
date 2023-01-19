@@ -1,4 +1,8 @@
 extend type Query {
+
+  searchCompounds(searchTerm: String): [Compound]
+  searchOrganisms(searchTerm: String): [Model]
+
   uniqueMetabolicClusters: [String]
   modelIDsFromCluster(cluster: String): [String]
   allModelIDs: [String]

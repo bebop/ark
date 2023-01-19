@@ -1526,7 +1526,7 @@ func TestGetChemicalFormula(t *testing.T) {
 			args: args{
 				compoundID: "C00001_c0",
 			},
-			want: sql.NullString{String: "H20", Valid: true},
+			want: sql.NullString{String: "H2O", Valid: true},
 		},
 	}
 	for _, tt := range tests {
@@ -1614,25 +1614,19 @@ func TestGetCompoundNameBySearchTerm(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []string
+		want []Compound
 	}{
 		{
 			name: "Test GetCompoundNameBySearchTerm",
 			args: args{
 				searchTerm: "glucose",
 			},
-			want: []string{
-				"D-glucose",
-				"D-glucose-6-phosphate",
-				"D-glucose-6-phosphate 1-dehydrogenase",
-				"D-glucose-6-phosphate aldolase",
-				"D-glucose-6-phosphate aldolase (EC",
-			},
+			want: []Compound{},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetCompoundNameBySearchTerm(tt.args.searchTerm); !unsortedEqual(got, tt.want) {
+			if got := GetCompoundBySearchTerm(tt.args.searchTerm); !sparseEquals(got, tt.want) {
 				t.Errorf("GetCompoundNameBySearchTerm() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1692,6 +1686,79 @@ func TestGetAllFBAModelIDs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := GetAllFBAModelIDs(); !sparseEquals(got, tt.want) {
 				t.Errorf("GetAllFBAModelIDs() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetCompoundBySearchTerm(t *testing.T) {
+	setup()
+	type args struct {
+		searchTerm string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []Compound
+	}{
+		{
+			name: "Test GetCompoundBySearchTerm",
+			args: args{
+				searchTerm: "glucose",
+			},
+			want: []Compound{
+				{
+					ID:              "C00842_c0",
+					Name:            sql.NullString{String: "dTDPglucose", Valid: true},
+					Compartment:     sql.NullString{String: "c0", Valid: true},
+					KeggID:          sql.NullString{String: "C00842", Valid: true},
+					ChemicalFormula: sql.NullString{String: "C16H26N2O16P2", Valid: true},
+					CASNumber:       sql.NullString{String: "2196-62-5", Valid: true},
+					InchiString:     sql.NullString{String: `InChI=1S/C16H26N2O16P2/c1-6-3-18(16(25)17-14(6)24)10-2-7(20)9(31-10)5-30-35(26,27)34-36(28,29)33-15-13(23)12(22)11(21)8(4-19)32-15/h3,7-13,15,19-23H,2,4-5H2,1H3,(H,26,27)(H,28,29)(H,17,24,25)/t7-,8+,9+,10+,11+,12-,13+,15+/m0/s1`, Valid: true},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetCompoundBySearchTerm(tt.args.searchTerm); !sparseEquals(got, tt.want) {
+				t.Errorf("GetCompoundBySearchTerm() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetOrganismBySearchTerm(t *testing.T) {
+	setup()
+	type args struct {
+		searchTerm string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []Model
+	}{
+		{
+			name: "Test GetOrganismBySearchTerm",
+			args: args{
+				searchTerm: "aero",
+			},
+			want: []Model{
+				{
+					"633417.11",
+					"Aeromonas_taiwanensis_strain_Colony382_Complete",
+				},
+				{
+					"639200.3",
+					"Sphaerotilus_natans_subsp._sulfidivorans_strain_D-507_Complete",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetOrganismBySearchTerm(tt.args.searchTerm); !sparseEquals(got, tt.want) {
+				t.Errorf("GetOrganismBySearchTerm() = %v, want %v", got, tt.want)
 			}
 		})
 	}
