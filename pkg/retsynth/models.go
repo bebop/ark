@@ -92,3 +92,17 @@ type OringalDBCompooundIDs struct {
 	CompoundID string `db:"ID" json:"ID"`             //CompoundID is the compound ID
 	InchiID    string `db:"inchi_id" json:"inchi_id"` //InchiID is the Inchi ID
 }
+
+// ReactionCatalysts is a struct that contains the information about the reaction catalysts
+type ReactionCatalysts struct {
+	ReactionID  string `db:"reaction_ID" json:"reaction_ID"`   //ReactionID is the reaction ID
+	CatalystsID string `db:"catalysts_ID" json:"catalysts_ID"` //CatalystsID is the catalysts ID
+	Name        string `db:"name" json:"name"`                 //Name is the name of the catalysts
+}
+
+// ReactionSolvents is a struct that contains the information about the reaction solvents
+type ReactionSolvents struct {
+	ReactionID string `db:"reaction_ID" json:"reaction_ID"` //ReactionID is the reaction ID
+	SolventsID string `db:"solvents_ID" json:"solvents_ID"` //SolventsID is the solvents ID
+	Name       string `db:"name" json:"name"`               //Name is the name of the solvents
+}

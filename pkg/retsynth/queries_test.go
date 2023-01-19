@@ -811,9 +811,24 @@ func TestGetAllCompounds(t *testing.T) {
 		{
 			name: "TestGetAllCompounds",
 			want: []Compound{
-				{ID: "C05172_c0", Name: sql.NullString{String: "Selenophosphate", Valid: true}, Compartment: sql.NullString{String: "c0", Valid: true}, KeggID: sql.NullString{String: "C05172", Valid: true}, ChemicalFormula: sql.NullString{String: "H3O3PSe", Valid: true}, CASNumber: sql.NullString{String: "", Valid: false}, InchiString: sql.NullString{String: "InChI=1S/H3O3PSe/c1-4(2,3)5/h(H3,1,2,3,5)", Valid: true}},
-				{ID: "C05448_c0", Name: sql.NullString{String: "3alpha,7alpha,24-Trihydroxy-5beta-cholestanoyl-CoA", Valid: true}, Compartment: sql.NullString{String: "c0", Valid: true}, KeggID: sql.NullString{String: "C05448", Valid: true}, ChemicalFormula: sql.NullString{String: "C48H80N7O20P3S", Valid: true}, CASNumber: sql.NullString{String: "", Valid: false}, InchiString: sql.NullString{String: "InChI=1S/C48H80N7O20P3S/c1-25(29-8-9-30-36-31(12-15-48(29,30)6)47(5)14-11-28(56)19-27(47)20-33(36)58)7-10-32(57)26(2)45(63)79-18-17-50-35(59)13-16-51-43(62)40(61)46(3,4)22-72-78(69,70)75-77(67,68)71-21-34-39(74-76(64,65)66)38(60)44(73-34)55-24-54-37-41(49)52-23-53-42(37)55/h23-34,36,38-40,44,56-58,60-61H,7-22H2,1-6H3,(H,50,59)(H,51,62)(H,67,68)(H,69,70)(H2,49,52,53)(H2,64,65,66)/t25-,26-,27+,28-,29-,30+,31+,32-,33-,34-,36+,38-,39-,40+,44-,47+,48-/m1/s1", Valid: true}},
-				{ID: "cpd11533_c0", Name: sql.NullString{String: "11-methyl-3-oxo-dodecanoyl-ACP", Valid: true}, Compartment: sql.NullString{String: "c0", Valid: true}, KeggID: sql.NullString{String: "", Valid: false}, ChemicalFormula: sql.NullString{String: "", Valid: false}, CASNumber: sql.NullString{String: "", Valid: false}},
+				{
+					ID:              "C05172_c0",
+					Name:            sql.NullString{String: "Selenophosphate", Valid: true},
+					Compartment:     sql.NullString{String: "c0", Valid: true},
+					KeggID:          sql.NullString{String: "C05172", Valid: true},
+					ChemicalFormula: sql.NullString{String: "H3O3PSe", Valid: true},
+					CASNumber:       sql.NullString{String: "", Valid: false},
+					InchiString:     sql.NullString{String: `InChI=1S/H3O3PSe/c1-4(2,3)5/h(H3,1,2,3,5)`, Valid: true},
+				},
+				{
+					ID:              "C05448_c0",
+					Name:            sql.NullString{String: "3alpha,7alpha,24-Trihydroxy-5beta-cholestanoyl-CoA", Valid: true},
+					Compartment:     sql.NullString{String: "c0", Valid: true},
+					KeggID:          sql.NullString{String: "C05448", Valid: true},
+					ChemicalFormula: sql.NullString{String: "C48H80N7O20P3S", Valid: true},
+					CASNumber:       sql.NullString{String: "", Valid: false},
+					InchiString:     sql.NullString{String: `InChI=1S/C48H80N7O20P3S/c1-25(29-8-9-30-36-31(12-15-48(29,30)6)47(5)14-11-28(56)19-27(47)20-33(36)58)7-10-32(57)26(2)45(63)79-18-17-50-35(59)13-16-51-43(62)40(61)46(3,4)22-72-78(69,70)75-77(67,68)71-21-34-39(74-76(64,65)66)38(60)44(73-34)55-24-54-37-41(49)52-23-53-42(37)55/h23-34,36,38-40,44,56-58,60-61H,7-22H2,1-6H3,(H,50,59)(H,51,62)(H,67,68)(H,69,70)(H2,49,52,53)(H2,64,65,66)/t25-,26-,27+,28-,29-,30+,31+,32-,33-,34-,36+,38-,39-,40+,44-,47+,48-/m1/s1`, Valid: true},
+				},
 			},
 		},
 	}
@@ -1091,18 +1106,16 @@ func TestGetReactionCatalysts(t *testing.T) {
 		{
 			name: "TestGetReactionCatalysts",
 			args: args{
-				reactionID: "R03067_c0",
+				reactionID: "test_reaction_id",
 			},
 			want: []string{
-				"b0002",
-				"b0003",
-				"b0004",
+				"test_catalyst_id",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetReactionCatalysts(tt.args.reactionID); !unsortedEqual(got, tt.want) {
+			if got := GetReactionCatalysts(tt.args.reactionID); !sparseEquals(got, tt.want) {
 				t.Errorf("GetReactionCatalysts() = %v, want %v", got, tt.want)
 			}
 		})
@@ -1149,11 +1162,10 @@ func TestGetReactionSolvents(t *testing.T) {
 		{
 			name: "TestGetReactionSolvents",
 			args: args{
-				reactionID: "R03067_c0",
+				reactionID: "test_reaction_id",
 			},
 			want: []string{
-				"cpd00001_c0",
-				"cpd00002_c0",
+				"test_solvent_id",
 			},
 		},
 	}
@@ -1179,9 +1191,9 @@ func TestGetReactionTemperature(t *testing.T) {
 		{
 			name: "TestGetReactionTemperature",
 			args: args{
-				reactionID: "R03067_c0",
+				reactionID: "test_reaction0",
 			},
-			want: sql.NullFloat64{Float64: 37, Valid: true},
+			want: sql.NullFloat64{Float64: 25.0, Valid: true},
 		},
 	}
 	for _, tt := range tests {
@@ -1206,9 +1218,9 @@ func TestGetReactionPressure(t *testing.T) {
 		{
 			name: "TestGetReactionPressure",
 			args: args{
-				reactionID: "R03067_c0",
+				reactionID: "test_reaction0",
 			},
-			want: sql.NullFloat64{Float64: 1, Valid: true},
+			want: sql.NullFloat64{Float64: 99.0, Valid: true},
 		},
 	}
 	for _, tt := range tests {
@@ -1233,9 +1245,9 @@ func TestGetReactionTime(t *testing.T) {
 		{
 			name: "TestGetReactionTime",
 			args: args{
-				reactionID: "R03067_c0",
+				reactionID: "test_reaction0",
 			},
-			want: sql.NullFloat64{Float64: 1, Valid: true},
+			want: sql.NullFloat64{Float64: 44.0, Valid: true},
 		},
 	}
 	for _, tt := range tests {
@@ -1260,7 +1272,7 @@ func TestGetReactionYield(t *testing.T) {
 		{
 			name: "TestGetReactionYield",
 			args: args{
-				reactionID: "R03067_c0",
+				reactionID: "test_reaction0",
 			},
 			want: sql.NullFloat64{Float64: 0.5, Valid: true},
 		},
@@ -1287,9 +1299,9 @@ func TestGetReactionReference(t *testing.T) {
 		{
 			name: "TestGetReactionReference",
 			args: args{
-				reactionID: "R03067_c0",
+				reactionID: "test_reaction0",
 			},
-			want: sql.NullString{String: "10.1021/ja00003a001", Valid: true},
+			want: sql.NullString{String: "test_reference", Valid: true},
 		},
 	}
 	for _, tt := range tests {

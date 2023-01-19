@@ -344,13 +344,20 @@ func GetAllCompounds() []Compound {
 // Retrieves all compound inchistrings in the database
 func GetAllCompoundInchistrings() []string {
 	db := ConnectDB()
-	var inchistrings []string
+	var inchistrings []sql.NullString
 	query := "SELECT inchistring FROM compound"
 	var err = db.Select(&inchistrings, query)
 	if err != nil {
 		return nil
 	}
-	return inchistrings
+	// Convert sql.NullString to string
+	var returninchistrings []string
+	for _, inchistring := range inchistrings {
+		if inchistring.Valid {
+			returninchistrings = append(returninchistrings, inchistring.String)
+		}
+	}
+	return returninchistrings
 }
 
 // Retrieves all reactions in a metabolic model given model ID
@@ -455,7 +462,7 @@ func GetReactionCatalysts(reactionID string) []string {
 	db := ConnectDB()
 	var catalysts []string
 	query := "SELECT catalysts_ID FROM reaction_catalysts WHERE reaction_ID = ?"
-	var err = db.Get(&catalysts, query, reactionID)
+	var err = db.Select(&catalysts, query, reactionID)
 	if err == sql.ErrNoRows {
 		return nil
 	}
@@ -486,7 +493,7 @@ func GetReactionSolvents(reactionID string) []string {
 	db := ConnectDB()
 	var solvent []string
 	query := "SELECT solvents_ID FROM reaction_solvents WHERE reaction_ID = ?"
-	var err = db.Get(&solvent, query, reactionID)
+	var err = db.Select(&solvent, query, reactionID)
 	if err == sql.ErrNoRows {
 		return nil
 	}
