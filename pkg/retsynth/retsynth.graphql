@@ -56,8 +56,8 @@ extend type Query {
   compoundCASNumbers: [String]
   compoundCASNumber(compoundID: String): String
   compoundIDByFormula(formula: String): [String]
-  compoundNameBySearchTerm(searchTerm: String): [String]
-  modedIDByFileName(fileName: String): String
+  compoundCompoundsBySearchTerm(searchTerm: String): [Compound]
+  modedByFileName(fileName: String): [Model]
 
   fbaModelIDs: [String]
 

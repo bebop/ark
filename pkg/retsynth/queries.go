@@ -715,6 +715,28 @@ func GetCASNumber(compoundID string) sql.NullString {
 	return sql.NullString{String: casNumber, Valid: true}
 }
 
+// Retrieves all casnumbers
+func GetAllCASNumbers() []string {
+	db := ConnectDB()
+	var casNumbers []sql.NullString
+	query := "SELECT casnumber FROM compound"
+	var err = db.Select(&casNumbers, query)
+	if err == sql.ErrNoRows {
+		return nil
+	}
+	if err != nil {
+		panic(err)
+	}
+	// Convert sql.NullString to string
+	var returnCASNumbers []string
+	for _, casNumber := range casNumbers {
+		if casNumber.Valid {
+			returnCASNumbers = append(returnCASNumbers, casNumber.String)
+		}
+	}
+	return returnCASNumbers
+}
+
 // Retrieves compound IDs for Chemical formula
 func GetCompoundIDByFormula(formula string) []string {
 	db := ConnectDB()

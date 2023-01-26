@@ -97,60 +97,60 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		AllModelIDs                 func(childComplexity int) int
-		ChemicalFormula             func(childComplexity int, compoundID *string) int
-		ChemicalFormulas            func(childComplexity int) int
-		CompartmentID               func(childComplexity int, compartmentName *string) int
-		CompoundCASNumber           func(childComplexity int, compoundID *string) int
-		CompoundCASNumbers          func(childComplexity int) int
-		CompoundCompartment         func(childComplexity int, compoundID *string) int
-		CompoundID                  func(childComplexity int, compoundName *string) int
-		CompoundIDByFormula         func(childComplexity int, formula *string) int
-		CompoundIDFromInchi         func(childComplexity int, inchi *string) int
-		CompoundIDs                 func(childComplexity int) int
-		CompoundInchi               func(childComplexity int, compoundID *string) int
-		CompoundInchiStrings        func(childComplexity int) int
-		CompoundKEGGIDs             func(childComplexity int) int
-		CompoundKeggid              func(childComplexity int, compoundID *string) int
-		CompoundName                func(childComplexity int, compoundID *string) int
-		CompoundNameBySearchTerm    func(childComplexity int, searchTerm *string) int
-		CompoundNameFromInchi       func(childComplexity int, inchi *string) int
-		Compounds                   func(childComplexity int) int
-		FbaModelIDs                 func(childComplexity int) int
-		GetReactionsWithProduct     func(childComplexity int, compoundID *string) int
-		LikeCompoundID              func(childComplexity int, compoundName *string) int
-		ModedIDByFileName           func(childComplexity int, fileName *string) int
-		ModelCompounds              func(childComplexity int, modelID *string) int
-		ModelIDsFromCluster         func(childComplexity int, cluster *string) int
-		ModelReactions              func(childComplexity int, modelID *string) int
-		OrganismID                  func(childComplexity int, organismName *string) int
-		OrganismName                func(childComplexity int, organismID *string) int
-		Organisms                   func(childComplexity int) int
-		ReactantCompoundIDs         func(childComplexity int, reactionID *string) int
-		ReactionByType              func(childComplexity int, reactionType *string) int
-		ReactionCatalysts           func(childComplexity int, reactionID *string) int
-		ReactionGeneAssociations    func(childComplexity int, reactionID *string, modelID *string) int
-		ReactionID                  func(childComplexity int, reactionName *string) int
-		ReactionIDs                 func(childComplexity int) int
-		ReactionIDsFromCompound     func(childComplexity int, compoundID *string, isProduct *bool) int
-		ReactionKEGGIDs             func(childComplexity int) int
-		ReactionKeggid              func(childComplexity int, reactionID *string) int
-		ReactionName                func(childComplexity int, reactionID *string) int
-		ReactionPressure            func(childComplexity int, reactionID *string) int
-		ReactionProteinAssociations func(childComplexity int, reactionID *string, modelID *string) int
-		ReactionReference           func(childComplexity int, reactionID *string) int
-		ReactionReversibility       func(childComplexity int, reactionID *string, modelID *string) int
-		ReactionReversibilityGlobal func(childComplexity int, reactionID *string) int
-		ReactionSolvents            func(childComplexity int, reactionID *string) int
-		ReactionSpecies             func(childComplexity int, reactionID *string) int
-		ReactionTemperature         func(childComplexity int, reactionID *string) int
-		ReactionTime                func(childComplexity int, reactionID *string) int
-		ReactionType                func(childComplexity int, reactionID *string) int
-		ReactionYield               func(childComplexity int, reactionID *string) int
-		SearchCompounds             func(childComplexity int, searchTerm *string) int
-		SearchOrganisms             func(childComplexity int, searchTerm *string) int
-		Stoichiometry               func(childComplexity int, reactionID *string, compoundID *string, isProduct *bool) int
-		UniqueMetabolicClusters     func(childComplexity int) int
+		AllModelIDs                   func(childComplexity int) int
+		ChemicalFormula               func(childComplexity int, compoundID *string) int
+		ChemicalFormulas              func(childComplexity int) int
+		CompartmentID                 func(childComplexity int, compartmentName *string) int
+		CompoundCASNumber             func(childComplexity int, compoundID *string) int
+		CompoundCASNumbers            func(childComplexity int) int
+		CompoundCompartment           func(childComplexity int, compoundID *string) int
+		CompoundCompoundsBySearchTerm func(childComplexity int, searchTerm *string) int
+		CompoundID                    func(childComplexity int, compoundName *string) int
+		CompoundIDByFormula           func(childComplexity int, formula *string) int
+		CompoundIDFromInchi           func(childComplexity int, inchi *string) int
+		CompoundIDs                   func(childComplexity int) int
+		CompoundInchi                 func(childComplexity int, compoundID *string) int
+		CompoundInchiStrings          func(childComplexity int) int
+		CompoundKEGGIDs               func(childComplexity int) int
+		CompoundKeggid                func(childComplexity int, compoundID *string) int
+		CompoundName                  func(childComplexity int, compoundID *string) int
+		CompoundNameFromInchi         func(childComplexity int, inchi *string) int
+		Compounds                     func(childComplexity int) int
+		FbaModelIDs                   func(childComplexity int) int
+		GetReactionsWithProduct       func(childComplexity int, compoundID *string) int
+		LikeCompoundID                func(childComplexity int, compoundName *string) int
+		ModedByFileName               func(childComplexity int, fileName *string) int
+		ModelCompounds                func(childComplexity int, modelID *string) int
+		ModelIDsFromCluster           func(childComplexity int, cluster *string) int
+		ModelReactions                func(childComplexity int, modelID *string) int
+		OrganismID                    func(childComplexity int, organismName *string) int
+		OrganismName                  func(childComplexity int, organismID *string) int
+		Organisms                     func(childComplexity int) int
+		ReactantCompoundIDs           func(childComplexity int, reactionID *string) int
+		ReactionByType                func(childComplexity int, reactionType *string) int
+		ReactionCatalysts             func(childComplexity int, reactionID *string) int
+		ReactionGeneAssociations      func(childComplexity int, reactionID *string, modelID *string) int
+		ReactionID                    func(childComplexity int, reactionName *string) int
+		ReactionIDs                   func(childComplexity int) int
+		ReactionIDsFromCompound       func(childComplexity int, compoundID *string, isProduct *bool) int
+		ReactionKEGGIDs               func(childComplexity int) int
+		ReactionKeggid                func(childComplexity int, reactionID *string) int
+		ReactionName                  func(childComplexity int, reactionID *string) int
+		ReactionPressure              func(childComplexity int, reactionID *string) int
+		ReactionProteinAssociations   func(childComplexity int, reactionID *string, modelID *string) int
+		ReactionReference             func(childComplexity int, reactionID *string) int
+		ReactionReversibility         func(childComplexity int, reactionID *string, modelID *string) int
+		ReactionReversibilityGlobal   func(childComplexity int, reactionID *string) int
+		ReactionSolvents              func(childComplexity int, reactionID *string) int
+		ReactionSpecies               func(childComplexity int, reactionID *string) int
+		ReactionTemperature           func(childComplexity int, reactionID *string) int
+		ReactionTime                  func(childComplexity int, reactionID *string) int
+		ReactionType                  func(childComplexity int, reactionID *string) int
+		ReactionYield                 func(childComplexity int, reactionID *string) int
+		SearchCompounds               func(childComplexity int, searchTerm *string) int
+		SearchOrganisms               func(childComplexity int, searchTerm *string) int
+		Stoichiometry                 func(childComplexity int, reactionID *string, compoundID *string, isProduct *bool) int
+		UniqueMetabolicClusters       func(childComplexity int) int
 	}
 
 	Reaction struct {
@@ -241,8 +241,8 @@ type QueryResolver interface {
 	CompoundCASNumbers(ctx context.Context) ([]*string, error)
 	CompoundCASNumber(ctx context.Context, compoundID *string) (*string, error)
 	CompoundIDByFormula(ctx context.Context, formula *string) ([]*string, error)
-	CompoundNameBySearchTerm(ctx context.Context, searchTerm *string) ([]*string, error)
-	ModedIDByFileName(ctx context.Context, fileName *string) (*string, error)
+	CompoundCompoundsBySearchTerm(ctx context.Context, searchTerm *string) ([]*retsynth.Compound, error)
+	ModedByFileName(ctx context.Context, fileName *string) ([]*retsynth.Model, error)
 	FbaModelIDs(ctx context.Context) ([]*string, error)
 }
 
@@ -512,6 +512,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.CompoundCompartment(childComplexity, args["compoundID"].(*string)), true
 
+	case "Query.compoundCompoundsBySearchTerm":
+		if e.complexity.Query.CompoundCompoundsBySearchTerm == nil {
+			break
+		}
+
+		args, err := ec.field_Query_compoundCompoundsBySearchTerm_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.CompoundCompoundsBySearchTerm(childComplexity, args["searchTerm"].(*string)), true
+
 	case "Query.compoundID":
 		if e.complexity.Query.CompoundID == nil {
 			break
@@ -605,18 +617,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.CompoundName(childComplexity, args["compoundID"].(*string)), true
 
-	case "Query.compoundNameBySearchTerm":
-		if e.complexity.Query.CompoundNameBySearchTerm == nil {
-			break
-		}
-
-		args, err := ec.field_Query_compoundNameBySearchTerm_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.CompoundNameBySearchTerm(childComplexity, args["searchTerm"].(*string)), true
-
 	case "Query.compoundNameFromInchi":
 		if e.complexity.Query.CompoundNameFromInchi == nil {
 			break
@@ -667,17 +667,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.LikeCompoundID(childComplexity, args["compoundName"].(*string)), true
 
-	case "Query.modedIDByFileName":
-		if e.complexity.Query.ModedIDByFileName == nil {
+	case "Query.modedByFileName":
+		if e.complexity.Query.ModedByFileName == nil {
 			break
 		}
 
-		args, err := ec.field_Query_modedIDByFileName_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_modedByFileName_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.ModedIDByFileName(childComplexity, args["fileName"].(*string)), true
+		return e.complexity.Query.ModedByFileName(childComplexity, args["fileName"].(*string)), true
 
 	case "Query.modelCompounds":
 		if e.complexity.Query.ModelCompounds == nil {
@@ -1258,8 +1258,8 @@ var sources = []*ast.Source{
   compoundCASNumbers: [String]
   compoundCASNumber(compoundID: String): String
   compoundIDByFormula(formula: String): [String]
-  compoundNameBySearchTerm(searchTerm: String): [String]
-  modedIDByFileName(fileName: String): String
+  compoundCompoundsBySearchTerm(searchTerm: String): [Compound]
+  modedByFileName(fileName: String): [Model]
 
   fbaModelIDs: [String]
 
@@ -1347,6 +1347,21 @@ func (ec *executionContext) field_Query_compoundCompartment_args(ctx context.Con
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_compoundCompoundsBySearchTerm_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["searchTerm"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("searchTerm"))
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["searchTerm"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_compoundIDByFormula_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1422,21 +1437,6 @@ func (ec *executionContext) field_Query_compoundKEGGID_args(ctx context.Context,
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_compoundNameBySearchTerm_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *string
-	if tmp, ok := rawArgs["searchTerm"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("searchTerm"))
-		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["searchTerm"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Query_compoundNameFromInchi_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1497,7 +1497,7 @@ func (ec *executionContext) field_Query_likeCompoundID_args(ctx context.Context,
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_modedIDByFileName_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_modedByFileName_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *string
@@ -5728,8 +5728,8 @@ func (ec *executionContext) fieldContext_Query_compoundIDByFormula(ctx context.C
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_compoundNameBySearchTerm(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_compoundNameBySearchTerm(ctx, field)
+func (ec *executionContext) _Query_compoundCompoundsBySearchTerm(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_compoundCompoundsBySearchTerm(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -5742,7 +5742,7 @@ func (ec *executionContext) _Query_compoundNameBySearchTerm(ctx context.Context,
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CompoundNameBySearchTerm(rctx, fc.Args["searchTerm"].(*string))
+		return ec.resolvers.Query().CompoundCompoundsBySearchTerm(rctx, fc.Args["searchTerm"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5751,19 +5751,35 @@ func (ec *executionContext) _Query_compoundNameBySearchTerm(ctx context.Context,
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*string)
+	res := resTmp.([]*retsynth.Compound)
 	fc.Result = res
-	return ec.marshalOString2ᚕᚖstring(ctx, field.Selections, res)
+	return ec.marshalOCompound2ᚕᚖgithubᚗcomᚋTimothyStilesᚋallbaseᚋpkgᚋretsynthᚐCompound(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_compoundNameBySearchTerm(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_compoundCompoundsBySearchTerm(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "ID":
+				return ec.fieldContext_Compound_ID(ctx, field)
+			case "Name":
+				return ec.fieldContext_Compound_Name(ctx, field)
+			case "Compartment":
+				return ec.fieldContext_Compound_Compartment(ctx, field)
+			case "KeggID":
+				return ec.fieldContext_Compound_KeggID(ctx, field)
+			case "ChemicalFormula":
+				return ec.fieldContext_Compound_ChemicalFormula(ctx, field)
+			case "InchiString":
+				return ec.fieldContext_Compound_InchiString(ctx, field)
+			case "CASNumber":
+				return ec.fieldContext_Compound_CASNumber(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Compound", field.Name)
 		},
 	}
 	defer func() {
@@ -5773,15 +5789,15 @@ func (ec *executionContext) fieldContext_Query_compoundNameBySearchTerm(ctx cont
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_compoundNameBySearchTerm_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_compoundCompoundsBySearchTerm_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_modedIDByFileName(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_modedIDByFileName(ctx, field)
+func (ec *executionContext) _Query_modedByFileName(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_modedByFileName(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -5794,7 +5810,7 @@ func (ec *executionContext) _Query_modedIDByFileName(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ModedIDByFileName(rctx, fc.Args["fileName"].(*string))
+		return ec.resolvers.Query().ModedByFileName(rctx, fc.Args["fileName"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5803,19 +5819,25 @@ func (ec *executionContext) _Query_modedIDByFileName(ctx context.Context, field 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.([]*retsynth.Model)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOModel2ᚕᚖgithubᚗcomᚋTimothyStilesᚋallbaseᚋpkgᚋretsynthᚐModel(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_modedIDByFileName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_modedByFileName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "ID":
+				return ec.fieldContext_Model_ID(ctx, field)
+			case "FileName":
+				return ec.fieldContext_Model_FileName(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Model", field.Name)
 		},
 	}
 	defer func() {
@@ -5825,7 +5847,7 @@ func (ec *executionContext) fieldContext_Query_modedIDByFileName(ctx context.Con
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_modedIDByFileName_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_modedByFileName_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -9910,7 +9932,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "compoundNameBySearchTerm":
+		case "compoundCompoundsBySearchTerm":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -9919,7 +9941,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_compoundNameBySearchTerm(ctx, field)
+				res = ec._Query_compoundCompoundsBySearchTerm(ctx, field)
 				return res
 			}
 
@@ -9930,7 +9952,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "modedIDByFileName":
+		case "modedByFileName":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -9939,7 +9961,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_modedIDByFileName(ctx, field)
+				res = ec._Query_modedByFileName(ctx, field)
 				return res
 			}
 
