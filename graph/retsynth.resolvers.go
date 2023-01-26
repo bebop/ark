@@ -43,67 +43,144 @@ func (r *queryResolver) SearchOrganisms(ctx context.Context, searchTerm *string)
 
 // UniqueMetabolicClusters is the resolver for the uniqueMetabolicClusters field.
 func (r *queryResolver) UniqueMetabolicClusters(ctx context.Context) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: UniqueMetabolicClusters - uniqueMetabolicClusters"))
+	clusters := retsynth.GetUniqueMetabolicClusters()
+	if clusters == nil {
+		return nil, fmt.Errorf("no clusters found")
+	}
+	// Convert the compounds to the graphql return type
+	retclusters := []*string{}
+	for index, _ := range clusters {
+		retclusters = append(retclusters, &clusters[index])
+	}
+	return retclusters, nil
 }
 
 // ModelIDsFromCluster is the resolver for the modelIDsFromCluster field.
 func (r *queryResolver) ModelIDsFromCluster(ctx context.Context, cluster *string) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: ModelIDsFromCluster - modelIDsFromCluster"))
+	modelIDs := retsynth.GetModelIDsFromCluster(*cluster)
+	if modelIDs == nil {
+		return nil, fmt.Errorf("no models found for cluster %s", *cluster)
+	}
+	// Convert the compounds to the graphql return type
+	retmodelIDs := []*string{}
+	for index, _ := range modelIDs {
+		retmodelIDs = append(retmodelIDs, &modelIDs[index])
+	}
+	return retmodelIDs, nil
 }
 
 // AllModelIDs is the resolver for the allModelIDs field.
 func (r *queryResolver) AllModelIDs(ctx context.Context) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: AllModelIDs - allModelIDs"))
+	modelIDs := retsynth.GetAllModelIDs()
+	if modelIDs == nil {
+		return nil, fmt.Errorf("no models found")
+	}
+	// Convert the compounds to the graphql return type
+	retmodelIDs := []*string{}
+	for index, _ := range modelIDs {
+		retmodelIDs = append(retmodelIDs, &modelIDs[index])
+	}
+	return retmodelIDs, nil
 }
 
 // OrganismName is the resolver for the organismName field.
 func (r *queryResolver) OrganismName(ctx context.Context, organismID *string) (*string, error) {
-	panic(fmt.Errorf("not implemented: OrganismName - organismName"))
+	organismname := retsynth.GetOrganismName(*organismID)
+	if organismname.Valid == false {
+		return nil, fmt.Errorf("no organism found for ID %s", *organismID)
+	} else {
+		return &organismname.String, nil
+	}
 }
 
 // OrganismID is the resolver for the organismID field.
 func (r *queryResolver) OrganismID(ctx context.Context, organismName *string) (*string, error) {
-	panic(fmt.Errorf("not implemented: OrganismID - organismID"))
+	organismID := retsynth.GetOrganismID(*organismName)
+	if organismID.Valid == false {
+		return nil, fmt.Errorf("no organism found for name %s", *organismName)
+	} else {
+		return &organismID.String, nil
+	}
 }
 
 // CompoundID is the resolver for the compoundID field.
 func (r *queryResolver) CompoundID(ctx context.Context, compoundName *string) (*string, error) {
-	panic(fmt.Errorf("not implemented: CompoundID - compoundID"))
+	compoundID := retsynth.GetCompoundID(*compoundName)
+	if compoundID.Valid == false {
+		return nil, fmt.Errorf("no compound found for name %s", *compoundName)
+	} else {
+		return &compoundID.String, nil
+	}
 }
 
 // LikeCompoundID is the resolver for the likeCompoundID field.
 func (r *queryResolver) LikeCompoundID(ctx context.Context, compoundName *string) (*string, error) {
-	panic(fmt.Errorf("not implemented: LikeCompoundID - likeCompoundID"))
+	compoundID := retsynth.GetLikeCompoundID(*compoundName)
+	if compoundID.Valid == false {
+		return nil, fmt.Errorf("no compound found for name %s", *compoundName)
+	} else {
+		return &compoundID.String, nil
+	}
 }
 
 // CompoundIDFromInchi is the resolver for the compoundIDFromInchi field.
 func (r *queryResolver) CompoundIDFromInchi(ctx context.Context, inchi *string) (*string, error) {
-	panic(fmt.Errorf("not implemented: CompoundIDFromInchi - compoundIDFromInchi"))
+	compoundID := retsynth.GetCompoundIDFromInchi(*inchi)
+	if compoundID.Valid == false {
+		return nil, fmt.Errorf("no compound found for inchi %s", *inchi)
+	} else {
+		return &compoundID.String, nil
+	}
 }
 
 // CompoundInchi is the resolver for the compoundInchi field.
 func (r *queryResolver) CompoundInchi(ctx context.Context, compoundID *string) (*string, error) {
-	panic(fmt.Errorf("not implemented: CompoundInchi - compoundInchi"))
+	inchi := retsynth.GetCompoundInchi(*compoundID)
+	if inchi.Valid == false {
+		return nil, fmt.Errorf("no compound found for ID %s", *compoundID)
+	} else {
+		return &inchi.String, nil
+	}
 }
 
 // CompoundNameFromInchi is the resolver for the compoundNameFromInchi field.
 func (r *queryResolver) CompoundNameFromInchi(ctx context.Context, inchi *string) (*string, error) {
-	panic(fmt.Errorf("not implemented: CompoundNameFromInchi - compoundNameFromInchi"))
+	compoundName := retsynth.GetCompoundNameFromInchi(*inchi)
+	if compoundName.Valid == false {
+		return nil, fmt.Errorf("no compound found for inchi %s", *inchi)
+	} else {
+		return &compoundName.String, nil
+	}
 }
 
 // CompoundName is the resolver for the compoundName field.
 func (r *queryResolver) CompoundName(ctx context.Context, compoundID *string) (*string, error) {
-	panic(fmt.Errorf("not implemented: CompoundName - compoundName"))
+	compoundName := retsynth.GetCompoundName(*compoundID)
+	if compoundName.Valid == false {
+		return nil, fmt.Errorf("no compound found for ID %s", *compoundID)
+	} else {
+		return &compoundName.String, nil
+	}
 }
 
 // CompoundCompartment is the resolver for the compoundCompartment field.
 func (r *queryResolver) CompoundCompartment(ctx context.Context, compoundID *string) (*string, error) {
-	panic(fmt.Errorf("not implemented: CompoundCompartment - compoundCompartment"))
+	compartment := retsynth.GetCompoundCompartment(*compoundID)
+	if compartment.Valid == false {
+		return nil, fmt.Errorf("no compartment found for compound ID %s", *compoundID)
+	} else {
+		return &compartment.String, nil
+	}
 }
 
 // ReactionName is the resolver for the reactionName field.
 func (r *queryResolver) ReactionName(ctx context.Context, reactionID *string) (*string, error) {
-	panic(fmt.Errorf("not implemented: ReactionName - reactionName"))
+	reactionName := retsynth.GetReactionName(*reactionID)
+	if reactionName.Valid == false {
+		return nil, fmt.Errorf("no reaction found for ID %s", *reactionID)
+	} else {
+		return &reactionName.String, nil
+	}
 }
 
 // ReactionID is the resolver for the reactionID field.
@@ -113,22 +190,55 @@ func (r *queryResolver) ReactionID(ctx context.Context, reactionName *string) (*
 
 // ReactionIDsFromCompound is the resolver for the reactionIDsFromCompound field.
 func (r *queryResolver) ReactionIDsFromCompound(ctx context.Context, compoundID *string, isProduct *bool) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: ReactionIDsFromCompound - reactionIDsFromCompound"))
+	reactionIDs := retsynth.GetReactionIDsFromCompound(*compoundID, *isProduct)
+	if reactionIDs == nil {
+		return nil, fmt.Errorf("no reactions found for ID %s", *compoundID)
+	}
+	retReactionIDs := []*string{}
+	for index, _ := range reactionIDs {
+		retReactionIDs = append(retReactionIDs, &reactionIDs[index])
+	}
+
+	return retReactionIDs, nil
 }
 
 // ReactionSpecies is the resolver for the reactionSpecies field.
 func (r *queryResolver) ReactionSpecies(ctx context.Context, reactionID *string) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: ReactionSpecies - reactionSpecies"))
+	species := retsynth.GetReactionSpecies(*reactionID)
+	if species == nil {
+		return nil, fmt.Errorf("no data found for ID %s", *reactionID)
+	}
+	retspecies := []*string{}
+	for index, _ := range retspecies {
+		retspecies = append(retspecies, &species[index])
+	}
+	return retspecies, nil
 }
 
 // ReactantCompoundIDs is the resolver for the reactantCompoundIDs field.
 func (r *queryResolver) ReactantCompoundIDs(ctx context.Context, reactionID *string) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: ReactantCompoundIDs - reactantCompoundIDs"))
+	compoundIDs := retsynth.GetReactantCompoundIDs(*reactionID)
+	if compoundIDs == nil {
+		return nil, fmt.Errorf("no data found for ID %s", *reactionID)
+	}
+	retCompoundIDs := []*string{}
+	for index, _ := range compoundIDs {
+		retCompoundIDs = append(retCompoundIDs, &compoundIDs[index])
+	}
+	return retCompoundIDs, nil
 }
 
 // GetReactionsWithProduct is the resolver for the getReactionsWithProduct field.
 func (r *queryResolver) GetReactionsWithProduct(ctx context.Context, compoundID *string) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: GetReactionsWithProduct - getReactionsWithProduct"))
+	reactionIDs := retsynth.GetReactionsWithProduct(*compoundID)
+	if reactionIDs == nil {
+		return nil, fmt.Errorf("no data found for ID %s", *compoundID)
+	}
+	retReactionIDs := []*string{}
+	for index, _ := range reactionIDs {
+		retReactionIDs = append(retReactionIDs, &reactionIDs[index])
+	}
+	return retReactionIDs, nil
 }
 
 // ModelCompounds is the resolver for the modelCompounds field.
@@ -138,37 +248,87 @@ func (r *queryResolver) ModelCompounds(ctx context.Context, modelID *string) ([]
 
 // CompoundIDs is the resolver for the compoundIDs field.
 func (r *queryResolver) CompoundIDs(ctx context.Context) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: CompoundIDs - compoundIDs"))
+	compoundIDs := retsynth.GetAllCompoundIDs()
+	if compoundIDs == nil {
+		return nil, fmt.Errorf("no data found")
+	}
+	retCompoundIDs := []*string{}
+	for index, _ := range compoundIDs {
+		retCompoundIDs = append(retCompoundIDs, &compoundIDs[index])
+	}
+	return retCompoundIDs, nil
 }
 
 // CompoundInchiStrings is the resolver for the compoundInchiStrings field.
 func (r *queryResolver) CompoundInchiStrings(ctx context.Context) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: CompoundInchiStrings - compoundInchiStrings"))
+	inchiStrings := retsynth.GetAllCompoundInchiStrings()
+	if inchiStrings == nil {
+		return nil, fmt.Errorf("no reaction found")
+	}
+	retInchiStrings := []*string{}
+	for index, _ := range inchiStrings {
+		retInchiStrings = append(retInchiStrings, &inchiStrings[index])
+	}
+	return retInchiStrings, nil
 }
 
 // ModelReactions is the resolver for the modelReactions field.
 func (r *queryResolver) ModelReactions(ctx context.Context, modelID *string) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: ModelReactions - modelReactions"))
+	reactions := retsynth.GetModelReactions(*modelID)
+	if reactions == nil {
+		return nil, fmt.Errorf("no reaction found for ID %s", *modelID)
+	}
+	retReactions := []*string{}
+	for index, _ := range reactions {
+		retReactions = append(retReactions, &reactions[index])
+	}
+	return retReactions, nil
 }
 
 // ReactionIDs is the resolver for the reactionIDs field.
 func (r *queryResolver) ReactionIDs(ctx context.Context) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: ReactionIDs - reactionIDs"))
+	reactionIDs := retsynth.GetAllReactions()
+	if reactionIDs == nil {
+		return nil, fmt.Errorf("no data found")
+	}
+	retReactionIDs := []*string{}
+	for index, _ := range reactionIDs {
+		retReactionIDs = append(retReactionIDs, &reactionIDs[index])
+	}
+	return retReactionIDs, nil
 }
 
 // ReactionReversibility is the resolver for the reactionReversibility field.
 func (r *queryResolver) ReactionReversibility(ctx context.Context, reactionID *string, modelID *string) (*bool, error) {
-	panic(fmt.Errorf("not implemented: ReactionReversibility - reactionReversibility"))
+	reversibility := retsynth.GetReactionReversibility(*reactionID, *modelID)
+	if reversibility.Valid == false {
+		return nil, fmt.Errorf("no reaction found for ID %s", *reactionID)
+	} else {
+		return &reversibility.Bool, nil
+	}
 }
 
 // ReactionReversibilityGlobal is the resolver for the reactionReversibilityGlobal field.
 func (r *queryResolver) ReactionReversibilityGlobal(ctx context.Context, reactionID *string) (*bool, error) {
-	panic(fmt.Errorf("not implemented: ReactionReversibilityGlobal - reactionReversibilityGlobal"))
+	reversibility := retsynth.GetReactionReversibilityGlobal(*reactionID)
+	if reversibility.Valid == false {
+		return nil, fmt.Errorf("no reaction found for ID %s", *reactionID)
+	} else {
+		return &reversibility.Bool, nil
+	}
 }
 
 // ReactionGeneAssociations is the resolver for the reactionGeneAssociations field.
 func (r *queryResolver) ReactionGeneAssociations(ctx context.Context, reactionID *string, modelID *string) ([]*string, error) {
-	panic(fmt.Errorf("not implemented: ReactionGeneAssociations - reactionGeneAssociations"))
+	associations := retsynth.GetReactionGeneAssociations(*reactionID, *modelID)
+	if associations == nil {
+		return nil, fmt.Errorf("no reaction found for ID %s", *reactionID)
+	}
+	retAssociations := []*string{}
+	for index, _ := range associations {
+		retAssociations = append(retAssociations, &associations[index])
+	}
+	return retAssociations, nil
 }
 
 // ReactionProteinAssociations is the resolver for the reactionProteinAssociations field.

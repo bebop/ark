@@ -860,7 +860,7 @@ func TestGetAllCompoundInchistrings(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetAllCompoundInchistrings(); !sparseEquals(got, tt.want) {
+			if got := GetAllCompoundInchiStrings(); !sparseEquals(got, tt.want) {
 				t.Errorf("GetAllCompoundInchistrings() = %v, want %v", got, tt.want)
 			}
 		})

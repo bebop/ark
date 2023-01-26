@@ -342,7 +342,7 @@ func GetAllCompounds() []Compound {
 }
 
 // Retrieves all compound inchistrings in the database
-func GetAllCompoundInchistrings() []string {
+func GetAllCompoundInchiStrings() []string {
 	db := ConnectDB()
 	var inchistrings []sql.NullString
 	query := "SELECT inchistring FROM compound"
