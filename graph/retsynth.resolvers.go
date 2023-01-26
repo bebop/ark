@@ -20,7 +20,7 @@ func (r *queryResolver) SearchCompounds(ctx context.Context, searchTerm *string)
 	}
 	// Convert the compounds to the graphql return type
 	retcompounds := []*retsynth.Compound{}
-	for index, _ := range compounds {
+	for index := range compounds {
 		retcompounds = append(retcompounds, &compounds[index])
 	}
 	return retcompounds, nil
@@ -35,7 +35,7 @@ func (r *queryResolver) SearchOrganisms(ctx context.Context, searchTerm *string)
 	}
 	// Convert the compounds to the graphql return type
 	retorganisms := []*retsynth.Model{}
-	for index, _ := range organisms {
+	for index := range organisms {
 		retorganisms = append(retorganisms, &organisms[index])
 	}
 	return retorganisms, nil
@@ -49,7 +49,7 @@ func (r *queryResolver) UniqueMetabolicClusters(ctx context.Context) ([]*string,
 	}
 	// Convert the compounds to the graphql return type
 	retclusters := []*string{}
-	for index, _ := range clusters {
+	for index := range clusters {
 		retclusters = append(retclusters, &clusters[index])
 	}
 	return retclusters, nil
@@ -63,7 +63,7 @@ func (r *queryResolver) ModelIDsFromCluster(ctx context.Context, cluster *string
 	}
 	// Convert the compounds to the graphql return type
 	retmodelIDs := []*string{}
-	for index, _ := range modelIDs {
+	for index := range modelIDs {
 		retmodelIDs = append(retmodelIDs, &modelIDs[index])
 	}
 	return retmodelIDs, nil
@@ -77,7 +77,7 @@ func (r *queryResolver) AllModelIDs(ctx context.Context) ([]*string, error) {
 	}
 	// Convert the compounds to the graphql return type
 	retmodelIDs := []*string{}
-	for index, _ := range modelIDs {
+	for index := range modelIDs {
 		retmodelIDs = append(retmodelIDs, &modelIDs[index])
 	}
 	return retmodelIDs, nil
@@ -195,7 +195,7 @@ func (r *queryResolver) ReactionIDsFromCompound(ctx context.Context, compoundID 
 		return nil, fmt.Errorf("no reactions found for ID %s", *compoundID)
 	}
 	retReactionIDs := []*string{}
-	for index, _ := range reactionIDs {
+	for index := range reactionIDs {
 		retReactionIDs = append(retReactionIDs, &reactionIDs[index])
 	}
 
@@ -209,7 +209,7 @@ func (r *queryResolver) ReactionSpecies(ctx context.Context, reactionID *string)
 		return nil, fmt.Errorf("no data found for ID %s", *reactionID)
 	}
 	retspecies := []*string{}
-	for index, _ := range retspecies {
+	for index := range retspecies {
 		retspecies = append(retspecies, &species[index])
 	}
 	return retspecies, nil
@@ -222,7 +222,7 @@ func (r *queryResolver) ReactantCompoundIDs(ctx context.Context, reactionID *str
 		return nil, fmt.Errorf("no data found for ID %s", *reactionID)
 	}
 	retCompoundIDs := []*string{}
-	for index, _ := range compoundIDs {
+	for index := range compoundIDs {
 		retCompoundIDs = append(retCompoundIDs, &compoundIDs[index])
 	}
 	return retCompoundIDs, nil
@@ -235,7 +235,7 @@ func (r *queryResolver) GetReactionsWithProduct(ctx context.Context, compoundID 
 		return nil, fmt.Errorf("no data found for ID %s", *compoundID)
 	}
 	retReactionIDs := []*string{}
-	for index, _ := range reactionIDs {
+	for index := range reactionIDs {
 		retReactionIDs = append(retReactionIDs, &reactionIDs[index])
 	}
 	return retReactionIDs, nil
@@ -253,7 +253,7 @@ func (r *queryResolver) CompoundIDs(ctx context.Context) ([]*string, error) {
 		return nil, fmt.Errorf("no data found")
 	}
 	retCompoundIDs := []*string{}
-	for index, _ := range compoundIDs {
+	for index := range compoundIDs {
 		retCompoundIDs = append(retCompoundIDs, &compoundIDs[index])
 	}
 	return retCompoundIDs, nil
@@ -266,7 +266,7 @@ func (r *queryResolver) CompoundInchiStrings(ctx context.Context) ([]*string, er
 		return nil, fmt.Errorf("no reaction found")
 	}
 	retInchiStrings := []*string{}
-	for index, _ := range inchiStrings {
+	for index := range inchiStrings {
 		retInchiStrings = append(retInchiStrings, &inchiStrings[index])
 	}
 	return retInchiStrings, nil
@@ -279,7 +279,7 @@ func (r *queryResolver) ModelReactions(ctx context.Context, modelID *string) ([]
 		return nil, fmt.Errorf("no reaction found for ID %s", *modelID)
 	}
 	retReactions := []*string{}
-	for index, _ := range reactions {
+	for index := range reactions {
 		retReactions = append(retReactions, &reactions[index])
 	}
 	return retReactions, nil
@@ -292,7 +292,7 @@ func (r *queryResolver) ReactionIDs(ctx context.Context) ([]*string, error) {
 		return nil, fmt.Errorf("no data found")
 	}
 	retReactionIDs := []*string{}
-	for index, _ := range reactionIDs {
+	for index := range reactionIDs {
 		retReactionIDs = append(retReactionIDs, &reactionIDs[index])
 	}
 	return retReactionIDs, nil
@@ -325,7 +325,7 @@ func (r *queryResolver) ReactionGeneAssociations(ctx context.Context, reactionID
 		return nil, fmt.Errorf("no reaction found for ID %s", *reactionID)
 	}
 	retAssociations := []*string{}
-	for index, _ := range associations {
+	for index := range associations {
 		retAssociations = append(retAssociations, &associations[index])
 	}
 	return retAssociations, nil
