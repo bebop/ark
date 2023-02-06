@@ -10,8 +10,8 @@ type Model struct {
 
 // FBA Models is a struct that contains the information about a Flux Balanance Analysis model
 type FBAModel struct {
-	ID       string `db:"ID" json:"ID"` //ID is the FBA model ID
-	FileName string `db:"file_name" json:"file_name"`
+	ID       string `db:"ID" json:"ID"`               //ID is the FBA model ID
+	FileName string `db:"file_name" json:"file_name"` //FileName is the name of the FBA model file
 }
 
 // Compounds is a struct that contains the information about a compound
