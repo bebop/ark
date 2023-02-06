@@ -1,5 +1,8 @@
 package main
 
 func main() {
-	// cmd.Execute()
+
+	// Setup Command Line System to have different options
+	StartGraphQLServer()
+
 }
