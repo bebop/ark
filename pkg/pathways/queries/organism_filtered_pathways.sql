@@ -22,7 +22,7 @@ WHERE g.accession = ? -- organism param
 -- sometimes only these parent reaction have an associated enzyme. 
 -- modified to r.id + 1 so that it can match items within the stitch cte 
  
- -- formats the allbase tables in a conenient way to see reaction participants, ids, names
+ -- formats the ark tables in a conenient way to see reaction participants, ids, names
  stitch as ( 
  select a.accession, a.id as rxn_id,
 		b.reactionside,

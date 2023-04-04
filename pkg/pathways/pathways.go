@@ -12,7 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-//Reads and loads SQL files as string
+// Reads and loads SQL files as string
 func LoadSQLFile(path string) (string, error) {
 	realpath, err := filepath.Abs(path)
 	if err != nil {
@@ -25,18 +25,18 @@ func LoadSQLFile(path string) (string, error) {
 	return string(stuff), err
 }
 
-//Easy database connector
+// Easy database connector
 func ConnectDB() (*sqlx.DB, error) {
 	var db *sqlx.DB
 	var err error
-	db, err = sqlx.Connect("sqlite3", "./allbasetest.db")
+	db, err = sqlx.Connect("sqlite3", "./arktest.db")
 	if err != nil {
 		return db, err
 	}
 	return db, err
 }
 
-//Gets id from compound name if it exists in allbase
+// Gets id from compound name if it exists in ark
 func NameToId(name string) (int, error) {
 	db, err := ConnectDB()
 	if err != nil {
@@ -90,7 +90,7 @@ func GetTotalPathways(target_molecule string, levels int) ([]pathdata, error) {
 	return result, err
 }
 
-//GetTotalPathways but limited to a single organism
+// GetTotalPathways but limited to a single organism
 func OrganismFilteredPathways(GBOrganism string, target_molecule string, levels int) ([]pathdata, error) {
 	query, err := LoadSQLFile("./queries/organism_filtered_pathways.sql")
 	if err != nil {
@@ -114,7 +114,7 @@ func OrganismFilteredPathways(GBOrganism string, target_molecule string, levels 
 }
 
 /*
-Input is pathway data from OrganismFilteredPathways or GetTotalPathways (if Genbank/Uniprot are complete in allbase)
+Input is pathway data from OrganismFilteredPathways or GetTotalPathways (if Genbank/Uniprot are complete in ark)
 and the pathway depth (levels) you want
 Returns a map:
 key = compound path, e.g. "XMP->guanine", which ignores the intermediary steps

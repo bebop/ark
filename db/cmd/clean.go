@@ -11,6 +11,6 @@ var cleanCmd = &cobra.Command{
 	Short: "Clean up the project",
 	Long:  "Clean up the project",
 	Run: func(cmd *cobra.Command, args []string) {
-		os.Remove("allbase.db")
+		os.Remove("ark.db")
 	},
 }

@@ -2,4 +2,4 @@
 # sqlite3 is being run can change.
 # For example generation time and model test time.
 [sqlite3]
-dbname = "/Users/timothystiles/git/allbase/data/allbase.db"
+dbname = "/Users/timothystiles/git/ark/data/ark.db"

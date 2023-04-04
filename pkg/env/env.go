@@ -13,16 +13,16 @@ func RootPath() string {
 	dir := filepath.Join("/", path.Dir(runfile))
 
 	splitPath := strings.Split(dir, "/")
-	var lastAllBaseIndex int
+	var lastarkIndex int
 
-	// get last slice element equal to "allbase" of splitPath
+	// get last slice element equal to "ark" of splitPath
 	for index, substring := range splitPath {
-		if substring == "allbase" {
-			lastAllBaseIndex = index
+		if substring == "ark" {
+			lastarkIndex = index
 		}
 	}
 
-	splitRootPath := splitPath[:lastAllBaseIndex+1]
+	splitRootPath := splitPath[:lastarkIndex+1]
 	rootPathWithoutSlash := filepath.Join(splitRootPath...)
 	rootPath := path.Join("/", rootPathWithoutSlash)
 

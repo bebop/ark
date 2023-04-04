@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/TimothyStiles/allbase/pkg/config"
-	"github.com/TimothyStiles/allbase/schema"
+	"github.com/TimothyStiles/ark/pkg/config"
+	"github.com/TimothyStiles/ark/schema"
 	"github.com/jmoiron/sqlx"
 	_ "modernc.org/sqlite"
 )
@@ -23,14 +23,14 @@ func TestRhea(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpDataDir)
 
-	tmpConfig.AllbasePath = filepath.Join(tmpDataDir, "rheaTest.db")
+	tmpConfig.arkPath = filepath.Join(tmpDataDir, "rheaTest.db")
 
 	//create test database
 	err = schema.CreateDatabase(tmpConfig)
 
-	db, err := sqlx.Open("sqlite", tmpConfig.AllbasePath)
+	db, err := sqlx.Open("sqlite", tmpConfig.arkPath)
 	if err != nil {
-		log.Fatalf("Failed to open sqlite in allbase.db: %s", err)
+		log.Fatalf("Failed to open sqlite in ark.db: %s", err)
 	}
 
 	type args struct {

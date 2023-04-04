@@ -1,6 +1,6 @@
 package download
 
-//Rhea downloads all required files for allbase from the Rhea database.
+// Rhea downloads all required files for ark from the Rhea database.
 func Rhea(writePath string) {
 	go File("https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz", writePath)
 

@@ -1,17 +1,16 @@
 package cmd
 
 import (
-	"github.com/TimothyStiles/allbase/pkg/download"
 	"github.com/spf13/cobra"
 )
 
 /******************************************************************************
-Allbase needs an easy and reproducible way to grab all of the data it uses.
+ark needs an easy and reproducible way to grab all of the data it uses.
 Some people would try to download everything manually with wget or curl but
 that's bonkers and I'm not maintaining that. Instead I've made a multi-threaded webscraper.
 
 To be honest most of you reading this will probably just want to use the build
-command which will download AND insert all of the data into allbase for you
+command which will download AND insert all of the data into ark for you
 without any intermediary files but I'm leaving this here for the time being until
 the build command is implemented.
 
@@ -38,8 +37,8 @@ Tim
 var downloadCmd = &cobra.Command{
 	Use:   "download",
 	Short: "Download data for standard deploy build. Run at your own risk.",
-	Long:  "Download literally downloads all the base data needed to build a standard allbase deployment the amount of data is dummy high to casually test on your personal machine. Run at your own risk.",
+	Long:  "Download literally downloads all the base data needed to build a standard ark deployment the amount of data is dummy high to casually test on your personal machine. Run at your own risk.",
 	Run: func(cmd *cobra.Command, args []string) {
-		download.Allbase()
+		download.ark()
 	},
 }

@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/TimothyStiles/allbase/pkg/config"
+	"github.com/TimothyStiles/ark/pkg/config"
 	"github.com/jmoiron/sqlx"
 
 	//"github.com/minio/minio-go/v7"
@@ -29,14 +29,14 @@ var db *sqlx.DB
 
 func TestCreateDatabase(t *testing.T) {
 	tmpDataDir, err := ioutil.TempDir("", "data-*")
-	tmpAllbaseConfig := config.DevDefault()
-	tmpAllbaseConfig.AllbasePath = filepath.Join(tmpDataDir, "test.db")
+	tmparkConfig := config.DevDefault()
+	tmparkConfig.arkPath = filepath.Join(tmpDataDir, "test.db")
 	if err != nil {
 		t.Errorf("Failed to create temporary data directory")
 	}
 	defer os.RemoveAll(tmpDataDir)
 
-	err = CreateDatabase(tmpAllbaseConfig)
+	err = CreateDatabase(tmparkConfig)
 
 	if err != nil {
 		log.Fatalf("Failed on error during database creation: %s", err)

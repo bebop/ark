@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/TimothyStiles/allbase/pkg/config"
+	"github.com/TimothyStiles/ark/pkg/config"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
 
@@ -17,7 +17,7 @@ func CreateDatabase(config config.Config) error {
 
 	// Begin SQLite
 	log.Println("Creating database...")
-	db, err := sqlx.Open("sqlite", config.AllbasePath)
+	db, err := sqlx.Open("sqlite", config.arkPath)
 
 	if err != nil {
 		log.Fatalf("Failed to open sqlite database: %s", err)
@@ -41,7 +41,7 @@ func CreateDatabase(config config.Config) error {
 		log.Fatalf("Failed to execute schema: %s", err)
 	}
 
-	err = chemblAttach(db, config.AllbasePath)
+	err = chemblAttach(db, config.arkPath)
 	if err != nil {
 		log.Fatalf("Failed to attach chembl with error %s", err)
 	}
@@ -83,15 +83,15 @@ func CreateSchema() string {
 		REACTION                       = "reaction"
 		REACTIONSIDE                   = "reactionside"
 		UNIPROT                        = "uniprot"
-		ALLBASEDOT                     = ""
-		ALLBASE                        = "allbase"
+		arkDOT                         = ""
+		ark                            = "ark"
 	)
 
 	// each built string will be appended to this slice and returned at the end of the function
 	var tableStringSlice []string
 
-	// // create the allbase database itself
-	// databaseDeclaration := "CREATE DATABASE " + ALLBASE
+	// // create the ark database itself
+	// databaseDeclaration := "CREATE DATABASE " + ark
 	// tableStringSlice = append(tableStringSlice, databaseDeclaration)
 
 	// create seqhash table

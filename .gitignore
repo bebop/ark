@@ -1,4 +1,4 @@
-allbase.db
+ark.db
 .DS_Store
 data/rhea.rdf.gz
 cmd/main

@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/TimothyStiles/allbase/pkg/config"
+	"github.com/TimothyStiles/ark/pkg/config"
 	_ "github.com/mattn/go-sqlite3"
 )
 

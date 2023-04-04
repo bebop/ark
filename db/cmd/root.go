@@ -16,9 +16,9 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "allbase",
-	Short: "allbase is dummy fast database for engineering organisms.",
-	Long:  `allbase is a dummy fast database for engineering organisms. Cross reference genbank, uniprot, chembl, and rhea and get you some JSON.`,
+	Use:   "ark",
+	Short: "ark is dummy fast database for engineering organisms.",
+	Long:  `ark is a dummy fast database for engineering organisms. Cross reference genbank, uniprot, chembl, and rhea and get you some JSON.`,
 }
 
 func Execute() {

@@ -1,11 +1,11 @@
 # Introduction
 
-Yo, what up! if you're reading this then I'm super psyched because that means that you're thinking about contributing to Allbase! Thanks so much for your time and consideration. It's rad people like you that make Allbase such a cool computational synthetic biology tool.
+Yo, what up! if you're reading this then I'm super psyched because that means that you're thinking about contributing to ark! Thanks so much for your time and consideration. It's rad people like you that make ark such a cool computational synthetic biology tool.
 
 I wrote this contributor's guide to help newcomers feel welcome. Getting started with a new project can be complicated and I wanted to make it as easy as possible for you to contribute and as easy as possible for me to help.
 
 Currently any sincere pull request is a good request.
-Allbase is still in pre-release so there are so many way to contribute!
+ark is still in pre-release so there are so many way to contribute!
 Here's a list of ideas but feel free to suggest anything I may have forgotten to include.
 
 * Feature requests - especially cool new algorithms with citations.
@@ -17,7 +17,7 @@ Here's a list of ideas but feel free to suggest anything I may have forgotten to
 * Bug triaging.
 * Community management.
 * Art! Dreams! Your excellence!
-* Code that can be pulled into Allbase itself.
+* Code that can be pulled into ark itself.
 
 # Contributor guidelines
 ### Excellence, and the contributor's code of conduct
@@ -32,11 +32,11 @@ First up, most importantly we have a contributor's code of conduct. For some rea
 
 ### Do-ocracy
 
-Allbase runs on do-ocracy. Do-ocracy is a simple concept. If you don't like something you don't need permission to fix it, you can just go ahead and fix it! If you actually want to merge your fix, or contribute in someway that benefits everybody, it'd really, really, really help if you got some light consensus from the rest of the Allbase development community but hey, if you really need to do something then you just gotta do it! Just don't expect me to merge it if it doesn't meet our technical criteria or isn't quite right for Allbase.
+ark runs on do-ocracy. Do-ocracy is a simple concept. If you don't like something you don't need permission to fix it, you can just go ahead and fix it! If you actually want to merge your fix, or contribute in someway that benefits everybody, it'd really, really, really help if you got some light consensus from the rest of the ark development community but hey, if you really need to do something then you just gotta do it! Just don't expect me to merge it if it doesn't meet our technical criteria or isn't quite right for ark.
 
 ### Technical requirements
 
-Part of what makes Allbase so special is that we have standards. DNA is already spaghetti code on its own and we just don't need to add to that.
+Part of what makes ark so special is that we have standards. DNA is already spaghetti code on its own and we just don't need to add to that.
 
 All successfully merged pull requests must meet the following criteria: 
 
@@ -54,19 +54,19 @@ Don't worry if you submit a pull request and all the tests break and the code is
 
 ### Be welcoming
 
-As one final guideline please be welcoming to newcomers and encourage new contributors from all walks of life. I want Allbase to be for everyone and that includes you and people who don't look, sound, or act like you!
+As one final guideline please be welcoming to newcomers and encourage new contributors from all walks of life. I want ark to be for everyone and that includes you and people who don't look, sound, or act like you!
 
 # Your first contribution
 
-Unsure where to begin contributing to Allbase? You can start by looking through these beginner and help-wanted issues:
+Unsure where to begin contributing to ark? You can start by looking through these beginner and help-wanted issues:
 
-[Beginner issues](https://github.com/TimothyStiles/allbase/issues?q=is%3Aissue+is%3Aopen+label%3A%22beginner%22+) - issues which should only require a few lines of code, and a test or two.
+[Beginner issues](https://github.com/TimothyStiles/ark/issues?q=is%3Aissue+is%3Aopen+label%3A%22beginner%22+) - issues which should only require a few lines of code, and a test or two.
 
-[Good first issues](https://github.com/TimothyStiles/allbase/contribute) - issues which are good for first time contributors.
+[Good first issues](https://github.com/TimothyStiles/ark/contribute) - issues which are good for first time contributors.
 
-[Help wanted issues](https://github.com/TimothyStiles/allbase/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22+) - issues which should be a bit more involved than beginner issues.
+[Help wanted issues](https://github.com/TimothyStiles/ark/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22+) - issues which should be a bit more involved than beginner issues.
 
-[Feature requests](https://github.com/TimothyStiles/allbase/labels/enhancement) - before requesting a new feature search through previous feature requests to see if it's already been requested. If not then feel free to submit a request and tag it with the enhancement tag!
+[Feature requests](https://github.com/TimothyStiles/ark/labels/enhancement) - before requesting a new feature search through previous feature requests to see if it's already been requested. If not then feel free to submit a request and tag it with the enhancement tag!
 
 ### Working on your first Pull Request? 
 
@@ -87,11 +87,11 @@ For something that is bigger than a one or two line fix:
 
 ## Virtual Environments and Development Containers 
 
-In order to simplify the development experience, and environment setup, the allbase Github repository comes packaged to support *Github CodeSpaces* and [*VSCode Development Containers*](https://code.visualstudio.com/docs/remote/containers#_getting-started). *Github CodeSpaces* will give you ability to spin up a Github hosted instance of Ubuntu that would allow you run, test, develop allbase from the browser. *VSCode Development Containers* in turn will allow your installation of VSCode to spin up a docker instance of Ubuntu on your computer and automatically mount your code onto it so that you continue developing on this docker instance that has all the required development environment setup. 
+In order to simplify the development experience, and environment setup, the ark Github repository comes packaged to support *Github CodeSpaces* and [*VSCode Development Containers*](https://code.visualstudio.com/docs/remote/containers#_getting-started). *Github CodeSpaces* will give you ability to spin up a Github hosted instance of Ubuntu that would allow you run, test, develop ark from the browser. *VSCode Development Containers* in turn will allow your installation of VSCode to spin up a docker instance of Ubuntu on your computer and automatically mount your code onto it so that you continue developing on this docker instance that has all the required development environment setup. 
 
 ## Recommended Plugins
 
-Whether you're a beginner with Go or you're an experienced developer, You should see the suggestions popup automatically when you goto the *Plugins* tab in VSCode. Using these plugins can help accelerate the development experience and also allow you to work more collaboratively with other allbase developers.
+Whether you're a beginner with Go or you're an experienced developer, You should see the suggestions popup automatically when you goto the *Plugins* tab in VSCode. Using these plugins can help accelerate the development experience and also allow you to work more collaboratively with other ark developers.
 
 # How to report a bug
 
@@ -108,16 +108,16 @@ If the answer to either of those two questions are "yes", then you're probably d
 
 ### Non-security related bugs
 
-For non-security bug reports please [submit it using this template!](https://github.com/TimothyStiles/allbase/issues/new?assignees=&labels=&template=bug_report.md&title=)
+For non-security bug reports please [submit it using this template!](https://github.com/TimothyStiles/ark/issues/new?assignees=&labels=&template=bug_report.md&title=)
 
 # How to suggest a feature or enhancement
 
-If you want to suggest a feature it's as easy as filling out this [issue template](https://github.com/TimothyStiles/allbase/issues/new?assignees=&labels=&template=feature_request.md&title=), but before you do please [check to see if it's already been suggested!](https://github.com/TimothyStiles/allbase/labels/enhancement)
+If you want to suggest a feature it's as easy as filling out this [issue template](https://github.com/TimothyStiles/ark/issues/new?assignees=&labels=&template=feature_request.md&title=), but before you do please [check to see if it's already been suggested!](https://github.com/TimothyStiles/ark/labels/enhancement)
 
 # How add a recommended VSCode Plugin
 
-Allbase comes with a set of recommended plugins for VSCode. If you have suggestions that will simplify life for the allbase dev community, consider doing a pull-request after modifying `.vscode/extensions.json`. 
+ark comes with a set of recommended plugins for VSCode. If you have suggestions that will simplify life for the ark dev community, consider doing a pull-request after modifying `.vscode/extensions.json`. 
 
 # In closing
 
-Thanks, for reading and I'm super psyched to see what you'll do with Allbase!
+Thanks, for reading and I'm super psyched to see what you'll do with ark!

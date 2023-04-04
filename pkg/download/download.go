@@ -1,8 +1,8 @@
 package download
 
-// Allbase literally downloads all the base data needed to build a standard allbase deployment
+// ark literally downloads all the base data needed to build a standard ark deployment
 // the amount of data is dummy high to casually test on your personal machine. Run at your own risk.
-func Allbase() {
+func ark() {
 	writePath := "../data/build"
 
 	// Typically I'd write these functions to return errors but since I'm using go routines

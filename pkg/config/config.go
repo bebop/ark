@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/TimothyStiles/allbase/pkg/env"
+	"github.com/TimothyStiles/ark/pkg/env"
 )
 
 // Read reads the config file and returns the config.
@@ -32,7 +32,7 @@ func Write(fileName string, config Config) error {
 	return nil
 }
 
-// Config is the configuration for the allbase application.
+// Config is the configuration for the ark application.
 type Config struct {
 	// Production or development.
 	IsProd bool `json:"prod"`
@@ -43,8 +43,8 @@ type Config struct {
 	// DataPath is the data directory of the project.
 	DataPath string `json:"data_path"`
 
-	// AllbasePath is the path to the allbase sqlite database.
-	AllbasePath string `json:"allbase_path"`
+	// arkPath is the path to the ark sqlite database.
+	arkPath string `json:"ark_path"`
 
 	// RheaRDF is the path to the Rhea RDF file.
 	RheaRDF string `json:"rhea_rdf"`
@@ -80,7 +80,7 @@ func DevDefault() Config {
 		IsProd:              false,
 		RootPath:            env.RootPath(),
 		DataPath:            devPath,
-		AllbasePath:         filepath.Join(devPath, "allbase.sqlite"),
+		arkPath:             filepath.Join(devPath, "ark.sqlite"),
 		RheaRDF:             filepath.Join(devPath, "rhea_mini.rdf.gz"),
 		RheaToUniprotSprot:  filepath.Join(devPath, "rhea_to_uniprot_sprot.tsv.gz"),
 		RheaToUniprotTrembl: filepath.Join(devPath, "rhea_to_uniprot_trembl.tsv.gz"),
@@ -101,7 +101,7 @@ func ProdDefault() Config {
 		IsProd:              true,
 		RootPath:            env.RootPath(),
 		DataPath:            prodPath,
-		AllbasePath:         filepath.Join(prodPath, "allbase.sqlite"),
+		arkPath:             filepath.Join(prodPath, "ark.sqlite"),
 		RheaRDF:             filepath.Join(prodPath, "rhea.rdf.gz"),
 		RheaToUniprotSprot:  filepath.Join(prodPath, "rhea_to_uniprot_sprot.tsv"),
 		RheaToUniprotTrembl: filepath.Join(prodPath, "rhea_to_uniprot_trembl.tsv"),

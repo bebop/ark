@@ -1,4 +1,4 @@
-module github.com/TimothyStiles/allbase
+module github.com/TimothyStiles/ark
 
 go 1.18
 
