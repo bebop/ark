@@ -8,8 +8,8 @@ import (
 
 	"github.com/TimothyStiles/poly/io/genbank"
 	"github.com/TimothyStiles/poly/io/uniprot"
-	"github.com/allyourbasepair/allbase/models"
-	"github.com/allyourbasepair/allbase/pkg/rhea"
+	"github.com/allyourbasepair/ark/models"
+	"github.com/allyourbasepair/ark/pkg/rhea"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 )
@@ -24,15 +24,15 @@ var localCmd = &cobra.Command{
 
 func local() {
 	// TODO: Check to see if the database already exists. Tells the user to run clean if they want a new install.
-	if _, err := os.Stat("allbase.db"); !os.IsNotExist(err) {
-		log.Fatal("Database already exists. Run 'allbase clean' to remove it.")
+	if _, err := os.Stat("ark.db"); !os.IsNotExist(err) {
+		log.Fatal("Database already exists. Run 'ark clean' to remove it.")
 	}
 
 	// Begin SQLite
 	log.Println("Creating database...")
-	db, err := sqlx.Open("sqlite3", "allbase.db")
+	db, err := sqlx.Open("sqlite3", "ark.db")
 	if err != nil {
-		log.Fatalf("Failed to open sqlite in allbase.db: %s", err)
+		log.Fatalf("Failed to open sqlite in ark.db: %s", err)
 	}
 
 	// Execute our schema in memory
@@ -114,5 +114,5 @@ func local() {
 		log.Fatalf("Failed to insert RheaTsvInsert trembl on: %s", err)
 	}
 
-	log.Printf("Finished allbase")
+	log.Printf("Finished ark")
 }

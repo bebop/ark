@@ -21,7 +21,7 @@ import (
 	//dc "github.com/ory/dockertest/v3/docker"
 
 	"github.com/TimothyStiles/poly/io/uniprot"
-	"github.com/allyourbasepair/allbase/pkg/rhea"
+	"github.com/allyourbasepair/ark/pkg/rhea"
 	_ "github.com/mattn/go-sqlite3"
 )
 

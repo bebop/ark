@@ -1,4 +1,4 @@
-module github.com/allyourbasepair/allbase
+module github.com/allyourbasepair/ark
 
 go 1.17
 

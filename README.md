@@ -1,10 +1,10 @@
-# allbase
+# ark
 
 ## All your basepair are belong to us
 
-We're building a modern solution to the biotech data access problem. Too many siloed databases using terrible dataformats that can't crossref eachother. Allbase is still in hot development but as it stands now the plan is to have a single service that can search and cross reference sequences and pathways from genbank, rhea, chembl, and uniprot. All sequences get hashes so they have a unique identifier. Allbase should in the end be able to spit out JSON for every sequence it has and every pathway it can make. Keoni should write down how somewhere but search is going to be dummy fast and easy to use through an API.
+We're building a modern solution to the biotech data access problem. Too many siloed databases using terrible dataformats that can't crossref eachother. ark is still in hot development but as it stands now the plan is to have a single service that can search and cross reference sequences and pathways from genbank, rhea, chembl, and uniprot. All sequences get hashes so they have a unique identifier. ark should in the end be able to spit out JSON for every sequence it has and every pathway it can make. Keoni should write down how somewhere but search is going to be dummy fast and easy to use through an API.
 ## Specification
-When completed allbase will have:
+When completed ark will have:
 
 * [x] Functions that pull data from Genbank, Rhea, CHEMBL, and Uniprot.
   * [ ] Cron jobs for daily updates from public DBs mentioned above.
@@ -18,7 +18,7 @@ When completed allbase will have:
   * [ ] deploy on push to main
   * [ ] continuous db updates
 * [ ] Annotate given sequence string
-* [ ] Improved data streaming. Currently allbase downloads THEN inserts.
+* [ ] Improved data streaming. Currently ark downloads THEN inserts.
 * [ ] REST API endpoints to:
   * [ ] Query for metabolic pathways:
     * [x] Breadth first search
