@@ -3,8 +3,8 @@ package insert
 import (
 	"context"
 
-	"github.com/TimothyStiles/ark/pkg/config"
-	"github.com/TimothyStiles/ark/pkg/rhea"
+	"github.com/bebop/ark/pkg/config"
+	"github.com/bebop/ark/pkg/rhea"
 	"github.com/jmoiron/sqlx"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )

@@ -3,7 +3,7 @@ package download_test
 import (
 	"testing"
 
-	"github.com/TimothyStiles/ark/pkg/download"
+	"github.com/bebop/ark/pkg/download"
 )
 
 func TestGetPageLinks(t *testing.T) {
