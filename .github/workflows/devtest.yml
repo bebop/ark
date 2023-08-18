@@ -19,6 +19,6 @@ jobs:
       with:
         imageName: ghcr.io/bebop/ark-devcontainer
         cacheFrom: ghcr.io/bebop/ark-devcontainer
-        push: always
+        push: never
         # Change this to be your CI task/script
         runCmd: go test -v ./...
