@@ -1,7 +1,23 @@
-- name: Pre-build image and run make ci-build in dev container
-  uses: devcontainers/ci@v0.3
-  with:
-    imageName: ghcr.io/bebop/ark-devcontainer
-    cacheFrom: ghcr.io/bebop/ark-devcontainer
-    push: always
-    runCmd: go test -v ./...
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+  pull_request:
+name: Test
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.18.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Pre-build image and run make ci-build in dev container
+        uses: devcontainers/ci@v0.3
+        with:
+          imageName: ghcr.io/bebop/ark-devcontainer
+          cacheFrom: ghcr.io/bebop/ark-devcontainer
+          push: always
+          runCmd: go test -v ./...
