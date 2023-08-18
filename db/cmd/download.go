@@ -39,6 +39,6 @@ var downloadCmd = &cobra.Command{
 	Short: "Download data for standard deploy build. Run at your own risk.",
 	Long:  "Download literally downloads all the base data needed to build a standard ark deployment the amount of data is dummy high to casually test on your personal machine. Run at your own risk.",
 	Run: func(cmd *cobra.Command, args []string) {
-		download.ark()
+		// download.ark()
 	},
 }

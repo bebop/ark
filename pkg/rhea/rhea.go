@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/TimothyStiles/ark/models"
+	"github.com/bebop/ark/models"
 	"github.com/volatiletech/null/v8"
 )
 

@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/TimothyStiles/ark/pkg/config"
-	"github.com/TimothyStiles/ark/schema"
+	"github.com/bebop/ark/pkg/config"
+	"github.com/bebop/ark/schema"
 	"github.com/jmoiron/sqlx"
 	_ "modernc.org/sqlite"
 )
@@ -23,12 +23,12 @@ func TestRhea(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpDataDir)
 
-	tmpConfig.arkPath = filepath.Join(tmpDataDir, "rheaTest.db")
+	tmpConfig.ArkPath = filepath.Join(tmpDataDir, "rheaTest.db")
 
 	//create test database
 	err = schema.CreateDatabase(tmpConfig)
 
-	db, err := sqlx.Open("sqlite", tmpConfig.arkPath)
+	db, err := sqlx.Open("sqlite", tmpConfig.ArkPath)
 	if err != nil {
 		log.Fatalf("Failed to open sqlite in ark.db: %s", err)
 	}

@@ -1,4 +1,4 @@
-module github.com/TimothyStiles/ark
+module github.com/bebop/ark
 
 go 1.18
 

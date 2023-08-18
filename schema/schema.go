@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/TimothyStiles/ark/pkg/config"
+	"github.com/bebop/ark/pkg/config"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
 
@@ -17,7 +17,7 @@ func CreateDatabase(config config.Config) error {
 
 	// Begin SQLite
 	log.Println("Creating database...")
-	db, err := sqlx.Open("sqlite", config.arkPath)
+	db, err := sqlx.Open("sqlite", config.ArkPath)
 
 	if err != nil {
 		log.Fatalf("Failed to open sqlite database: %s", err)
@@ -41,7 +41,7 @@ func CreateDatabase(config config.Config) error {
 		log.Fatalf("Failed to execute schema: %s", err)
 	}
 
-	err = chemblAttach(db, config.arkPath)
+	err = chemblAttach(db, config.ArkPath)
 	if err != nil {
 		log.Fatalf("Failed to attach chembl with error %s", err)
 	}

@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/TimothyStiles/ark/pkg/download"
+	"github.com/bebop/ark/pkg/download"
 )
 
 func TestTarball(t *testing.T) {
