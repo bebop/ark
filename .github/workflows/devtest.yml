@@ -17,7 +17,7 @@ jobs:
     - name: Pre-build image and run make ci-build in dev container
       uses: devcontainers/ci@v0.3
       with:
-        imageName: ghcr.io/bebop/devcontainer
-        cacheFrom: ghcr.io/bebop/devcontainer
+        imageName: ghcr.io/bebop/ark-devcontainer
+        cacheFrom: ghcr.io/bebop/ark-devcontainer
         push: always
         runCmd: go test -v ./...
