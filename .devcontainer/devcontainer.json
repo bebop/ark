@@ -6,22 +6,13 @@
 	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
 
 	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {
-			"enableNonRootDocker": "true",
-			"moby": "true"
-		},
-		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
-			"version": "latest",
-			"helm": "latest",
-			"minikube": "latest"
-		},
 		"ghcr.io/devcontainers/features/go:1": {
 			"version": "latest",
 			"golangciLintVersion": "latest"
 		},
-    "ghcr.io/mpriscella/features/kind:1": {
-      "version": "latest"
-    }
+		"ghcr.io/itsmechlark/features/postgresql:1": {
+			"version": "latest"
+		}
 	},
 	
 	"extensions": ["golang.go","premparihar.gotestexplorer","github.vscode-pull-request-github","eamodio.gitlens"],
@@ -33,7 +24,7 @@
 	// "postCreateCommand": "kubectl version",
 
 	// Use 'postStartCommand' to run commands after the container is created like starting minikube.
-	"postStartCommand": "kind create cluster && helm install dev .devcontainer/dev",
+	// "postStartCommand": "kind create cluster && helm install dev .devcontainer/dev",
 	// "postStartCommand": "nohup bash -c 'minikube start &' > minikube.log 2>&1 && helm install dev .devcontainer/dev",
 
 	// Configure tool-specific properties.
