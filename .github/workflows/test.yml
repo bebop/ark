@@ -1,3 +1,4 @@
+name: 'build and test within dev container'
 on:
   push:
     tags:
@@ -5,20 +6,19 @@ on:
     branches:
       - main
   pull_request:
-name: Test
 jobs:
-  test:
-    strategy:
-      matrix:
-        go-version: [1.18.x]
-        platform: [ubuntu-latest]
-    runs-on: ${{ matrix.platform }}
+  build:
+    runs-on: ubuntu-latest
     steps:
-    - name: Install Go
-      uses: actions/setup-go@v2
+
+    - name: Checkout (GitHub)
+      uses: actions/checkout@v3
+
+    - name: Build and run dev container task
+      uses: devcontainers/ci@v0.3
       with:
-        go-version: ${{ matrix.go-version }}
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Test
-      run: go test -v ./...
+        imageName: ghcr.io/bebop/ark-devcontainer
+        cacheFrom: ghcr.io/bebop/ark-devcontainer
+        push: never
+        # Change this to be your CI task/script
+        runCmd: go test -v ./...
