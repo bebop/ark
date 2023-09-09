@@ -1,40 +1,39 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
+	"log"
+	"net/http"
 
-	_ "github.com/lib/pq"
+	"github.com/bebop/ark/initializers"
+	"github.com/gin-gonic/gin"
 )
 
-const (
-	host     = "127.0.0.1"
-	port     = 65318
-	user     = ""
-	password = ""
-	dbname   = ""
+var (
+	server *gin.Engine
 )
 
-func main() {
-	// connection string
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+func init() {
+	config, err := initializers.LoadConfig(".devcontainer")
+	if err != nil {
+		log.Fatal("? Could not load environment variables", err)
+	}
 
-	// open database
-	db, err := sql.Open("postgres", psqlconn)
-	CheckError(err)
+	initializers.ConnectDB(&config)
 
-	// close database
-	defer db.Close()
-
-	// check db
-	err = db.Ping()
-	CheckError(err)
-
-	fmt.Println("Connected!")
+	server = gin.Default()
 }
 
-func CheckError(err error) {
+func main() {
+	config, err := initializers.LoadConfig(".devcontainer")
 	if err != nil {
-		panic(err)
+		log.Fatal("? Could not load environment variables", err)
 	}
+
+	router := server.Group("/api")
+	router.GET("/healthchecker", func(ctx *gin.Context) {
+		message := "Welcome to Golang with Gorm and Postgres"
+		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
+	})
+
+	log.Fatal(server.Run(":" + config.ServerPort))
 }
