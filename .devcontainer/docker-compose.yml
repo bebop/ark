@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile
     env_file:
         # Ensure that the variables in .env match the same variables in devcontainer.json
-        - .env
+        - app.env
 
     volumes:
       - ../..:/workspaces:cached
