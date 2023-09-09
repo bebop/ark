@@ -1,0 +1,14 @@
+apiVersion: v2
+name: ark-dev
+description: Dev Helm chart for Ark developer environment
+type: application
+version: 0.0.0
+appVersion: 1.20.2
+
+# Bitnami charts are served from GitHub CDN - See https://github.com/bitnami/charts/issues/10539 for details
+dependencies:
+  # Chart release date: 2023-07 (https://github.com/bitnami/charts/blob/main/bitnami/postgresql/Chart.yaml)
+  - name: postgresql
+    repository: oci://registry-1.docker.io/bitnamicharts
+    version: 12.6.6
+    condition: postgresql.enabled
