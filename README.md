@@ -32,7 +32,7 @@ ark is still in hot development and not production ready. We currently only ship
 
 * [MIT](LICENSE)
 
-* Copyright (c) 2022 Timothy Stiles, Keoni Gandall
+* Copyright (c) 2022 Timothy Stiles
 <!-- We're building a modern solution to the biotech data access problem. Too many siloed databases using terrible dataformats that can't crossref eachother. ark is still in hot development but as it stands now the plan is to have a single service that can search and cross reference sequences and pathways from genbank, rhea, chembl, and uniprot. All sequences get hashes so they have a unique identifier. ark should in the end be able to spit out JSON for every sequence it has and every pathway it can make. Keoni should write down how somewhere but search is going to be dummy fast and easy to use through an API. -->
 <!-- ## Specification
 When completed ark will have:
